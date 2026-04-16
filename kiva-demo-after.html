@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Giving Fund Impact — Kiva</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+
+<style>
+/* ─── Kiva Design Tokens (alias layer) ─────────────────────────── */
+:root {
+  /* color/text */
+  --text-primary:   #223829;
+  --text-secondary: #757575;
+  --text-tertiary:  #9e9e9e;
+  --text-action:    #276a43;
+  --text-inverse:   #edf4f1;
+
+  /* color/bg */
+  --bg-primary:     #ffffff;
+  --bg-secondary:   #edf4f1;
+  --bg-action:      #276a43;
+  --bg-caution:     #f8cd69;
+  --bg-caution-lt:  #f8f2e6;
+
+  /* color/brand */
+  --brand:          #2aa967;
+  --brand-dark:     #19653e;
+  --brand-light:    #bfe5d1;
+  --brand-50:       #f4fbf7;
+  --marigold:       #f4b539;
+  --marigold-light: #f8f2e6;
+  --desert-rose:    #c45f4f;
+
+  /* color/border */
+  --border-tertiary: #c4c4c4;
+  --border-action:   #276a43;
+
+  /* typography */
+  --font: 'DM Sans', system-ui, -apple-system, sans-serif;
+  --text-jumbo-lg:  44px;
+  --text-jumbo-sm:  32px;
+  --text-h1:        26px;
+  --text-h2:        22px;
+  --text-h3:        18px;
+  --text-base:      16px;
+  --text-small:     14px;
+  --text-caption:   12px;
+  --lh-jumbo:       1.12;
+  --lh-h1:          1.25;
+  --lh-body:        1.55;
+  --ls-tight:       -0.022em;
+  --ls-tighter:     -0.03em;
+
+  /* spacing */
+  --sp-xs:  4px;
+  --sp-sm:  8px;
+  --sp-md:  16px;
+  --sp-lg:  24px;
+  --sp-xl:  32px;
+  --sp-2xl: 48px;
+  --sp-3xl: 64px;
+
+  /* radius */
+  --radius-sm:  8px;
+  --radius-md:  12px;
+  --radius-lg:  16px;
+  --radius-xl:  20px;
+  --radius-2xl: 24px;
+  --radius-pill: 100px;
+
+  /* layout */
+  --page-margin: 20px;
+  --content-max: 880px;
+}
+
+@media (min-width: 734px) {
+  :root {
+    --page-margin: 32px;
+    --text-jumbo-sm: 38px;
+  }
+}
+@media (min-width: 1024px) {
+  :root {
+    --page-margin: 64px;
+    --text-jumbo-sm: 44px;
+  }
+}
+
+/* ─── Reset ──────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  font-size: var(--text-base);
+  line-height: var(--lh-body);
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Nav ────────────────────────────────────────────────────────── */
+.nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-tertiary);
+  padding: var(--sp-md) var(--page-margin);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: var(--sp-sm);
+  font-size: 18px; font-weight: 600;
+  letter-spacing: var(--ls-tighter); color: var(--text-primary);
+  text-decoration: none;
+}
+.nav-logo-mark {
+  width: 28px; height: 28px; border-radius: var(--radius-sm);
+  background: var(--brand); display: flex; align-items: center; justify-content: center;
+}
+.nav-logo-mark svg { width: 16px; height: 16px; }
+.nav-links { display: flex; gap: var(--sp-xl); list-style: none; }
+.nav-links a {
+  font-size: var(--text-small); font-weight: 500; color: var(--text-secondary);
+  text-decoration: none; transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--text-primary); }
+.nav-cta {
+  font-size: var(--text-small); font-weight: 600;
+  background: var(--bg-action); color: #fff;
+  padding: 8px 18px; border-radius: var(--radius-pill);
+  text-decoration: none; transition: background 0.2s;
+  border: none; cursor: pointer;
+}
+.nav-cta:hover { background: var(--brand-dark); }
+@media (max-width: 600px) {
+  .nav-links { display: none; }
+}
+
+/* ─── Page wrapper ───────────────────────────────────────────────── */
+.page { max-width: var(--content-max); margin: 0 auto; padding: 0 var(--page-margin); }
+
+/* ─── Hero ───────────────────────────────────────────────────────── */
+.hero {
+  padding: var(--sp-3xl) 0 var(--sp-2xl);
+  text-align: center;
+}
+.hero-tag {
+  display: inline-flex; align-items: center; gap: var(--sp-xs);
+  font-size: var(--text-caption); font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text-action);
+  background: var(--bg-secondary); border: 1px solid var(--brand-light);
+  padding: 4px 12px; border-radius: var(--radius-pill);
+  margin-bottom: var(--sp-lg);
+}
+.hero-tag::before { content: ''; display: block; width: 6px; height: 6px; border-radius: 50%; background: var(--brand); }
+.hero-title {
+  font-size: clamp(28px, 5vw, var(--text-jumbo-lg));
+  font-weight: 600; letter-spacing: var(--ls-tighter);
+  line-height: var(--lh-jumbo); color: var(--text-primary);
+  margin-bottom: var(--sp-md);
+}
+.hero-title em {
+  font-style: normal; color: var(--brand);
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-sub {
+  font-size: var(--text-h3); color: var(--text-secondary);
+  max-width: 520px; margin: 0 auto var(--sp-2xl);
+  font-weight: 400; line-height: var(--lh-body);
+}
+.hero-ctas {
+  display: flex; gap: var(--sp-md); justify-content: center; flex-wrap: wrap;
+}
+.btn-primary {
+  font-family: var(--font); font-size: var(--text-base); font-weight: 600;
+  background: var(--bg-action); color: #fff;
+  padding: 14px 28px; border-radius: var(--radius-pill);
+  border: none; cursor: pointer; text-decoration: none;
+  transition: background 0.2s, transform 0.15s;
+}
+.btn-primary:hover { background: var(--brand-dark); transform: translateY(-1px); }
+.btn-secondary {
+  font-family: var(--font); font-size: var(--text-base); font-weight: 500;
+  background: transparent; color: var(--text-action);
+  padding: 14px 28px; border-radius: var(--radius-pill);
+  border: 1.5px solid var(--brand-light); cursor: pointer; text-decoration: none;
+  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+}
+.btn-secondary:hover {
+  border-color: var(--brand); background: var(--brand-50);
+  transform: translateY(-1px);
+}
+
+/* ─── Stats row ──────────────────────────────────────────────────── */
+.stats-section { padding: var(--sp-2xl) 0; }
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-md);
+}
+@media (max-width: 500px) {
+  .stats-grid { grid-template-columns: 1fr; }
+}
+.stat-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--brand-light);
+  border-radius: var(--radius-xl);
+  padding: var(--sp-xl) var(--sp-lg);
+  text-align: center;
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.5s, transform 0.5s;
+}
+.stat-card.visible { opacity: 1; transform: none; }
+.stat-card:nth-child(2) { transition-delay: 0.1s; }
+.stat-card:nth-child(3) { transition-delay: 0.2s; }
+.stat-value {
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 700; letter-spacing: var(--ls-tighter);
+  color: var(--text-primary); line-height: 1;
+  margin-bottom: var(--sp-xs);
+}
+.stat-value .stat-prefix { font-size: 0.6em; vertical-align: super; }
+.stat-label {
+  font-size: var(--text-small); color: var(--text-secondary);
+  font-weight: 400;
+}
+.stat-trend {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; font-weight: 600; color: var(--text-action);
+  background: rgba(42,169,103,0.1); border-radius: var(--radius-pill);
+  padding: 2px 8px; margin-top: var(--sp-sm);
+}
+.stat-trend::before { content: '↑'; }
+
+/* ─── Section label ──────────────────────────────────────────────── */
+.section-label {
+  font-size: var(--text-caption); font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text-tertiary);
+  margin-bottom: var(--sp-sm);
+}
+.section-title {
+  font-size: var(--text-h1); font-weight: 600;
+  letter-spacing: var(--ls-tight); color: var(--text-primary);
+  margin-bottom: var(--sp-sm);
+}
+.section-desc {
+  font-size: var(--text-base); color: var(--text-secondary);
+  max-width: 520px; margin-bottom: var(--sp-xl);
+}
+
+/* ─── Divider ────────────────────────────────────────────────────── */
+.divider {
+  border: none; border-top: 1px solid #e8ede9;
+  margin: var(--sp-2xl) 0;
+}
+
+/* ─── Impact multiplier ──────────────────────────────────────────── */
+.multiplier-section { padding: var(--sp-sm) 0 var(--sp-2xl); }
+.multiplier-card {
+  background: var(--text-primary);
+  border-radius: var(--radius-2xl);
+  padding: var(--sp-2xl) var(--sp-xl);
+  color: var(--text-inverse);
+}
+.multiplier-top {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: var(--sp-xl);
+  flex-wrap: wrap; gap: var(--sp-md);
+}
+.multiplier-heading {
+  font-size: var(--text-h2); font-weight: 600;
+  letter-spacing: var(--ls-tight); color: var(--text-inverse);
+}
+.multiplier-sub { font-size: var(--text-small); color: rgba(237,244,241,0.6); margin-top: 4px; }
+.multiplier-badge {
+  font-size: var(--text-small); font-weight: 600;
+  background: var(--brand); color: #fff;
+  padding: 6px 14px; border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+.bar-group { display: flex; flex-direction: column; gap: var(--sp-md); }
+.bar-row { display: flex; flex-direction: column; gap: 6px; }
+.bar-meta {
+  display: flex; justify-content: space-between;
+  font-size: var(--text-small); color: rgba(237,244,241,0.7);
+}
+.bar-meta strong { color: var(--text-inverse); font-weight: 600; }
+.bar-track {
+  height: 10px; background: rgba(237,244,241,0.1);
+  border-radius: var(--radius-pill); overflow: hidden;
+}
+.bar-fill {
+  height: 100%; border-radius: var(--radius-pill);
+  width: 0; transition: width 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.bar-fill.green  { background: linear-gradient(90deg, var(--brand) 0%, #6ac395 100%); }
+.bar-fill.gold   { background: linear-gradient(90deg, var(--marigold) 0%, #f8cd69 100%); }
+.bar-fill.teal   { background: linear-gradient(90deg, #4ab67e 0%, #bfe5d1 100%); }
+.multiplier-note {
+  margin-top: var(--sp-xl); padding-top: var(--sp-md);
+  border-top: 1px solid rgba(237,244,241,0.12);
+  font-size: var(--text-caption); color: rgba(237,244,241,0.45);
+}
+
+/* ─── Sector donut ───────────────────────────────────────────────── */
+.sectors-section { padding: var(--sp-sm) 0 var(--sp-2xl); }
+.sectors-layout {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: var(--sp-2xl); align-items: center;
+}
+@media (max-width: 640px) {
+  .sectors-layout { grid-template-columns: 1fr; }
+}
+.donut-wrap {
+  position: relative; width: 200px; height: 200px;
+  margin: 0 auto;
+}
+.donut-wrap svg { transform: rotate(-90deg); }
+.donut-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.donut-center-val {
+  font-size: 28px; font-weight: 700;
+  letter-spacing: var(--ls-tighter); color: var(--text-primary);
+}
+.donut-center-label {
+  font-size: 10px; font-weight: 500; color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.sector-list { display: flex; flex-direction: column; gap: var(--sp-md); }
+.sector-item { display: flex; align-items: center; gap: var(--sp-md); }
+.sector-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+}
+.sector-info { flex: 1; }
+.sector-name { font-size: var(--text-small); font-weight: 500; color: var(--text-primary); }
+.sector-bar-track {
+  height: 4px; background: #e8ede9; border-radius: var(--radius-pill);
+  margin-top: 4px; overflow: hidden;
+}
+.sector-bar-fill {
+  height: 100%; border-radius: var(--radius-pill);
+  width: 0; transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.sector-pct {
+  font-size: var(--text-small); font-weight: 600;
+  color: var(--text-secondary); min-width: 36px; text-align: right;
+}
+
+/* ─── Borrower cards ─────────────────────────────────────────────── */
+.borrowers-section { padding: var(--sp-sm) 0 var(--sp-3xl); }
+.borrowers-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-md);
+}
+@media (max-width: 640px) { .borrowers-grid { grid-template-columns: 1fr; } }
+@media (min-width: 641px) and (max-width: 880px) { .borrowers-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.borrower-card {
+  border: 1px solid var(--border-tertiary);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: var(--bg-primary);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  transition: box-shadow 0.25s, transform 0.25s;
+}
+.borrower-card:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+}
+
+/* shimmer → reveal */
+.borrower-img-wrap {
+  width: 100%; aspect-ratio: 4/3; position: relative; overflow: hidden;
+  background: #e8ede9;
+}
+.shimmer {
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, #e8ede9 25%, #d4e5da 50%, #e8ede9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+.shimmer.done { animation: none; opacity: 0; transition: opacity 0.4s; }
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.borrower-img {
+  width: 100%; height: 100%; object-fit: cover;
+  opacity: 0; transition: opacity 0.5s;
+  position: absolute; inset: 0;
+}
+.borrower-img.loaded { opacity: 1; }
+
+/* avatar fallback */
+.borrower-avatar {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 48px;
+}
+
+.borrower-tag {
+  position: absolute; top: 10px; left: 10px;
+  font-size: 10px; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: rgba(255,255,255,0.9);
+  color: var(--text-action);
+  padding: 3px 8px; border-radius: var(--radius-pill);
+}
+.borrower-body { padding: var(--sp-md); }
+.borrower-name {
+  font-size: var(--text-base); font-weight: 600;
+  color: var(--text-primary); margin-bottom: 4px;
+}
+.borrower-meta {
+  font-size: var(--text-small); color: var(--text-secondary);
+  margin-bottom: var(--sp-sm);
+}
+.borrower-amount {
+  display: flex; align-items: baseline; gap: 4px;
+  font-size: var(--text-h2); font-weight: 700;
+  letter-spacing: var(--ls-tighter); color: var(--text-primary);
+}
+.borrower-amount span { font-size: var(--text-small); color: var(--text-tertiary); font-weight: 400; }
+.borrower-progress-track {
+  height: 4px; background: #e8ede9; border-radius: var(--radius-pill);
+  margin: var(--sp-sm) 0 var(--sp-xs); overflow: hidden;
+}
+.borrower-progress-fill {
+  height: 100%; background: var(--brand); border-radius: var(--radius-pill);
+  width: 0; transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.4s;
+}
+.borrower-pct {
+  font-size: 11px; color: var(--text-secondary); text-align: right;
+}
+.borrower-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: var(--sp-sm) var(--sp-md);
+  border-top: 1px solid #f0f0f0;
+}
+.borrower-country {
+  font-size: var(--text-small); color: var(--text-secondary);
+  display: flex; align-items: center; gap: 4px;
+}
+.lend-btn {
+  font-family: var(--font); font-size: 13px; font-weight: 600;
+  background: var(--bg-action); color: #fff;
+  padding: 7px 16px; border-radius: var(--radius-pill);
+  border: none; cursor: pointer; transition: background 0.2s;
+}
+.lend-btn:hover { background: var(--brand-dark); }
+
+/* ─── Impact callout ─────────────────────────────────────────────── */
+.callout {
+  background: var(--bg-secondary);
+  border: 1px solid var(--brand-light);
+  border-radius: var(--radius-2xl);
+  padding: var(--sp-2xl) var(--sp-xl);
+  display: flex; gap: var(--sp-xl); align-items: center;
+  flex-wrap: wrap; margin-bottom: var(--sp-3xl);
+}
+.callout-icon {
+  width: 56px; height: 56px; border-radius: var(--radius-md);
+  background: var(--brand); display: flex; align-items: center;
+  justify-content: center; font-size: 28px; flex-shrink: 0;
+}
+.callout-body { flex: 1; min-width: 200px; }
+.callout-title {
+  font-size: var(--text-h2); font-weight: 600;
+  letter-spacing: var(--ls-tight); margin-bottom: 6px;
+}
+.callout-desc { font-size: var(--text-base); color: var(--text-secondary); }
+.callout-cta { margin-top: var(--sp-md); }
+
+/* ─── Footer ─────────────────────────────────────────────────────── */
+.footer {
+  border-top: 1px solid #e8ede9;
+  padding: var(--sp-xl) var(--page-margin);
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: var(--sp-md);
+  max-width: var(--content-max); margin: 0 auto;
+}
+.footer-note { font-size: var(--text-caption); color: var(--text-tertiary); }
+.footer-links { display: flex; gap: var(--sp-lg); }
+.footer-links a { font-size: var(--text-caption); color: var(--text-secondary); text-decoration: none; }
+.footer-links a:hover { color: var(--text-primary); }
+
+/* ─── Token annotation tooltip (hover) ──────────────────────────── */
+[data-token] {
+  position: relative; cursor: help;
+}
+[data-token]::after {
+  content: attr(data-token);
+  position: absolute; bottom: calc(100% + 4px); left: 50%;
+  transform: translateX(-50%);
+  background: #223829; color: #edf4f1;
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  padding: 3px 8px; border-radius: 4px; white-space: nowrap;
+  pointer-events: none; opacity: 0; transition: opacity 0.15s;
+  z-index: 200;
+}
+[data-token]:hover::after { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- ── Nav ──────────────────────────────────────────────────────── -->
+<nav class="nav">
+  <a class="nav-logo" href="#">
+    <div class="nav-logo-mark">
+      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 3h4v10H3V3zm6 4h4v6H9V7z" fill="white"/>
+      </svg>
+    </div>
+    Kiva
+  </a>
+  <ul class="nav-links">
+    <li><a href="#">Lend</a></li>
+    <li><a href="#">Giving Fund</a></li>
+    <li><a href="#">Impact</a></li>
+    <li><a href="#">About</a></li>
+  </ul>
+  <a href="#" class="nav-cta">Contribute</a>
+</nav>
+
+<!-- ── Hero ─────────────────────────────────────────────────────── -->
+<main>
+<section class="page hero">
+  <div class="hero-tag">Giving Fund Dashboard</div>
+  <h1 class="hero-title">
+    Every dollar you give<br>becomes <em>real impact</em>
+  </h1>
+  <p class="hero-sub">
+    See what your contribution to the Kiva Giving Fund could unlock —
+    loans funded, borrowers reached, and communities transformed.
+  </p>
+  <div class="hero-ctas">
+    <a href="#" class="btn-primary" data-token="bg.action">Start giving</a>
+    <a href="#" class="btn-secondary">See how it works</a>
+  </div>
+</section>
+
+<!-- ── Stats ────────────────────────────────────────────────────── -->
+<section class="page stats-section">
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card" data-token="bg.secondary">
+      <div class="stat-value" data-target="2800000" data-prefix="$" id="stat0">$0</div>
+      <div class="stat-label">Total loans funded</div>
+      <div class="stat-trend">18% vs last year</div>
+    </div>
+    <div class="stat-card" data-token="bg.secondary">
+      <div class="stat-value" data-target="4200" id="stat1">0</div>
+      <div class="stat-label">Borrowers reached</div>
+      <div class="stat-trend">23% vs last year</div>
+    </div>
+    <div class="stat-card" data-token="bg.secondary">
+      <div class="stat-value" data-target="72" id="stat2">0</div>
+      <div class="stat-label">Countries represented</div>
+      <div class="stat-trend">5 new this year</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" style="max-width:var(--content-max);margin:0 auto var(--sp-2xl)">
+
+<!-- ── Impact multiplier ────────────────────────────────────────── -->
+<section class="page multiplier-section">
+  <div class="section-label">How your gift multiplies</div>
+  <div class="section-title">The Giving Fund multiplier</div>
+  <p class="section-desc">
+    Contributions to the Giving Fund are distributed as interest-free loans,
+    cycling through borrowers and generating compounding impact over time.
+  </p>
+
+  <div class="multiplier-card">
+    <div class="multiplier-top">
+      <div>
+        <div class="multiplier-heading" data-token="text.inverse">$100 contribution → up to $620 in loans</div>
+        <div class="multiplier-sub">Average cycle rate over 3 years, based on 94% repayment</div>
+      </div>
+      <div class="multiplier-badge">6.2× multiplier</div>
+    </div>
+    <div class="bar-group" id="barGroup">
+      <div class="bar-row">
+        <div class="bar-meta"><strong>Year 1</strong><span>$100 → <strong>$100</strong> in loans</span></div>
+        <div class="bar-track"><div class="bar-fill green" data-width="16"></div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-meta"><strong>Year 2</strong><span>Repayments relent → <strong>$288</strong> in loans</span></div>
+        <div class="bar-track"><div class="bar-fill gold" data-width="46"></div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-meta"><strong>Year 3</strong><span>Compounded impact → <strong>$620</strong> in loans</span></div>
+        <div class="bar-track"><div class="bar-fill teal" data-width="100"></div></div>
+      </div>
+    </div>
+    <p class="multiplier-note">Based on Kiva's 94% repayment rate. Actual impact varies by loan portfolio and market conditions.</p>
+  </div>
+</section>
+
+<hr class="divider" style="max-width:var(--content-max);margin:0 auto var(--sp-2xl)">
+
+<!-- ── Sector breakdown ──────────────────────────────────────────── -->
+<section class="page sectors-section">
+  <div class="section-label">Portfolio composition</div>
+  <div class="section-title">Who your loans reach</div>
+  <p class="section-desc">Giving Fund loans are distributed across sectors with the highest impact per dollar.</p>
+
+  <div class="sectors-layout">
+    <div class="donut-wrap" id="donutWrap">
+      <svg width="200" height="200" viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="80" fill="none" stroke="#e8ede9" stroke-width="28"/>
+        <!-- segments drawn by JS -->
+        <circle id="seg0" cx="100" cy="100" r="80" fill="none" stroke="#2aa967"     stroke-width="28" stroke-dasharray="0 502.65" stroke-dashoffset="0"   style="transition:stroke-dasharray 1s cubic-bezier(0.16,1,0.3,1) 0s"/>
+        <circle id="seg1" cx="100" cy="100" r="80" fill="none" stroke="#f4b539"     stroke-width="28" stroke-dasharray="0 502.65" stroke-dashoffset="0"   style="transition:stroke-dasharray 1s cubic-bezier(0.16,1,0.3,1) 0.12s"/>
+        <circle id="seg2" cx="100" cy="100" r="80" fill="none" stroke="#4ab67e"     stroke-width="28" stroke-dasharray="0 502.65" stroke-dashoffset="0"   style="transition:stroke-dasharray 1s cubic-bezier(0.16,1,0.3,1) 0.22s"/>
+        <circle id="seg3" cx="100" cy="100" r="80" fill="none" stroke="#c45f4f"     stroke-width="28" stroke-dasharray="0 502.65" stroke-dashoffset="0"   style="transition:stroke-dasharray 1s cubic-bezier(0.16,1,0.3,1) 0.32s"/>
+        <circle id="seg4" cx="100" cy="100" r="80" fill="none" stroke="#bfe5d1"     stroke-width="28" stroke-dasharray="0 502.65" stroke-dashoffset="0"   style="transition:stroke-dasharray 1s cubic-bezier(0.16,1,0.3,1) 0.42s"/>
+      </svg>
+      <div class="donut-center">
+        <div class="donut-center-val">4,200</div>
+        <div class="donut-center-label">borrowers</div>
+      </div>
+    </div>
+
+    <div class="sector-list" id="sectorList">
+      <!-- populated by JS -->
+    </div>
+  </div>
+</section>
+
+<hr class="divider" style="max-width:var(--content-max);margin:0 auto var(--sp-2xl)">
+
+<!-- ── Borrower cards ────────────────────────────────────────────── -->
+<section class="page borrowers-section">
+  <div class="section-label">Real borrowers</div>
+  <div class="section-title">Loans your gift could fund</div>
+  <p class="section-desc">Each contribution supports verified borrowers working with Kiva's local field partners.</p>
+
+  <div class="borrowers-grid" id="borrowersGrid">
+
+    <div class="borrower-card">
+      <div class="borrower-img-wrap">
+        <div class="shimmer" id="shim0"></div>
+        <div class="borrower-avatar">🌾</div>
+        <div class="borrower-tag">Agriculture</div>
+      </div>
+      <div class="borrower-body">
+        <div class="borrower-name">Amara S.</div>
+        <div class="borrower-meta">Expanding small-scale rice farming</div>
+        <div class="borrower-amount">$525 <span>loan goal</span></div>
+        <div class="borrower-progress-track">
+          <div class="borrower-progress-fill" data-pct="84"></div>
+        </div>
+        <div class="borrower-pct" id="bpct0">0%</div>
+      </div>
+      <div class="borrower-footer">
+        <div class="borrower-country">🇰🇪 Kenya · 14 lenders</div>
+        <button class="lend-btn" data-token="bg.action">Lend $25</button>
+      </div>
+    </div>
+
+    <div class="borrower-card">
+      <div class="borrower-img-wrap">
+        <div class="shimmer" id="shim1"></div>
+        <div class="borrower-avatar">📚</div>
+        <div class="borrower-tag">Education</div>
+      </div>
+      <div class="borrower-body">
+        <div class="borrower-name">Maria L.</div>
+        <div class="borrower-meta">Vocational training for women entrepreneurs</div>
+        <div class="borrower-amount">$350 <span>loan goal</span></div>
+        <div class="borrower-progress-track">
+          <div class="borrower-progress-fill" data-pct="60"></div>
+        </div>
+        <div class="borrower-pct" id="bpct1">0%</div>
+      </div>
+      <div class="borrower-footer">
+        <div class="borrower-country">🇵🇭 Philippines · 8 lenders</div>
+        <button class="lend-btn">Lend $25</button>
+      </div>
+    </div>
+
+    <div class="borrower-card">
+      <div class="borrower-img-wrap">
+        <div class="shimmer" id="shim2"></div>
+        <div class="borrower-avatar">🏪</div>
+        <div class="borrower-tag">Services</div>
+      </div>
+      <div class="borrower-body">
+        <div class="borrower-name">Fatou D.</div>
+        <div class="borrower-meta">Tailoring business expansion and equipment</div>
+        <div class="borrower-amount">$700 <span>loan goal</span></div>
+        <div class="borrower-progress-track">
+          <div class="borrower-progress-fill" data-pct="92"></div>
+        </div>
+        <div class="borrower-pct" id="bpct2">0%</div>
+      </div>
+      <div class="borrower-footer">
+        <div class="borrower-country">🇸🇳 Senegal · 21 lenders</div>
+        <button class="lend-btn">Lend $25</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── Callout CTA ───────────────────────────────────────────────── -->
+<section class="page">
+  <div class="callout">
+    <div class="callout-icon">🌱</div>
+    <div class="callout-body">
+      <div class="callout-title">Ready to multiply your impact?</div>
+      <p class="callout-desc">Join 180,000 Kiva supporters. Your contribution enters the cycle and keeps lending.</p>
+      <div class="callout-cta">
+        <a href="#" class="btn-primary" style="font-size:15px;padding:12px 24px;">Contribute to Giving Fund</a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ── Footer ────────────────────────────────────────────────────── -->
+<footer class="footer">
+  <div class="footer-note">© 2026 Kiva Microfunds. All loans subject to availability.</div>
+  <div class="footer-links">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">Help</a>
+  </div>
+</footer>
+
+<script>
+/* ── Intersection Observer utility ─────────────────────────────── */
+const observe = (el, cb, opts = {}) => {
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { cb(e.target); io.unobserve(e.target); } });
+  }, { threshold: 0.25, ...opts });
+  io.observe(el);
+};
+
+/* ── Stat count-up ─────────────────────────────────────────────── */
+function countUp(el, target, prefix = '', duration = 1600) {
+  const start = performance.now();
+  const fmt = n => {
+    if (n >= 1000000) return prefix + (n/1000000).toFixed(1) + 'M';
+    if (n >= 1000)    return prefix + (n/1000).toFixed(n >= 10000 ? 0 : 1) + 'K';
+    return prefix + Math.round(n).toLocaleString();
+  };
+  const step = ts => {
+    const p = Math.min((ts - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - p, 4);
+    el.textContent = fmt(target * ease);
+    if (p < 1) requestAnimationFrame(step);
+    else el.textContent = fmt(target);
+  };
+  requestAnimationFrame(step);
+}
+
+observe(document.getElementById('statsGrid'), () => {
+  document.querySelectorAll('.stat-card').forEach((c, i) => {
+    setTimeout(() => {
+      c.classList.add('visible');
+      const val = c.querySelector('.stat-value');
+      const target = +val.dataset.target;
+      const prefix = val.dataset.prefix || '';
+      countUp(val, target, prefix, 1600 + i * 200);
+    }, i * 100);
+  });
+});
+
+/* ── Multiplier bars ───────────────────────────────────────────── */
+observe(document.getElementById('barGroup'), () => {
+  document.querySelectorAll('.bar-fill').forEach((b, i) => {
+    setTimeout(() => {
+      b.style.width = b.dataset.width + '%';
+    }, i * 180);
+  });
+});
+
+/* ── Donut chart ───────────────────────────────────────────────── */
+const sectors = [
+  { name: 'Agriculture',    pct: 35, color: '#2aa967' },
+  { name: 'Services',       pct: 28, color: '#f4b539' },
+  { name: 'Food / Retail',  pct: 18, color: '#4ab67e' },
+  { name: 'Health',         pct: 11, color: '#c45f4f' },
+  { name: 'Education',      pct: 8,  color: '#bfe5d1' },
+];
+const C = 2 * Math.PI * 80; // circumference ≈ 502.65
+
+// Populate legend
+const sectorList = document.getElementById('sectorList');
+sectors.forEach((s, i) => {
+  sectorList.innerHTML += `
+    <div class="sector-item">
+      <div class="sector-dot" style="background:${s.color}"></div>
+      <div class="sector-info">
+        <div class="sector-name">${s.name}</div>
+        <div class="sector-bar-track">
+          <div class="sector-bar-fill" id="sbf${i}" style="background:${s.color}" data-pct="${s.pct}"></div>
+        </div>
+      </div>
+      <div class="sector-pct">${s.pct}%</div>
+    </div>`;
+});
+
+observe(document.getElementById('donutWrap'), () => {
+  let offset = 0;
+  sectors.forEach((s, i) => {
+    const seg = document.getElementById('seg' + i);
+    const dash = (s.pct / 100) * C;
+    const gap  = C - dash;
+    seg.style.strokeDasharray  = `${dash} ${gap}`;
+    seg.style.strokeDashoffset = -offset;
+    offset += dash;
+    // legend bars
+    setTimeout(() => {
+      const bar = document.getElementById('sbf' + i);
+      if (bar) bar.style.width = bar.dataset.pct + '%';
+    }, 200 + i * 80);
+  });
+});
+
+/* ── Borrower shimmer → reveal ─────────────────────────────────── */
+[0, 1, 2].forEach(i => {
+  const shim = document.getElementById('shim' + i);
+  const pctEl = document.getElementById('bpct' + i);
+  const fill = document.querySelectorAll('.borrower-progress-fill')[i];
+  const target = +fill.dataset.pct;
+  setTimeout(() => {
+    shim.classList.add('done');
+    fill.style.width = target + '%';
+    // animate percentage label
+    let cur = 0;
+    const step = () => {
+      cur = Math.min(cur + 2, target);
+      pctEl.textContent = cur + '% funded';
+      if (cur < target) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, 600 + i * 300);
+});
+</script>
+</body>
+</html>
