@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Shoply case study — From 31% retention to 82%. Full V2 redesign of a cashback app. Heuristic audit, 272-person usability test, and a new design system.">
+<meta property="og:title" content="Shoply Redesign — Lin Zhao">
+<meta property="og:description" content="From 31% retention to 82%. Full V2 redesign of a cashback app.">
+<meta property="og:type" content="article">
+<title>Shoply Redesign — Lin Zhao</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<style>
+/* ================================================================
+   ORGANIC SYSTEMS v4 — Shoply Case Study
+   WebGL Contour · Spring Cursor · Glass Cards
+   ================================================================ */
+
+@property --border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:           #F4F0E8;
+  --bg-warm:      #EDE8DE;
+  --sage:         #5C6E4D;
+  --sage-mid:     #8A9E78;
+  --terracotta:   #B87D5A;
+  --sand:         #C4B094;
+  --ink:          #252520;
+  --ink-mid:      #4A4A44;
+  --ink-muted:    #787668;
+  --ink-faint:    #B4B0A6;
+  --glass-bg:     rgba(253,250,246,0.68);
+  --glass-hi:     rgba(255,255,255,0.92);
+  --glass-border: rgba(255,255,255,0.88);
+
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body:    'DM Sans', system-ui, sans-serif;
+  --font-mono:    'DM Mono', 'SF Mono', monospace;
+
+  --radius:    16px;
+  --radius-lg: 24px;
+  --pad:       clamp(24px, 5.5vw, 88px);
+  --max-w:     1040px;
+
+  --ease-silk:   cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-expo:   cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --bg-surface:  rgba(237,232,222,0.60);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+@media (hover: hover) { * { cursor: none !important; } }
+
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; }
+::selection { background: rgba(92,110,77,0.14); color: var(--sage); }
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--sand); border-radius: 2px; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0;
+  margin: -1px; overflow: hidden; clip: rect(0,0,0,0);
+  white-space: nowrap; border-width: 0;
+}
+.skip-link {
+  position: fixed; top: -100%; left: 50%; transform: translateX(-50%);
+  z-index: 20000; padding: 0.75rem 1.5rem;
+  background: var(--sage); color: #fff;
+  font-family: var(--font-body); font-size: 0.875rem; font-weight: 600;
+  border-radius: 0 0 12px 12px; transition: top 0.2s;
+}
+.skip-link:focus { top: 0; outline: none; }
+
+/* ── Cursor ───────────────────────────────────────────────────── */
+#cursor {
+  position: fixed; top: 0; left: 0;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--sage); pointer-events: none; z-index: 16000;
+  transform: translate(-50%,-50%); mix-blend-mode: multiply;
+  transition: width 0.35s var(--ease-silk), height 0.35s var(--ease-silk), background 0.3s;
+  will-change: transform;
+}
+#cursor-aura {
+  position: fixed; top: 0; left: 0;
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid rgba(92,110,77,0.22);
+  pointer-events: none; z-index: 15999;
+  transform: translate(-50%,-50%);
+  transition: width 0.5s var(--ease-silk), height 0.5s var(--ease-silk), border-color 0.4s;
+  will-change: transform;
+}
+#cursor.link  { width: 26px; height: 26px; background: var(--terracotta); }
+#cursor-aura.link { width: 68px; height: 68px; border-color: rgba(184,125,90,0.16); }
+.c-trail {
+  position: fixed; top: 0; left: 0; border-radius: 50%;
+  background: var(--sage); mix-blend-mode: multiply;
+  pointer-events: none; z-index: 15998;
+  transform: translate(-50%,-50%); will-change: transform, opacity;
+}
+
+/* ── WebGL + Progress ─────────────────────────────────────────── */
+#glCanvas { display: none !important; }
+#scrollProgress {
+  position: fixed; top: 0; left: 0; height: 1px; width: 0%;
+  background: linear-gradient(90deg, var(--sage), var(--terracotta), var(--sand));
+  z-index: 10002; pointer-events: none;
+}
+
+/* ── Nav ──────────────────────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  padding: 1.5rem var(--pad);
+  display: flex; align-items: center; justify-content: space-between;
+  transition: padding 0.5s var(--ease-expo), background 0.55s var(--ease-expo), backdrop-filter 0.55s;
+}
+nav.scrolled {
+  padding-top: 1rem; padding-bottom: 1rem;
+  background: rgba(244,240,232,0.84);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  box-shadow: 0 1px 0 rgba(92,110,77,0.07);
+}
+.nav-back {
+  font-family: var(--font-display); font-size: 1rem;
+  font-weight: 500; font-style: italic; color: var(--ink-muted);
+  display: flex; align-items: center; gap: 0.5rem;
+  transition: color 0.3s; min-height: 44px;
+}
+.nav-back:hover { color: var(--sage); }
+.nav-back svg { transition: transform 0.35s var(--ease-silk); }
+.nav-back:hover svg { transform: translateX(-4px); }
+.nav-links { display: flex; gap: 2.5rem; }
+.nav-links a {
+  font-family: var(--font-body); font-size: 0.6875rem; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-muted);
+  display: inline-flex; align-items: center; min-height: 44px;
+  position: relative; transition: color 0.3s;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: 6px; left: 0;
+  width: 0; height: 1px; background: var(--sage);
+  transition: width 0.4s var(--ease-silk);
+}
+.nav-links a:hover { color: var(--sage); }
+.nav-links a:hover::after { width: 100%; }
+
+main { position: relative; z-index: 2; }
+
+/* ── Layout ───────────────────────────────────────────────────── */
+.container { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad); }
+.divider { width: 100%; }
+.divider-line { height: 1px; background: linear-gradient(90deg, transparent, rgba(92,110,77,0.12), transparent); }
+
+/* ── Reveals ──────────────────────────────────────────────────── */
+.reveal {
+  opacity: 0; transform: translateY(24px);
+  transition: opacity 0.85s var(--ease-silk), transform 0.85s var(--ease-silk);
+}
+.reveal.on { opacity: 1; transform: none; }
+.reveal-delay-1 { transition-delay: 0.08s; }
+.reveal-delay-2 { transition-delay: 0.16s; }
+.reveal-delay-3 { transition-delay: 0.24s; }
+.reveal-delay-4 { transition-delay: 0.32s; }
+
+/* ── Typography ───────────────────────────────────────────────── */
+.chapter-num {
+  font-family: var(--font-mono); font-size: 0.5rem;
+  letter-spacing: 0.28em; text-transform: uppercase;
+  color: var(--ink-faint); margin-bottom: 1.25rem;
+}
+.chapter-heading {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.75rem);
+  font-weight: 300; font-style: italic;
+  letter-spacing: -0.03em; line-height: 0.92;
+  color: var(--ink); margin-bottom: 2rem;
+}
+.chapter-heading em { color: var(--sage); font-style: inherit; }
+.body-text {
+  font-size: clamp(0.9375rem, 1.5vw, 1.0625rem);
+  line-height: 1.82; color: var(--ink-muted); max-width: 620px; margin-bottom: 2.5rem;
+}
+.body-text p + p { margin-top: 1rem; }
+.body-text strong { color: var(--ink); font-weight: 500; }
+
+/* ── Hero ─────────────────────────────────────────────────────── */
+#hero {
+  min-height: 100svh; display: flex; align-items: center;
+  padding: 140px 0 80px;
+  position: relative; overflow: hidden;
+}
+.hero-inner { max-width: var(--max-w); margin: 0 auto; width: 100%; }
+.hero-meta {
+  font-family: var(--font-mono); font-size: 0.5625rem;
+  letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-muted);
+  display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;
+  opacity: 0; transform: translateY(10px);
+}
+.hero-meta::before { content: ''; width: 22px; height: 1px; background: var(--sage); opacity: 0.5; }
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5.5vw, 4.5rem);
+  font-weight: 300; font-style: italic;
+  line-height: 1.1; letter-spacing: -0.04em;
+  color: var(--ink); margin-bottom: 2.5rem;
+  opacity: 0; transform: translateY(36px); filter: blur(12px);
+}
+.hero-title em { color: var(--sage); font-style: inherit; }
+.hero-sub {
+  font-size: clamp(0.9375rem, 1.6vw, 1.1875rem);
+  color: var(--ink-muted); line-height: 1.75;
+  max-width: 560px; margin-bottom: 2.5rem;
+  opacity: 0; transform: translateY(18px);
+}
+.hero-sub strong { color: var(--ink); font-weight: 500; }
+
+/* ── Meta Grid ────────────────────────────────────────────────── */
+.cs-meta-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem; margin: 2rem 0;
+}
+@media (max-width: 600px) { .cs-meta-grid { grid-template-columns: repeat(2, 1fr); } }
+.cs-meta-item {
+  padding: 1rem 1.25rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: inset 0 1px 0 var(--glass-hi);
+}
+.cs-meta-item.wide {
+  grid-column: 1 / -1;
+}
+.cs-meta-label {
+  font-family: var(--font-mono); font-size: 0.5625rem;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--sage); margin-bottom: 0.25rem;
+}
+.cs-meta-value { font-size: 0.8125rem; color: var(--ink-muted); line-height: 1.5; }
+
+/* ── Content Sections ─────────────────────────────────────────── */
+.cs-content-section { margin-top: clamp(64px, 9vw, 100px); }
+.cs-content-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.375rem, 2.5vw, 1.875rem);
+  font-weight: 400; font-style: italic;
+  color: var(--ink); margin-bottom: 0.75rem;
+}
+.cs-content-text {
+  font-size: 0.9375rem; color: var(--ink-muted);
+  line-height: 1.75; margin-bottom: 1.25rem;
+}
+.cs-content-text strong { color: var(--ink-mid); font-weight: 500; }
+
+/* ── Bullet Lists ─────────────────────────────────────────────── */
+.cs-bullet-list { list-style: none; padding: 0; margin: 0.75rem 0; }
+.cs-bullet-list li {
+  font-size: 0.875rem; color: var(--ink-muted);
+  line-height: 1.65; padding: 0.25rem 0 0.25rem 1.25rem; position: relative;
+}
+.cs-bullet-list li::before {
+  content: '→'; position: absolute; left: 0;
+  color: var(--sage); font-size: 0.75rem;
+}
+.cs-bullet-list strong { color: var(--ink-mid); font-weight: 500; }
+
+/* ── Key Insight ──────────────────────────────────────────────── */
+.cs-key-insight {
+  margin: 1.5rem 0; padding: 1.5rem 1.75rem;
+  background: rgba(92,110,77,0.04);
+  border: 1px solid rgba(92,110,77,0.12);
+  border-left: 2px solid var(--sage);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+.cs-key-insight p { font-size: 0.9375rem; color: var(--ink-muted); line-height: 1.7; }
+.cs-key-insight strong { color: var(--ink-mid); font-weight: 500; }
+
+/* ── Images ───────────────────────────────────────────────────── */
+.cs-image-full {
+  width: 100%; border-radius: var(--radius);
+  border: 1px solid rgba(92,110,77,0.08);
+  cursor: pointer; margin: 1rem 0;
+  transition: border-color 0.3s;
+}
+.cs-image-full:hover { border-color: rgba(92,110,77,0.2); }
+.cs-image-row {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 0.75rem; margin: 1rem 0;
+}
+.cs-image-row img {
+  width: 100%; border-radius: var(--radius);
+  border: 1px solid rgba(92,110,77,0.08);
+  cursor: pointer; transition: border-color 0.3s;
+  object-fit: cover; max-height: 280px;
+}
+.cs-image-row img:hover { border-color: rgba(92,110,77,0.2); }
+.cs-image-trio {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem; margin: 1rem 0;
+}
+.cs-image-trio img {
+  width: 100%; border-radius: var(--radius);
+  border: 1px solid rgba(92,110,77,0.08);
+  cursor: pointer; transition: border-color 0.3s;
+}
+.cs-image-trio img:hover { border-color: rgba(92,110,77,0.2); }
+@media (max-width: 600px) { .cs-image-trio { grid-template-columns: 1fr; } }
+
+/* ── Persona Cards ────────────────────────────────────────────── */
+.cs-persona-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 0.75rem; margin: 1.5rem 0;
+}
+@media (max-width: 600px) { .cs-persona-grid { grid-template-columns: 1fr; } }
+.cs-persona-card {
+  padding: 1.5rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: inset 0 1px 0 var(--glass-hi);
+}
+.cs-persona-card-name {
+  font-family: var(--font-display); font-size: 1rem;
+  font-weight: 500; font-style: italic;
+  color: var(--sage); margin-bottom: 0.875rem;
+}
+.cs-persona-card ul { list-style: none; padding: 0; margin: 0; }
+.cs-persona-card li {
+  font-size: 0.8125rem; color: var(--ink-muted);
+  line-height: 1.6; padding: 0.2rem 0 0.2rem 1rem; position: relative;
+}
+.cs-persona-card li::before {
+  content: '→'; position: absolute; left: 0;
+  color: var(--ink-faint); font-size: 0.6875rem;
+}
+
+/* ── Three Col Cards ──────────────────────────────────────────── */
+.cs-three-col {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem; margin: 1.5rem 0;
+}
+@media (max-width: 680px) { .cs-three-col { grid-template-columns: 1fr; } }
+.cs-audit-card {
+  padding: 1.25rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: inset 0 1px 0 var(--glass-hi);
+  transition: transform 0.5s var(--ease-silk);
+}
+.cs-audit-card:hover { transform: translateY(-2px); }
+.cs-audit-card-title {
+  font-family: var(--font-display); font-size: 1rem;
+  font-weight: 500; font-style: italic;
+  color: var(--sage); margin-bottom: 0.625rem;
+}
+.cs-audit-card ul { list-style: none; padding: 0; margin: 0; }
+.cs-audit-card li {
+  font-size: 0.8125rem; color: var(--ink-muted);
+  line-height: 1.55; padding: 0.2rem 0 0.2rem 1rem; position: relative;
+}
+.cs-audit-card li::before {
+  content: '→'; position: absolute; left: 0;
+  color: var(--ink-faint); font-size: 0.6875rem;
+}
+
+/* ── Two Col ──────────────────────────────────────────────────── */
+.cs-two-col {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1.5rem; margin: 1.5rem 0;
+}
+@media (max-width: 600px) { .cs-two-col { grid-template-columns: 1fr; } }
+.cs-two-col h4 {
+  font-family: var(--font-display); font-size: 0.9375rem;
+  font-weight: 500; font-style: italic;
+  color: var(--sage); margin-bottom: 0.5rem;
+}
+
+/* ── Finding Cards ────────────────────────────────────────────── */
+.cs-findings-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 0.75rem; margin: 1.5rem 0;
+}
+@media (max-width: 600px) { .cs-findings-grid { grid-template-columns: 1fr; } }
+.cs-finding-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: inset 0 1px 0 var(--glass-hi);
+  overflow: hidden;
+  transition: transform 0.5s var(--ease-silk), box-shadow 0.5s var(--ease-silk);
+}
+.cs-finding-card:hover {
+  transform: translateY(-3px);
+  box-shadow: inset 0 1px 0 var(--glass-hi), 0 16px 40px rgba(92,110,77,0.08);
+}
+.cs-finding-card img {
+  width: 100%; height: 200px;
+  object-fit: cover; object-position: top; cursor: pointer;
+  transition: filter 0.4s;
+}
+.cs-finding-card:hover img { filter: brightness(1.04); }
+.cs-finding-card-body { padding: 1.25rem 1.25rem; }
+.cs-finding-card-title {
+  font-family: var(--font-display); font-size: 0.9375rem;
+  font-weight: 500; font-style: italic;
+  color: var(--sage); margin-bottom: 0.625rem;
+}
+.cs-finding-card ul { list-style: none; padding: 0; margin: 0; }
+.cs-finding-card li {
+  font-size: 0.8125rem; color: var(--ink-muted);
+  line-height: 1.55; padding: 0.2rem 0 0.2rem 1rem; position: relative;
+}
+.cs-finding-card li::before {
+  content: '·'; position: absolute; left: 0;
+  color: var(--sage); font-weight: bold;
+}
+
+/* ── Outcomes Grid ────────────────────────────────────────────── */
+.cs-outcomes-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem; margin: 1.5rem 0;
+}
+@media (max-width: 600px) { .cs-outcomes-grid { grid-template-columns: 1fr 1fr; } }
+.cs-outcome-card {
+  padding: 1.5rem 1.25rem; text-align: center;
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: inset 0 1.5px 0 var(--glass-hi);
+  transition: transform 0.5s var(--ease-silk), box-shadow 0.5s var(--ease-silk);
+}
+.cs-outcome-card:hover {
+  transform: translateY(-3px);
+  box-shadow: inset 0 1.5px 0 var(--glass-hi), 0 12px 40px rgba(92,110,77,0.08);
+}
+.cs-outcome-number {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 400; font-style: italic;
+  color: var(--sage); line-height: 1.1; margin-bottom: 0.5rem;
+  font-variant-numeric: tabular-nums;
+}
+.cs-outcome-label {
+  font-family: var(--font-body); font-size: 0.75rem;
+  color: var(--ink-muted); line-height: 1.4;
+}
+
+/* ── Contact / Footer ─────────────────────────────────────────── */
+#contact {
+  padding: clamp(100px,14vw,160px) var(--pad) 0;
+  position: relative;
+}
+#contact::before {
+  content: ''; position: absolute;
+  top: 0; left: var(--pad); right: var(--pad); height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(92,110,77,0.14), transparent);
+}
+.contact-inner { max-width: var(--max-w); margin: 0 auto; text-align: center; }
+.contact-eyebrow {
+  font-family: var(--font-mono); font-size: 0.5625rem; font-weight: 500;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--sage); margin-bottom: 1.25rem;
+}
+.contact-headline {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 5rem);
+  font-weight: 300; font-style: italic;
+  letter-spacing: -0.03em; line-height: 1.05;
+  color: var(--ink); margin-bottom: 0.75rem;
+}
+.contact-sub {
+  font-size: 1rem; line-height: 1.75; color: var(--ink-muted);
+  max-width: 440px; margin: 0 auto 2rem;
+}
+.contact-email {
+  font-family: var(--font-display); font-size: clamp(1rem, 2vw, 1.375rem);
+  font-weight: 400; color: var(--terracotta);
+  border-bottom: 1px solid rgba(184,125,90,0.22);
+  padding-bottom: 4px; display: inline-flex; align-items: center;
+  transition: color 0.3s, border-color 0.3s; min-height: 44px;
+}
+.contact-email:hover { color: var(--sage); border-color: rgba(92,110,77,0.32); }
+footer {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 1rem;
+  max-width: var(--max-w); margin: 4rem auto 0; padding: 1.5rem var(--pad);
+  border-top: 1px solid rgba(92,110,77,0.07);
+}
+.footer-note, .footer-links a {
+  font-family: var(--font-mono); font-size: 0.5rem;
+  color: var(--ink-faint); letter-spacing: 0.14em;
+}
+.footer-links { display: flex; gap: 1.5rem; }
+.footer-links a { transition: color 0.25s; }
+.footer-links a:hover { color: var(--sage); }
+.footer-accent { color: var(--sage); }
+
+/* ── Lightbox ─────────────────────────────────────────────────── */
+.lightbox {
+  position: fixed; inset: 0; z-index: 20000;
+  background: rgba(37,37,32,0.85);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.35s var(--ease-silk); padding: 2rem;
+}
+.lightbox.open { opacity: 1; pointer-events: auto; }
+.lightbox img { max-width: 90vw; max-height: 88vh; border-radius: var(--radius); object-fit: contain; }
+.lightbox-close {
+  position: absolute; top: 1.75rem; right: 1.75rem;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(244,240,232,0.12); border: 1px solid rgba(244,240,232,0.16);
+  color: rgba(244,240,232,0.7); font-size: 1.125rem;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  transition: background 0.2s; backdrop-filter: blur(8px);
+}
+.lightbox-close:hover { background: rgba(244,240,232,0.22); }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+<div id="cursor" aria-hidden="true"></div>
+<div id="cursor-aura" aria-hidden="true"></div>
+<canvas id="glCanvas" aria-hidden="true"></canvas>
+<div id="scrollProgress" aria-hidden="true"></div>
+
+<nav id="mainNav" aria-label="Site navigation">
+  <a class="nav-back" href="index.html" aria-label="Back to portfolio">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M19 12H5M5 12l7-7M5 12l7 7" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Lin Zhao
+  </a>
+  <div class="nav-links">
+    <a href="index.html#work">Work</a>
+    <a href="index.html#about">About</a>
+    <a href="index.html#contact">Contact</a>
+  </div>
+</nav>
+
+<main id="main">
+  <div class="container">
+
+    <!-- ── Hero ───────────────────────────────────────────────── -->
+    <section id="hero" aria-labelledby="heroTitle">
+      <div class="hero-inner">
+      <div class="hero-meta">Shoply · Lead UX/UI Designer</div>
+      <h1 class="hero-title" id="heroTitle">
+        From 31%<br>retention to <em>82%.</em>
+      </h1>
+      <p class="hero-sub">
+        Users downloaded Shoply, poked around for four days, and left. The cashback app's V1 was haemorrhaging users — declining conversion, spiking bounce rates, and a retention curve that flatlined after day four. <strong>I owned V2 end to end: audit, redesign, testing, and a new design system.</strong>
+      </p>
+
+      <div class="cs-meta-grid">
+        <div class="cs-meta-item">
+          <div class="cs-meta-label">Role</div>
+          <div class="cs-meta-value">Lead UX/UI Designer</div>
+        </div>
+        <div class="cs-meta-item">
+          <div class="cs-meta-label">Team</div>
+          <div class="cs-meta-value">PM, Engineering, Researcher, Sales</div>
+        </div>
+        <div class="cs-meta-item">
+          <div class="cs-meta-label">Duration</div>
+          <div class="cs-meta-value">2 months</div>
+        </div>
+        <div class="cs-meta-item">
+          <div class="cs-meta-label">Tools</div>
+          <div class="cs-meta-value">Figma, SurveyMonkey</div>
+        </div>
+        <div class="cs-meta-item wide">
+          <div class="cs-meta-label">Process</div>
+          <div class="cs-meta-value">Audit → Research → Ideate → Prototype → Test → Design System → QA</div>
+        </div>
+      </div>
+      </div>
+    </section>
+
+    <!-- ── Day 4 cliff ────────────────────────────────────────── -->
+    <div class="divider"><div class="divider-line"></div></div>
+    <div class="cs-content-section reveal">
+      <div class="chapter-num">01 — The Problem</div>
+      <h2 class="chapter-heading">Day 4 <em>was the cliff</em></h2>
+      <p class="cs-content-text">The data was unambiguous: users who survived onboarding hit a wall by day four. They couldn't find deals, couldn't figure out redemption, and didn't see the value fast enough. The question wasn't whether to redesign — it was how deep to go.</p>
+    </div>
+
+    <!-- ── Personas ───────────────────────────────────────────── -->
+    <div class="cs-content-section reveal">
+      <div class="chapter-num">02 — Research</div>
+      <h2 class="chapter-heading">Two users, <em>opposite needs</em></h2>
+      <p class="cs-content-text">Marketing data surfaced two behavioural archetypes — and they wanted fundamentally different things from the same app:</p>
+      <div class="cs-persona-grid">
+        <div class="cs-persona-card">
+          <div class="cs-persona-card-name">The Deal Hunter — browses online, wants speed</div>
+          <ul>
+            <li>Prefers online shopping</li>
+            <li>Goals: save money quickly, earn rewards</li>
+            <li>Wants convenient cashback experience</li>
+            <li>Needs clean, easy-to-scan content</li>
+            <li>Values user-friendly interface for browsing and purchasing</li>
+          </ul>
+        </div>
+        <div class="cs-persona-card">
+          <div class="cs-persona-card-name">The Coupon Clipper — shops in-store, wants simplicity</div>
+          <ul>
+            <li>Prefers offline shopping</li>
+            <li>Goals: save money, find nearby store coupons</li>
+            <li>Needs quick access to deals and coupons</li>
+            <li>Wants easy-to-learn app</li>
+            <li>Simple interface — no tech complexity</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Audit ──────────────────────────────────────────────── -->
+    <div class="cs-content-section reveal">
+      <div class="chapter-num">03 — Heuristic Audit</div>
+      <h2 class="chapter-heading">Broken at <em>every layer</em></h2>
+      <p class="cs-content-text">A heuristic evaluation across onboarding, homepage, and redemption revealed the problems weren't cosmetic — they were structural:</p>
+      <div class="cs-three-col">
+        <div class="cs-audit-card">
+          <div class="cs-audit-card-title">Onboarding</div>
+          <ul>
+            <li>Lacks visual appeal — aesthetic and minimalist design failure</li>
+            <li>No feature intro demonstrating product value</li>
+            <li>Excessive pre-sign-up questions without skip button, heightening user anxiety</li>
+          </ul>
+        </div>
+        <div class="cs-audit-card">
+          <div class="cs-audit-card-title">Homepage</div>
+          <ul>
+            <li>No search, filtering, or sorting — users can't find deals</li>
+            <li>Visual hierarchy collapse: icons and text blend together</li>
+            <li>Saved offers disappear with no way to find them again</li>
+          </ul>
+        </div>
+        <div class="cs-audit-card">
+          <div class="cs-audit-card-title">Redemption</div>
+          <ul>
+            <li>Users unsure where to upload receipts — logos not clearly clickable</li>
+            <li>No immediate feedback after receipt upload — no success or error message</li>
+          </ul>
+        </div>
+      </div>
+      <div class="cs-image-trio">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screen-Shot-2021-01-30-at-6.25.46-PM-1280x955.png"
+             alt="Heuristic evaluation — onboarding" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screen-Shot-2021-01-30-at-6.54.27-PM-1280x856.png"
+             alt="Heuristic evaluation — homepage" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screen-Shot-2019-09-20-at-3.35.47-PM.png"
+             alt="Heuristic evaluation — redeem" onclick="openLightbox(this.src)" loading="lazy">
+      </div>
+    </div>
+
+    <!-- ── Competitive Analysis ───────────────────────────────── -->
+    <div class="cs-content-section reveal">
+      <div class="chapter-num">04 — Competitive Analysis</div>
+      <h2 class="chapter-heading">What the best cashback apps <em>got right</em></h2>
+      <p class="cs-content-text">I benchmarked 8 competitors across 9 dimensions and presented findings company-wide. The gap between Shoply and market leaders (Ibotta, Rakuten) was clear — and specific:</p>
+      <ul class="cs-bullet-list">
+        <li><strong>Immediate value hook</strong> — join bonuses + instruction pages drive first-session engagement</li>
+        <li><strong>Location-aware deals</strong> — geo-targeting bridges online and offline shopping</li>
+        <li><strong>Browse by category + sort</strong> — navigation that matches how users think about deals</li>
+        <li><strong>Real-time cashback status</strong> — visibility of system status keeps users in control</li>
+      </ul>
+      <div class="cs-image-row">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Shoply-Competitive-Analysis.jpg"
+             alt="Competitive analysis overview" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Shoply-CA-2.jpg"
+             alt="Competitive analysis details" onclick="openLightbox(this.src)" loading="lazy">
+      </div>
+    </div>
+
+    <!-- ── IA + Ideation ──────────────────────────────────────── -->
+    <div class="cs-content-section reveal">
+      <div class="chapter-num">05 — Ideation</div>
+      <h2 class="chapter-heading">Rebuilding the <em>information architecture</em></h2>
+      <p class="cs-content-text">Card sorting with stakeholders confirmed what testing showed: users couldn't find deals because the IA didn't match how they think about shopping. I rebuilt the flow with the PM and devs around one core principle: <strong>every screen must have a clear next step, and every step must be reversible.</strong></p>
+      <div class="cs-image-row">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Shoply-Competitive-Analysis.docx-3.jpg"
+             alt="Card sorting session" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Redesigned-Shopping-Flow.png"
+             alt="Redesigned shopping flow" onclick="openLightbox(this.src)" loading="lazy">
+      </div>
+    </div>
+
+    <!-- ── Wireframing ────────────────────────────────────────── -->
+    <div class="cs-content-section reveal">
+      <div class="chapter-num">06 — Design</div>
+      <h2 class="chapter-heading">From whiteboard <em>to high-fidelity</em></h2>
+      <p class="cs-content-text">Wireframes first, whiteboarding with the team to align on logic and edge cases, then high-fidelity designs targeting the two core failure points:</p>
+      <div class="cs-two-col">
+        <div>
+          <h4>Onboarding: show value, not process</h4>
+          <ul class="cs-bullet-list">
+            <li>Replaced text walls with visual demos of cashback in action</li>
+            <li>Cut pre-sign-up questions — earn trust first, ask later</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Homepage: findability over decoration</h4>
+          <ul class="cs-bullet-list">
+            <li>Added search + category filtering — the #1 user request</li>
+            <li>Rebuilt visual hierarchy so deals, not chrome, dominate the fold</li>
+          </ul>
+        </div>
+      </div>
+      <div class="cs-image-row">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/IMG_4835.jpg"
+             alt="Whiteboarding session" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/IMG_4992.jpg"
+             alt="Wireframe sketches" onclick="openLightbox(this.src)" loading="lazy">
+      </div>
+    </div>
+
+    <!-- ── Usability Testing ──────────────────────────────────── -->
+    <div class="cs-content-section reveal">
+      <div class="chapter-num">07 — Testing</div>
+      <h2 class="chapter-heading">272 users <em>confirmed the direction</em></h2>
+      <p class="cs-content-text">338 users recruited, 272 completed usability tests across three core tasks. Alongside that, 10+ think-aloud sessions with a researcher gave us the qualitative "why" behind the numbers:</p>
+      <div class="cs-outcomes-grid" style="margin-bottom:1.5rem;">
+        <div class="cs-outcome-card">
+          <div class="cs-outcome-number">78%</div>
+          <div class="cs-outcome-label">found it "easy to use, simple, clean, modern"</div>
+        </div>
+        <div class="cs-outcome-card">
+          <div class="cs-outcome-number">81%</div>
+          <div class="cs-outcome-label">found it "easy to learn"</div>
+        </div>
+        <div class="cs-outcome-card">
+          <div class="cs-outcome-number">72%</div>
+          <div class="cs-outcome-label">wanted to use it frequently</div>
+        </div>
+      </div>
+      <p class="cs-content-text">I distilled the top 10 pain points into prioritised recommendations, weighed against engineering feasibility and timeline. V2 shipped the critical fixes; the remaining insights seeded V3 strategy.</p>
+      <img class="cs-image-full"
+           src="https://www.linzhao15.com/wp-content/uploads/2020/01/Shoply-Mobile-On-boarding-_-home-page-User-Testing-09_27_2019-Sheet1-copy.jpg"
+           alt="Usability test results" onclick="openLightbox(this.src)" loading="lazy">
+    </div>
+
+    <!-- ── Final Design + DS ──────────────────────────────────── -->
+    <div class="cs-content-section reveal">
+      <div class="chapter-num">08 — Shipped Product</div>
+      <h2 class="chapter-heading">V2 + <em>Design System 2.0</em></h2>
+      <div class="cs-image-trio">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screen-Shot-2019-12-02-at-2.18.26-PM.png"
+             alt="Final design — onboarding" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screen-Shot-2019-12-02-at-2.18.33-PM.png"
+             alt="Final design — homepage" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screen-Shot-2019-12-02-at-2.18.40-PM.png"
+             alt="Final design — redemption" onclick="openLightbox(this.src)" loading="lazy">
+      </div>
+      <img class="cs-image-full"
+           src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screen-Shot-2019-12-02-at-1.55.40-PM.png"
+           alt="Design System 2.0" onclick="openLightbox(this.src)" loading="lazy">
+    </div>
+
+    <!-- ── Outcomes ───────────────────────────────────────────── -->
+    <div class="cs-content-section reveal">
+      <div class="chapter-num">09 — Outcomes</div>
+      <h2 class="chapter-heading">The retention curve <em>bent</em></h2>
+      <p class="cs-content-text">V2 didn't just fix individual screens — it fixed the <em>system</em>. Every heuristic failure from the audit got a targeted solution:</p>
+      <div class="cs-outcomes-grid">
+        <div class="cs-outcome-card">
+          <div class="cs-outcome-number">31→82%</div>
+          <div class="cs-outcome-label">user retention improvement</div>
+        </div>
+        <div class="cs-outcome-card">
+          <div class="cs-outcome-number">272</div>
+          <div class="cs-outcome-label">usability test completions</div>
+        </div>
+        <div class="cs-outcome-card">
+          <div class="cs-outcome-number">2.0</div>
+          <div class="cs-outcome-label">new design system shipped</div>
+        </div>
+      </div>
+      <ul class="cs-bullet-list">
+        <li><strong>Visibility of System Status:</strong> Instant confirmation after adding deals and uploading receipts</li>
+        <li><strong>Consistency &amp; Standards:</strong> New UI library clarifying information hierarchy</li>
+        <li><strong>Error Prevention:</strong> Error messages with instructions for fixing issues</li>
+        <li><strong>Aesthetic &amp; Minimalist Design:</strong> Sorting and filtering for a concise, logical homepage</li>
+      </ul>
+      <div class="cs-key-insight">
+        <p><strong>The real lesson:</strong> V1 failed not because individual screens were bad, but because <strong>no one owned the system</strong>. Icons, hierarchy, feedback loops, redemption flows — they were designed in isolation. V2 worked because I treated the entire app as one connected experience, not a collection of screens. A design system isn't a style guide — it's the <strong>connective tissue</strong> between every interaction.</p>
+      </div>
+    </div>
+
+  </div><!-- /container -->
+
+  <!-- ── Contact ────────────────────────────────────────────────── -->
+  <section id="contact" aria-labelledby="contactHeadline">
+    <div class="contact-inner">
+      <div class="contact-eyebrow reveal">What's next</div>
+      <h2 class="contact-headline reveal" id="contactHeadline">Let's close<br>a gap together.</h2>
+      <p class="contact-sub reveal">I'm looking for teams where research drives the roadmap and design ships — not just specs.</p>
+      <div><a class="contact-email reveal" href="mailto:lin@linzhao.design">lin@linzhao.design</a></div>
+    </div>
+    <footer>
+      <span class="footer-note">Built with <span class="footer-accent">Claude Code</span> · Deployed on <span class="footer-accent">Vercel</span></span>
+      <div class="footer-links">
+        <a href="https://www.linkedin.com/in/linzhao15/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <a href="https://www.linzhao15.com/" target="_blank" rel="noopener noreferrer">Previous Work</a>
+      </div>
+    </footer>
+  </section>
+</main>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close image viewer">✕</button>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<script>
+/* ================================================================
+   ORGANIC SYSTEMS v4 — Shoply Case Study
+   WebGL contour · custom cursor · scroll reveals · lightbox
+   ================================================================ */
+'use strict';
+
+const PRM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ── WebGL Contour Background ─────────────────────────────────── */
+(function() {
+  const canvas = document.getElementById('glCanvas');
+  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  if (!gl) { canvas.style.display = 'none'; return; }
+
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    gl.viewport(0, 0, canvas.width, canvas.height);
+  }
+  resize();
+  window.addEventListener('resize', resize, { passive: true });
+
+  const VS = `
+    attribute vec2 a_pos;
+    void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }
+  `;
+  const FS = `
+    precision mediump float;
+    uniform float u_t;
+    uniform vec2  u_res;
+    uniform vec2  u_mouse;
+
+    float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1,311.7)))*43758.5453); }
+    float sn(vec2 p) {
+      vec2 i = floor(p), f = fract(p);
+      f = f*f*(3.0-2.0*f);
+      return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),
+                 mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);
+    }
+    float fbm(vec2 p) {
+      float v=0.0,a=0.5;
+      for(int i=0;i<4;i++){v+=a*sn(p);p*=2.1;a*=0.5;}
+      return v;
+    }
+    void main() {
+      vec2 uv = gl_FragCoord.xy/u_res;
+      vec2 mu = u_mouse/u_res;
+      float t  = u_t*0.065;
+      vec2 p   = uv*2.6+vec2(t*0.28,t*0.18);
+      float f  = fbm(p+fbm(p+fbm(p)));
+      float ct = abs(sin(f*13.0+t));
+      ct = smoothstep(0.86,1.0,ct)*0.06;
+      float md = length(uv-mu);
+      float mi = smoothstep(0.45,0.0,md)*0.03;
+      vec3 base = vec3(0.957,0.941,0.910);
+      vec3 sage = vec3(0.361,0.431,0.302);
+      vec3 col  = base - ct*(base-sage) - mi;
+      gl_FragColor = vec4(col,1.0);
+    }
+  `;
+  function sh(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src); gl.compileShader(s); return s;
+  }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, sh(gl.VERTEX_SHADER, VS));
+  gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FS));
+  gl.linkProgram(prog); gl.useProgram(prog);
+
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+  const ap = gl.getAttribLocation(prog, 'a_pos');
+  gl.enableVertexAttribArray(ap);
+  gl.vertexAttribPointer(ap, 2, gl.FLOAT, false, 0, 0);
+
+  const uT = gl.getUniformLocation(prog, 'u_t');
+  const uR = gl.getUniformLocation(prog, 'u_res');
+  const uM = gl.getUniformLocation(prog, 'u_mouse');
+
+  let mx = canvas.width*.5, my = canvas.height*.5, tx = mx, ty = my;
+  window.addEventListener('mousemove', e => { tx = e.clientX; ty = e.clientY; }, { passive: true });
+
+  const t0 = performance.now();
+  (function frame() {
+    if (!PRM) { mx += (tx-mx)*.055; my += (ty-my)*.055; }
+    const t = (performance.now()-t0)/1000;
+    gl.uniform1f(uT, PRM ? 0 : t);
+    gl.uniform2f(uR, canvas.width, canvas.height);
+    gl.uniform2f(uM, mx, canvas.height-my);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    requestAnimationFrame(frame);
+  })();
+})();
+
+/* ── Custom Cursor + Trail ────────────────────────────────────── */
+(function() {
+  if (PRM || !window.matchMedia('(hover: hover)').matches) return;
+  const dot  = document.getElementById('cursor');
+  const aura = document.getElementById('cursor-aura');
+  if (!dot || !aura) return;
+  const N = 8;
+  const trails = Array.from({length:N}, (_,i) => {
+    const el = document.createElement('div'); el.className = 'c-trail';
+    const sz = Math.max(2, 4 - i * 0.25);
+    el.style.cssText = `width:${sz}px;height:${sz}px;opacity:0;`;
+    document.body.appendChild(el); return { el, x: -200, y: -200 };
+  });
+  let dx=-200, dy=-200, ax=-200, ay=-200, rx=-200, ry=-200, st='';
+  window.addEventListener('mousemove', e => { rx=e.clientX; ry=e.clientY; }, { passive: true });
+  document.addEventListener('mouseleave', () => { rx=-500; ry=-500; });
+  document.addEventListener('mouseover', e => {
+    const cls = e.target.closest('a,button,[role="button"]') ? 'link' : '';
+    if (st !== cls) { dot.className = cls; aura.className = cls; st = cls; }
+  });
+  (function loop() {
+    dx += (rx-dx)*.90; dy += (ry-dy)*.90;
+    dot.style.transform  = `translate(${dx}px,${dy}px) translate(-50%,-50%)`;
+    ax += (rx-ax)*.10; ay += (ry-ay)*.10;
+    aura.style.transform = `translate(${ax}px,${ay}px) translate(-50%,-50%)`;
+    trails[0].x += (dx-trails[0].x)*.55; trails[0].y += (dy-trails[0].y)*.55;
+    for (let i=1; i<N; i++) { trails[i].x += (trails[i-1].x-trails[i].x)*.50; trails[i].y += (trails[i-1].y-trails[i].y)*.50; }
+    trails.forEach((tr,i) => {
+      tr.el.style.opacity = ((1-i/N)*.18).toFixed(3);
+      tr.el.style.transform = `translate(${tr.x}px,${tr.y}px) translate(-50%,-50%)`;
+    });
+    requestAnimationFrame(loop);
+  })();
+})();
+
+/* ── Nav + Progress Bar ───────────────────────────────────────── */
+(function() {
+  const nav  = document.getElementById('mainNav');
+  const prog = document.getElementById('scrollProgress');
+  window.addEventListener('scroll', () => {
+    const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100;
+    if (prog) prog.style.width = Math.min(100, pct) + '%';
+    if (nav)  nav.classList.toggle('scrolled', window.scrollY > 40);
+  }, { passive: true });
+})();
+
+/* ── Scroll Reveals ───────────────────────────────────────────── */
+(function() {
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+})();
+
+/* ── Hero Entrance ────────────────────────────────────────────── */
+if (!PRM && window.gsap) {
+  const tl = gsap.timeline({ delay: 0.15 });
+  tl.to('.hero-meta',    { opacity:1, y:0, duration:0.8,  ease:'power3.out' }, 0)
+    .to('.hero-title',   { opacity:1, y:0, filter:'blur(0px)', duration:1.15, ease:'power3.out' }, 0.12)
+    .to('.hero-sub',     { opacity:1, y:0, duration:0.9,  ease:'power3.out' }, 0.52);
+} else {
+  ['.hero-meta','.hero-title','.hero-sub'].forEach(s => {
+    const el = document.querySelector(s);
+    if (el) { el.style.opacity='1'; el.style.transform='none'; el.style.filter='none'; }
+  });
+}
+
+/* ── Counter Animations ───────────────────────────────────────── */
+if (window.gsap) {
+  function animateCountUp(el, target, suffix, prefix) {
+    suffix = suffix || ''; prefix = prefix || '';
+    var isDecimal = String(target).includes('.');
+    gsap.fromTo(el, { innerText: 0 }, {
+      innerText: target, duration: 1.5, ease: 'power2.out',
+      snap: { innerText: isDecimal ? 0.1 : 1 },
+      onUpdate: function() {
+        var val = isDecimal ? parseFloat(el.innerText).toFixed(1) : Math.round(parseFloat(el.innerText));
+        el.innerText = prefix + val + suffix;
+      }
+    });
+  }
+  document.querySelectorAll('.cs-outcome-number').forEach(function(el) {
+    var text = el.textContent.trim(), match = text.match(/^([^0-9]*)([\d.]+)(.*)$/);
+    if (!match) return;
+    el.style.fontVariantNumeric = 'tabular-nums';
+    if (window.ScrollTrigger) {
+      ScrollTrigger.create({
+        trigger: el, start: 'top 85%',
+        onEnter: function() { animateCountUp(el, parseFloat(match[2]), match[3], match[1]); },
+        once: true
+      });
+    }
+  });
+}
+
+/* ── Hover Float ──────────────────────────────────────────────── */
+if (window.gsap && !PRM) {
+  document.querySelectorAll('.cs-outcome-card, .cs-audit-card, .cs-persona-card, .cs-finding-card').forEach(function(card) {
+    card.addEventListener('mouseenter', function() { gsap.to(card, { y: -3, duration: 0.2, ease: 'power2.out' }); });
+    card.addEventListener('mouseleave', function() { gsap.to(card, { y: 0,  duration: 0.3, ease: 'power2.out' }); });
+  });
+}
+
+/* ── Lightbox ─────────────────────────────────────────────────── */
+function openLightbox(src) {
+  var lb  = document.getElementById('lightbox');
+  var img = document.getElementById('lightboxImg');
+  img.src = src; lb.classList.add('open'); document.body.style.overflow = 'hidden';
+  if (window.gsap) gsap.fromTo(img, { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: 'power2.out' });
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLightbox(); });
+
+/* ── GSAP ScrollTrigger init ──────────────────────────────────── */
+if (window.gsap && window.ScrollTrigger) {
+  gsap.registerPlugin(ScrollTrigger);
+  gsap.ticker.lagSmoothing(0);
+}
+</script>
+</body>
+</html>

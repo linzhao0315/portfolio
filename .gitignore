@@ -1,0 +1,18 @@
+# Internal tooling — not for deployment
+portfolio-assets/.claude/
+
+# Internal reference docs
+*.md
+*.txt
+DEPLOYMENT_CHECKLIST.md
+README.md
+START_HERE.md
+Demo.md
+
+# Old prototype versions (keep only current site)
+portfolio-prototype-v1.html
+portfolio-prototype-v2.html
+portfolio-prototype-v3.html
+
+# macOS
+.DS_Store

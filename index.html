@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Lin Zhao — Design Systems Lead. Building AI-governed design pipelines that make complexity disappear.">
+<meta property="og:title" content="Lin Zhao — Design Systems Lead">
+<meta property="og:description" content="Making complexity disappear. Design Systems Lead building AI infrastructure at Kiva.">
+<meta property="og:type" content="website">
+<title>Lin Zhao — Design Systems Lead</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ================================================================
+   ORGANIC SYSTEMS v4 — Lin Zhao Portfolio
+   overdrive × threejs-motion × css-motion × animate × delight × polish
+   WebGL Contour · Spring Cursor Trail · @property Glass Borders
+   Char Animation · Magnetic Fields · Scroll-Driven Reveals
+   ================================================================ */
+
+/* ── @property registrations ──────────────────────────────────── */
+@property --border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@property --glow-opacity {
+  syntax: '<number>';
+  initial-value: 0;
+  inherits: false;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:            #F4F0E8;
+  --bg-warm:       #EDE8DE;
+  --sage:          #5C6E4D;
+  --sage-mid:      #8A9E78;
+  --sage-faint:    rgba(92,110,77,0.08);
+  --terracotta:    #B87D5A;
+  --sand:          #C4B094;
+  --ink:           #252520;
+  --ink-mid:       #4A4A44;
+  --ink-muted:     #787668;
+  --ink-faint:     #B4B0A6;
+  --glass-bg:      rgba(253,250,246,0.68);
+  --glass-hi:      rgba(255,255,255,0.94);
+  --glass-border:  rgba(255,255,255,0.88);
+
+  --font-display:  'Cormorant Garamond', Georgia, serif;
+  --font-body:     'DM Sans', system-ui, sans-serif;
+  --font-mono:     'DM Mono', 'SF Mono', monospace;
+
+  --radius-lg: 30px;
+  --pad:       clamp(24px, 5.5vw, 88px);
+  --max-w:     1120px;
+
+  --ease-silk:   cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-expo:   cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Hide system cursor on pointer devices */
+@media (hover: hover) {
+  * { cursor: none !important; }
+}
+
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; }
+::selection { background: rgba(92,110,77,0.14); color: var(--sage); }
+::-webkit-scrollbar { width: 3px; height: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--sand); border-radius: 2px; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0;
+  margin: -1px; overflow: hidden; clip: rect(0,0,0,0);
+  white-space: nowrap; border-width: 0;
+}
+.skip-link {
+  position: fixed; top: -100%; left: 50%; transform: translateX(-50%);
+  z-index: 20000; padding: 0.75rem 1.5rem;
+  background: var(--sage); color: #fff;
+  font-family: var(--font-body); font-size: 0.875rem; font-weight: 600;
+  border-radius: 0 0 16px 16px; transition: top 0.2s;
+}
+.skip-link:focus { top: 0; outline: none; }
+
+/* ================================================================
+   CURSOR SYSTEM — dot + aura + spring trail
+   ================================================================ */
+#cursor {
+  position: fixed; top: 0; left: 0;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--sage);
+  pointer-events: none; z-index: 16000;
+  transform: translate(-50%,-50%);
+  mix-blend-mode: multiply;
+  transition: width 0.35s var(--ease-silk), height 0.35s var(--ease-silk),
+              background 0.3s, opacity 0.3s;
+  will-change: transform;
+}
+#cursor-aura {
+  position: fixed; top: 0; left: 0;
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid rgba(92,110,77,0.22);
+  pointer-events: none; z-index: 15999;
+  transform: translate(-50%,-50%);
+  transition: width 0.5s var(--ease-silk), height 0.5s var(--ease-silk),
+              border-color 0.4s, opacity 0.35s;
+  will-change: transform;
+}
+#cursor.link    { width: 26px; height: 26px; background: var(--terracotta); }
+#cursor.card    { width: 48px; height: 48px; background: rgba(92,110,77,0.08); }
+#cursor.drag    { width: 56px; height: 56px; background: rgba(92,110,77,0.06); }
+#cursor.press   { width: 7px;  height: 7px; }
+#cursor-aura.link  { width: 68px; height: 68px; border-color: rgba(184,125,90,0.16); }
+#cursor-aura.card  { width: 88px; height: 88px; border-color: rgba(92,110,77,0.10); }
+#cursor-aura.drag  { opacity: 0; }
+#cursor-aura.press { width: 32px; height: 32px; }
+
+/* Trail dots — created in JS */
+.c-trail {
+  position: fixed; top: 0; left: 0; border-radius: 50%;
+  background: var(--sage); mix-blend-mode: multiply;
+  pointer-events: none; z-index: 15998;
+  transform: translate(-50%,-50%);
+  will-change: transform, opacity;
+}
+
+/* ================================================================
+   WEBGL CANVAS (background)
+   ================================================================ */
+#glCanvas {
+  position: fixed; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: -1;
+}
+
+
+/* ================================================================
+   SCROLL PROGRESS
+   ================================================================ */
+#scrollProgress {
+  position: fixed; top: 0; left: 0; height: 1px; width: 0%;
+  background: linear-gradient(90deg, var(--sage), var(--terracotta), var(--sand));
+  z-index: 10002; pointer-events: none;
+  box-shadow: 0 0 10px rgba(92,110,77,0.20);
+}
+
+/* ================================================================
+   NAV
+   ================================================================ */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  padding: 1.75rem var(--pad);
+  display: flex; align-items: center; justify-content: space-between;
+  transition: padding 0.5s var(--ease-expo), background 0.55s var(--ease-expo),
+              backdrop-filter 0.55s, box-shadow 0.55s;
+  isolation: isolate;
+}
+nav.scrolled {
+  padding-top: 1.1rem; padding-bottom: 1.1rem;
+  background: rgba(244,240,232,0.84);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  box-shadow: 0 1px 0 rgba(92,110,77,0.07), 0 4px 28px rgba(92,110,77,0.04);
+}
+.nav-name {
+  font-family: var(--font-display);
+  font-size: 1.125rem; font-weight: 500; font-style: italic;
+  color: var(--ink); letter-spacing: 0.01em;
+}
+.nav-name a {
+  color: inherit;
+  transition: color 0.3s var(--ease-silk), opacity 0.3s var(--ease-silk);
+}
+.nav-name a:hover { color: var(--sage); opacity: 0.8; }
+.nav-links { display: flex; gap: 2.75rem; }
+.nav-links a {
+  font-family: var(--font-body); font-size: 0.6875rem; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-muted);
+  display: inline-flex; align-items: center; min-height: 44px;
+  position: relative; transition: color 0.3s;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: 6px; left: 0;
+  width: 0; height: 1px; background: var(--sage);
+  transition: width 0.4s var(--ease-silk);
+}
+.nav-links a:hover { color: var(--sage); }
+.nav-links a:hover::after { width: 100%; }
+
+main, footer { position: relative; z-index: 2; }
+
+/* ================================================================
+   SECTION EYEBROW
+   ================================================================ */
+.eyebrow {
+  font-family: var(--font-mono); font-size: 0.5625rem; font-weight: 400;
+  letter-spacing: 0.24em; text-transform: uppercase; color: var(--sage);
+  display: flex; align-items: center; gap: 0.875rem; margin-bottom: 2rem;
+  opacity: 0.75;
+}
+.eyebrow::before {
+  content: ''; display: block; width: 24px; height: 1px;
+  background: currentColor; flex-shrink: 0;
+}
+
+/* ================================================================
+   HERO
+   ================================================================ */
+#hero {
+  min-height: 100svh;
+  display: flex; align-items: center;
+  padding: 140px var(--pad) 100px;
+  overflow: hidden;
+}
+.hero-inner {
+  max-width: var(--max-w); margin: 0 auto; width: 100%;
+  display: flex; align-items: center;
+  justify-content: space-between; gap: clamp(2rem,5vw,5rem);
+}
+.hero-text { flex: 1; min-width: 0; }
+
+.hero-label {
+  font-family: var(--font-mono); font-size: 0.5625rem;
+  letter-spacing: 0.26em; text-transform: uppercase; color: var(--ink-muted);
+  display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;
+  opacity: 0; transform: translateY(12px);
+}
+.hero-label::before {
+  content:''; width: 22px; height: 1px; background: var(--sage); opacity: 0.5;
+}
+
+/* Name — individual chars animated */
+.hero-name {
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 14vw, 11.5rem);
+  font-weight: 300; font-style: italic;
+  letter-spacing: -0.04em; line-height: 0.86;
+  color: var(--ink); margin-bottom: 2.5rem;
+  overflow: visible;
+  /* perspective for 3D char entrance */
+  perspective: 800px;
+}
+.hero-name .char {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(52px) rotateX(-22deg);
+  transform-origin: bottom center;
+  will-change: transform, opacity;
+}
+.hero-name .char-space { display: inline-block; width: 0.28em; }
+
+.hero-tagline {
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 2.3vw, 1.8rem);
+  font-weight: 400; letter-spacing: -0.01em; line-height: 1.35;
+  color: var(--sage); margin-bottom: 1.5rem;
+  opacity: 0; transform: translateY(22px);
+}
+.hero-sub {
+  font-family: var(--font-body);
+  font-size: clamp(0.875rem, 1.4vw, 1rem);
+  line-height: 1.82; color: var(--ink-muted);
+  max-width: 480px; margin-bottom: 1.25rem;
+  opacity: 0; transform: translateY(16px);
+}
+.hero-role {
+  font-family: var(--font-mono); font-size: 0.625rem;
+  color: var(--ink-faint); letter-spacing: 0.14em;
+  opacity: 0; transform: translateY(10px);
+}
+
+/* Orbital SVG orb */
+.hero-orb {
+  width: clamp(160px, 24vw, 340px);
+  aspect-ratio: 1; flex-shrink: 0;
+  opacity: 0; pointer-events: none;
+}
+@media (max-width: 700px) { .hero-orb { display: none; } }
+.hero-orb svg { width: 100%; height: 100%; overflow: visible; }
+
+/* Scroll hint */
+.scroll-hint {
+  position: absolute; bottom: 2.5rem; left: var(--pad);
+  display: flex; align-items: center; gap: 0.75rem; opacity: 0;
+}
+.scroll-hint-line {
+  width: 40px; height: 1px;
+  background: linear-gradient(90deg, var(--sage-mid), transparent);
+}
+@keyframes hintSlide {
+  0%,100% { width: 40px; opacity: 0.8; }
+  50%      { width: 58px; opacity: 0.4; }
+}
+.scroll-hint.go .scroll-hint-line { animation: hintSlide 2.2s ease-in-out infinite; }
+.scroll-hint-label {
+  font-family: var(--font-mono); font-size: 0.5rem;
+  letter-spacing: 0.26em; text-transform: uppercase; color: var(--ink-faint);
+}
+
+/* ================================================================
+   WORK
+   ================================================================ */
+#work { padding: clamp(90px,12vw,160px) 0; }
+
+.work-top {
+  padding: 0 var(--pad);
+  display: flex; align-items: flex-end;
+  justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+.work-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 5.5vw, 4rem);
+  font-weight: 300; font-style: italic;
+  letter-spacing: -0.025em; color: var(--ink); line-height: 1;
+  opacity: 0; transform: translateY(22px);
+  transition: opacity 0.85s var(--ease-silk), transform 0.85s var(--ease-silk);
+}
+.work-title.on { opacity:1; transform: none; }
+
+.drag-hint {
+  font-family: var(--font-mono); font-size: 0.5rem;
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-faint);
+  display: flex; align-items: center; gap: 0.6rem; padding-bottom: 0.5rem;
+  opacity: 0; transform: translateY(14px);
+  transition: opacity 0.75s var(--ease-silk) 0.18s, transform 0.75s var(--ease-silk) 0.18s;
+}
+.drag-hint.on { opacity:1; transform: none; }
+.arr3 { display: flex; gap: 3px; }
+.arr3 span {
+  display: block; width: 5px; height: 5px;
+  border-right: 1px solid currentColor; border-top: 1px solid currentColor;
+  transform: rotate(45deg);
+}
+.arr3 span:nth-child(2) { opacity: 0.4; }
+.arr3 span:nth-child(3) { opacity: 0.15; }
+
+/* Track */
+.work-outer {
+  overflow-x: auto; overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 2.5rem var(--pad) 3.5rem;
+  cursor: grab;
+  user-select: none;
+}
+.work-outer::-webkit-scrollbar { display: none; }
+.work-outer.dragging { cursor: grabbing; }
+
+.work-track { display: flex; gap: 1.75rem; width: max-content; }
+
+/* ── GRADIENT BORDER wrapper ───────────────────────────────────── */
+.proj-wrap {
+  border-radius: calc(var(--radius-lg) + 1.5px);
+  padding: 1.5px;
+  /* Fully transparent at rest — no visible stroke at all */
+  background: transparent;
+  flex: 0 0 clamp(340px, 42vw, 540px);
+  display: flex; flex-direction: column;
+  opacity: 0; transform: translateY(32px);
+  transition:
+    opacity    0.75s var(--ease-silk),
+    transform  0.75s var(--ease-silk);
+}
+.proj-wrap.on { opacity:1; transform: translateY(0); }
+/* Gradient border only appears on hover */
+.proj-wrap:hover {
+  background: conic-gradient(
+    from var(--border-angle) at 50% 50%,
+    rgba(92,110,77,0)      0deg,
+    rgba(92,110,77,0)      195deg,
+    rgba(92,110,77,0.28)   248deg,
+    rgba(184,125,90,0.22)  282deg,
+    rgba(196,176,148,0.18) 308deg,
+    rgba(196,176,148,0)    334deg
+  );
+  animation: borderSpin 4.5s linear infinite;
+}
+
+
+@keyframes borderSpin {
+  from { --border-angle: 0deg; }
+  to   { --border-angle: 360deg; }
+}
+
+/* borderSpin only — cardReveal uses CSS transition + .on class (works in all browsers) */
+@supports (animation-timeline: view()) {
+  .proj-wrap {
+    /* No scroll-driven opacity animation — view() doesn't work inside
+       .work-outer horizontal scroll container (block axis has no scroll).
+       Reveal is handled by the base transition + JS IntersectionObserver. */
+    animation: borderSpin 4.5s linear infinite paused;
+  }
+  .proj-wrap.on  { animation-play-state: paused; }
+  .proj-wrap:hover { animation-play-state: running; }
+}
+
+/* ── LIQUID GLASS CARD ────────────────────────────────────────── */
+/* .proj-wrap opacity bug is now fixed → this actually renders correctly.
+   95% white fill: only 5% of canvas bleeds through.
+   blur(48px): atomises that 5% grain → smooth warm colour wash only.
+   Result: clean frosted glass surface — grain visible around card,
+   not on it. */
+.proj-card {
+  /* 0.78 fill: background colour & warmth glow through noticeably */
+  background: rgba(255, 252, 248, 0.78);
+  backdrop-filter: blur(52px) saturate(150%) brightness(102%);
+  -webkit-backdrop-filter: blur(52px) saturate(150%) brightness(102%);
+  /* Four-side prismatic border: bright top/left, dim bottom/right */
+  border-top:    1px solid rgba(255,255,255,0.92);
+  border-left:   1px solid rgba(255,255,255,0.72);
+  border-right:  1px solid rgba(255,255,255,0.28);
+  border-bottom: 1px solid rgba(255,255,255,0.22);
+  border-radius: calc(var(--radius-lg) - 1.5px);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.95),
+    inset 1px 0   0 rgba(255,255,255,0.40),
+    0 8px 32px -4px rgba(30,30,26,0.01);
+  padding: 20px;
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column; flex: 1;
+  transition: transform 0.65s var(--ease-silk), box-shadow 0.65s var(--ease-silk);
+}
+/* Diagonal catch-light: simulates angled light hitting glass face */
+.proj-card::before {
+  content: ''; pointer-events: none;
+  position: absolute; z-index: 1;
+  inset: 0;
+  background: linear-gradient(145deg,
+    rgba(255,255,255,0.38) 0%,
+    rgba(255,255,255,0.10) 28%,
+    transparent 52%);
+  border-radius: inherit;
+}
+/* Subtle refraction tint on hover — light bends at the glass surface */
+.proj-card::after {
+  content: ''; pointer-events: none;
+  position: absolute; z-index: 1; inset: 0;
+  background: linear-gradient(145deg,
+    rgba(215,219,242,0.12) 0%,   /* Country Air tint */
+    rgba(233,233,213,0.08) 50%,  /* Glass Green tint */
+    transparent 75%);
+  border-radius: inherit;
+  opacity: 0; transition: opacity 0.6s var(--ease-silk);
+}
+.proj-card:hover::after { opacity: 1; }
+.proj-card:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,1.0),
+    inset 1px 0   0 rgba(255,255,255,0.45),
+    0 12px 40px -4px rgba(92,110,77,0.02);
+}
+
+/* Card hover number badge (delight) */
+.proj-num {
+  position: absolute; top: 20px; right: 20px; z-index: 10;
+  font-family: var(--font-mono); font-size: 0.5rem;
+  letter-spacing: 0.2em; color: var(--sage);
+  opacity: 0; transition: opacity 0.35s var(--ease-silk);
+  pointer-events: none;
+}
+.proj-card:hover .proj-num { opacity: 0.45; }
+
+.proj-img-wrap {
+  border-radius: 18px; overflow: hidden;
+  position: relative; z-index: 2; line-height: 0;
+  background: #EDE8DE; isolation: isolate; /* images on solid surface */
+}
+.proj-img {
+  width: 100%; height: 236px;
+  object-fit: cover; object-position: center top; display: block;
+  border-radius: 18px;
+  transition: transform 0.9s var(--ease-silk);
+}
+.proj-card:hover .proj-img { transform: scale(1.042); }
+
+/* flex: 1 makes all captions fill remaining height equally */
+.proj-caption { padding: 1.5rem 0.375rem 0.5rem; position: relative; z-index: 2; flex: 1; display: flex; flex-direction: column; }
+.proj-eyebrow {
+  font-family: var(--font-mono); font-size: 0.5rem;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: #5C6E4D; margin-bottom: 0.7rem; /* solid sage, no opacity */
+}
+.proj-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 2.4vw, 1.625rem);
+  font-weight: 500; letter-spacing: -0.02em; line-height: 1.16;
+  color: #1E1E1A; margin-bottom: 0.85rem; /* deep charcoal, 100% opaque */
+}
+.proj-desc {
+  font-family: var(--font-body); font-size: 0.875rem;
+  line-height: 1.68; color: #585650; margin-bottom: 1rem; /* solid mid-charcoal */
+}
+.proj-metrics { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 1.25rem; margin-top: auto; }
+.proj-metric {
+  font-family: var(--font-mono); font-size: 0.5625rem; color: var(--sage);
+  background: rgba(92,110,77,0.07); border: 1px solid rgba(92,110,77,0.14);
+  padding: 0.2rem 0.65rem; border-radius: 100px; letter-spacing: 0.04em;
+}
+.proj-link {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-family: var(--font-body); font-size: 0.8125rem; font-weight: 500;
+  color: var(--terracotta); border-bottom: 1px solid rgba(184,125,90,0.26);
+  padding-bottom: 2px; transition: color 0.3s, border-color 0.3s;
+  min-height: 44px; align-self: flex-start;
+}
+.proj-link:hover { color: var(--sage); border-color: rgba(92,110,77,0.32); }
+
+/* ================================================================
+   ABOUT
+   ================================================================ */
+#about { padding: clamp(120px,16vw,200px) var(--pad); }
+.about-inner { max-width: var(--max-w); margin: 0 auto; }
+.about-grid {
+  display: grid; grid-template-columns: 1fr 1.6fr;
+  gap: clamp(3rem,9vw,8rem); align-items: start;
+}
+@media (max-width: 760px) { .about-grid { grid-template-columns: 1fr; gap: 2.5rem; } }
+
+/* Scroll-driven reveal for about (CSS where supported, JS fallback) */
+@supports (animation-timeline: view()) {
+  .about-display, .about-rule, .about-bio, .about-detail, .about-links {
+    animation-timeline: view();
+    animation-fill-mode: both;
+    animation-timing-function: var(--ease-silk);
+  }
+  .about-display {
+    animation-name: fadeUp; animation-duration: 0.9s; animation-range: entry 0% entry 40%;
+  }
+  .about-rule {
+    animation-name: scaleIn; animation-duration: 0.7s; animation-range: entry 5% entry 42%;
+  }
+  .about-bio {
+    animation-name: fadeUp; animation-duration: 0.85s; animation-range: entry 8% entry 45%;
+  }
+  .about-detail {
+    animation-name: fadeUp; animation-duration: 0.75s; animation-range: entry 12% entry 48%;
+  }
+  .about-links {
+    animation-name: fadeUp; animation-duration: 0.7s; animation-range: entry 16% entry 50%;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: none; }
+  }
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scaleX(0); }
+    to   { opacity: 1; transform: scaleX(1); }
+  }
+}
+
+.about-display {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 6.5rem);
+  font-weight: 300; font-style: italic; line-height: 1.08;
+  letter-spacing: -0.03em; color: var(--ink);
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 1s var(--ease-silk), transform 1s var(--ease-silk);
+}
+.about-display.on { opacity:1; transform: none; }
+.about-display em { color: var(--sage); font-style: inherit; }
+
+.about-rule {
+  width: 32px; height: 1px; background: var(--sage); margin-top: 2.25rem;
+  opacity: 0; transform: scaleX(0); transform-origin: left;
+  transition: opacity 0.7s var(--ease-silk) 0.18s, transform 0.7s var(--ease-silk) 0.18s;
+}
+.about-rule.on { opacity:1; transform: scaleX(1); }
+
+.about-bio {
+  font-family: var(--font-body); font-size: clamp(1rem,1.7vw,1.125rem);
+  line-height: 1.84; color: var(--ink); margin-bottom: 1.75rem;
+  opacity: 0; transform: translateY(22px);
+  transition: opacity 0.9s var(--ease-silk) 0.1s, transform 0.9s var(--ease-silk) 0.1s;
+}
+.about-bio.on { opacity:1; transform: none; }
+
+.about-detail {
+  font-family: var(--font-mono); font-size: 0.625rem;
+  color: var(--ink-muted); letter-spacing: 0.14em; margin-bottom: 2.25rem;
+  opacity: 0; transform: translateY(14px);
+  transition: opacity 0.75s var(--ease-silk) 0.22s, transform 0.75s var(--ease-silk) 0.22s;
+}
+.about-detail.on { opacity:1; transform: none; }
+
+.about-links {
+  display: flex; gap: 1.75rem; flex-wrap: wrap;
+  opacity: 0; transform: translateY(12px);
+  transition: opacity 0.7s var(--ease-silk) 0.32s, transform 0.7s var(--ease-silk) 0.32s;
+}
+.about-links.on { opacity:1; transform: none; }
+.about-links a {
+  font-family: var(--font-body); font-size: 0.875rem; font-weight: 500;
+  color: var(--sage); border-bottom: 1px solid rgba(92,110,77,0.25);
+  padding-bottom: 2px; transition: color 0.3s, border-color 0.3s;
+  min-height: 44px; display: inline-flex; align-items: center;
+}
+.about-links a:hover { color: var(--terracotta); border-color: rgba(184,125,90,0.35); }
+
+/* ================================================================
+   CONTACT
+   ================================================================ */
+#contact {
+  padding: clamp(120px,16vw,200px) var(--pad) clamp(80px,10vw,120px);
+  position: relative;
+}
+#contact::before {
+  content: ''; position: absolute; top: 0; left: var(--pad); right: var(--pad);
+  height: 1px; background: linear-gradient(90deg, transparent, rgba(92,110,77,0.14), transparent);
+}
+.contact-inner { max-width: var(--max-w); margin: 0 auto; }
+
+.contact-display {
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem,12vw,10rem);
+  font-weight: 300; font-style: italic;
+  letter-spacing: -0.04em; line-height: 0.86;
+  color: var(--ink); margin-bottom: 3rem;
+  opacity: 0; transform: translateY(40px);
+  transition: opacity 1s var(--ease-silk), transform 1s var(--ease-silk);
+}
+.contact-display.on { opacity:1; transform: none; }
+.contact-display em { color: var(--sage); font-style: inherit; }
+
+.contact-email {
+  font-family: var(--font-display); font-size: clamp(0.9375rem,2vw,1.375rem);
+  font-weight: 400; color: var(--terracotta);
+  border-bottom: 1px solid rgba(184,125,90,0.22); padding-bottom: 4px;
+  margin-bottom: 2.5rem; display: inline-flex; align-items: center;
+  transition: color 0.3s, border-color 0.3s,
+              opacity 0.8s var(--ease-silk) 0.15s, transform 0.8s var(--ease-silk) 0.15s;
+  min-height: 44px; opacity: 0; transform: translateY(20px);
+}
+.contact-email.on { opacity:1; transform: none; }
+.contact-email:hover { color: var(--sage); border-color: rgba(92,110,77,0.32); }
+
+.contact-social {
+  display: flex; gap: 2.25rem; flex-wrap: wrap;
+  opacity: 0; transform: translateY(14px);
+  transition: opacity 0.7s var(--ease-silk) 0.28s, transform 0.7s var(--ease-silk) 0.28s;
+}
+.contact-social.on { opacity:1; transform: none; }
+.contact-social a {
+  font-family: var(--font-body); font-size: 0.875rem;
+  color: var(--ink-muted); transition: color 0.3s;
+  min-height: 44px; display: inline-flex; align-items: center;
+}
+.contact-social a:hover { color: var(--sage); }
+
+/* ================================================================
+   FOOTER
+   ================================================================ */
+footer {
+  padding: 1.75rem var(--pad);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 1rem;
+  border-top: 1px solid rgba(92,110,77,0.07); position: relative; z-index: 2;
+}
+.footer-copy, .footer-note {
+  font-family: var(--font-mono); font-size: 0.5rem;
+  color: var(--ink-faint); letter-spacing: 0.16em;
+}
+
+/* ================================================================
+   MAGNETIC element helper
+   ================================================================ */
+.mag { display: inline-block; will-change: transform; }
+
+/* ================================================================
+   ACCESSIBILITY
+   ================================================================ */
+:focus-visible { outline: 2px solid var(--sage); outline-offset: 3px; border-radius: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  #cursor, #cursor-aura, .c-trail, #glCanvas { display: none; }
+  body { cursor: auto !important; }
+  * { cursor: auto !important; }
+  .hero-label,.hero-name,.hero-name .char,.hero-tagline,.hero-sub,
+  .hero-role,.hero-orb,.scroll-hint,
+  .proj-wrap,.about-display,.about-rule,.about-bio,.about-detail,
+  .about-links,.contact-display,.contact-email,.contact-social,
+  .work-title,.drag-hint
+  { opacity:1 !important; transform:none !important; filter:none !important; }
+}
+
+@media (prefers-contrast: more) {
+  :root { --ink:#000; --ink-muted:#222; --sage:#2d4220; --terracotta:#7a3a10; }
+  #glCanvas { display: none; }
+  .proj-card { background: rgba(255,255,255,0.97); }
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  nav.scrolled { background: rgba(244,240,232,0.99); }
+}
+
+@media print {
+  #cursor,#cursor-aura,.c-trail,#glCanvas,#scrollProgress,nav,.scroll-hint
+  { display: none !important; }
+  body { background: #fff; }
+  .proj-wrap,.about-display,.contact-display { opacity:1 !important; transform:none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- Cursor -->
+<div id="cursor" aria-hidden="true"></div>
+<div id="cursor-aura" aria-hidden="true"></div>
+
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<div id="scrollProgress" aria-hidden="true"></div>
+<canvas id="glCanvas" role="presentation" aria-hidden="true"></canvas>
+
+<!-- NAV -->
+<nav id="nav" role="navigation" aria-label="Main navigation">
+  <div class="nav-name"><a href="#hero">Lin Zhao</a></div>
+  <div class="nav-links">
+    <a href="#work">Work</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<main id="main-content">
+
+<!-- ── HERO ──────────────────────────────────────────────────── -->
+<section id="hero" aria-label="Introduction">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-label">Portfolio &middot; 2026</div>
+      <h1 class="hero-name" id="heroName">Lin Z.</h1>
+      <p class="hero-tagline">Making complexity disappear.</p>
+      <p class="hero-sub">Principal designer at the intersection of design systems and AI. I build the infrastructure that makes AI accurate — token architectures, semantic descriptions, and cross-platform mappings that let AI reason from your design rules instead of guessing at them. When the system is right, the whole organization ships faster.</p>
+      <p class="hero-role">Principal Designer &middot; Kiva &middot; Previously Upwork</p>
+    </div>
+
+  </div>
+
+  <div class="scroll-hint" aria-hidden="true">
+    <span class="scroll-hint-line"></span>
+    <span class="scroll-hint-label">scroll</span>
+  </div>
+</section>
+
+<!-- ── WORK ──────────────────────────────────────────────────── -->
+<section id="work" aria-label="Selected work">
+  <div class="work-top">
+    <div>
+      <div class="eyebrow">Selected Work</div>
+      <h2 class="work-title" id="workTitle">Case studies</h2>
+    </div>
+    <div class="drag-hint" id="dragHint" aria-hidden="true">
+      Drag to explore <span class="arr3"><span></span><span></span><span></span></span>
+    </div>
+  </div>
+
+  <div class="work-outer" id="workOuter"
+       role="region" aria-label="Project gallery — drag or use arrow keys">
+    <div class="work-track" id="workTrack">
+
+      <!-- ── Card 0: AI Pipeline ── -->
+      <div class="proj-wrap">
+        <article class="proj-card" tabindex="0" aria-label="Project 1 of 5: Building an AI-Governed Design Pipeline">
+          <div class="proj-num">01</div>
+          <div class="proj-img-wrap">
+            <img class="proj-img" src="portfolio-assets/ds-color-system.png"
+                 alt="Design system color tokens showing AI-governed pipeline architecture"
+                 loading="eager" width="520" height="320">
+          </div>
+          <div class="proj-caption">
+            <div class="proj-eyebrow">Kiva &middot; Principal Designer &middot; 2025–2026</div>
+            <h3 class="proj-title">Building an AI-Ready Design System</h3>
+            <p class="proj-desc">AI tools hallucinate because design systems aren't built for machines. Rebuilt the architecture end-to-end — three token layers, semantic descriptions, HTML and Tailwind mappings — validated across three AI tools and scaled company-wide to 100+ teammates.</p>
+            <div class="proj-metrics">
+              <span class="proj-metric">90%+ AI fidelity</span>
+              <span class="proj-metric">3 tools validated</span>
+              <span class="proj-metric">100+ teammates</span>
+            </div>
+            <a class="proj-link" href="case-ai-pipeline.html">View case study →</a>
+          </div>
+        </article>
+      </div>
+
+      <!-- ── Card 1: Kiva ── -->
+      <div class="proj-wrap">
+        <article class="proj-card" tabindex="0" aria-label="Project 2 of 5: From strategic pivot to production at Kiva">
+          <div class="proj-num">02</div>
+          <div class="proj-img-wrap">
+            <img class="proj-img" src="portfolio-assets/ch3-hero.png"
+                 alt="Kiva partnerships platform interface showing Figma to production pipeline"
+                 loading="lazy" width="520" height="320">
+          </div>
+          <div class="proj-caption">
+            <div class="proj-eyebrow">Kiva &middot; Principal Product Designer</div>
+            <h3 class="proj-title">From strategic pivot to production</h3>
+            <p class="proj-desc">Discovered a product-market fit problem, led a pivot, then built a Figma → production pipeline that ships in 4 days.</p>
+            <div class="proj-metrics">
+              <span class="proj-metric">1 strategic pivot</span>
+              <span class="proj-metric">4 days Figma → live</span>
+            </div>
+            <a class="proj-link" href="case-kiva.html">View case study →</a>
+          </div>
+        </article>
+      </div>
+
+      <!-- ── Card 2: Upwork ── -->
+      <div class="proj-wrap">
+        <article class="proj-card" tabindex="0" aria-label="Project 3 of 5: Turning no-shows into converts at Upwork">
+          <div class="proj-num">03</div>
+          <div class="proj-img-wrap">
+            <img class="proj-img"
+                 src="https://www.linzhao15.com/wp-content/uploads/2021/10/Frame-8148-1280x847.png"
+                 alt="Upwork Talent Scout redesigned onboarding flow"
+                 loading="lazy" width="520" height="320">
+          </div>
+          <div class="proj-caption">
+            <div class="proj-eyebrow">Upwork &middot; Design Lead</div>
+            <h3 class="proj-title">Turning no-shows into converts</h3>
+            <p class="proj-desc">Flipped the flow order based on user mental models — 73% conversion lift.</p>
+            <div class="proj-metrics">
+              <span class="proj-metric">73% conversion lift</span>
+            </div>
+            <a class="proj-link" href="case-upwork.html">View case study →</a>
+          </div>
+        </article>
+      </div>
+
+      <!-- ── Card 3: Shoply ── -->
+      <div class="proj-wrap">
+        <article class="proj-card" tabindex="0" aria-label="Project 4 of 5: From frustration to retention at Shoply">
+          <div class="proj-num">04</div>
+          <div class="proj-img-wrap">
+            <img class="proj-img"
+                 src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screen-Shot-2019-12-02-at-2.18.26-PM.png"
+                 alt="Shoply platform redesign showing improved merchant dashboard"
+                 loading="lazy" width="520" height="320">
+          </div>
+          <div class="proj-caption">
+            <div class="proj-eyebrow">Shoply &middot; Lead UX/UI Designer</div>
+            <h3 class="proj-title">From frustration to retention</h3>
+            <p class="proj-desc">Owned V2 end to end — audit, redesign, testing, new design system.</p>
+            <div class="proj-metrics">
+              <span class="proj-metric">31→82% retention</span>
+            </div>
+            <a class="proj-link" href="case-shoply.html">View case study →</a>
+          </div>
+        </article>
+      </div>
+
+      <!-- ── Card 4: FYP ── -->
+      <div class="proj-wrap">
+        <article class="proj-card" tabindex="0" aria-label="Project 5 of 5: 5 days to product clarity at UOPX">
+          <div class="proj-num">05</div>
+          <div class="proj-img-wrap">
+            <img class="proj-img"
+                 src="https://www.linzhao15.com/wp-content/uploads/2020/08/FYP2-1280x919.png"
+                 alt="Find Your Purpose design sprint prototype screens"
+                 loading="lazy" width="520" height="320">
+          </div>
+          <div class="proj-caption">
+            <div class="proj-eyebrow">UOPX &middot; Design Lead</div>
+            <h3 class="proj-title">5 days to product clarity</h3>
+            <p class="proj-desc">Led a design sprint from vague brief to validated prototype.</p>
+            <div class="proj-metrics">
+              <span class="proj-metric">5-day sprint</span>
+            </div>
+            <a class="proj-link" href="case-fyp.html">View case study →</a>
+          </div>
+        </article>
+      </div>
+
+    </div><!-- /work-track -->
+  </div><!-- /work-outer -->
+</section>
+
+<!-- ── ABOUT ─────────────────────────────────────────────────── -->
+<section id="about" aria-label="About Lin Zhao">
+  <div class="about-inner">
+    <div class="about-grid">
+      <div>
+        <div class="eyebrow">About</div>
+        <h2 class="about-display">Systems<br><em>thinker.</em></h2>
+        <div class="about-rule"></div>
+      </div>
+      <div>
+        <p class="about-bio">I'm a Principal Designer who builds design systems that work for AI as fluently as they work for humans. That means rethinking what "complete" looks like — not just components and variables, but semantic descriptions, cross-platform mappings, and documentation written for machines and humans alike. I've spent years closing the gap between design intent and what AI actually produces, then scaling that capability across entire organizations. My edge is finding the structural problem nobody has named yet, and turning the solution into everyone's new default.</p>
+        <p class="about-detail">Currently at Kiva &middot; Previously Upwork &middot; San Francisco Bay Area</p>
+        <div class="about-links">
+          <a href="https://www.linkedin.com/in/linzhao15/" target="_blank" rel="noopener noreferrer">LinkedIn →</a>
+          <a href="mailto:lin@linzhao.design">Email →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT ───────────────────────────────────────────────── -->
+<section id="contact" aria-label="Contact">
+  <div class="contact-inner">
+    <div class="eyebrow">Contact</div>
+    <h2 class="contact-display">Let's<br><em>connect.</em></h2>
+    <a class="contact-email" href="mailto:lin@linzhao.design">lin@linzhao.design</a>
+    <div class="contact-social">
+      <a href="https://www.linkedin.com/in/linzhao15/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      <a href="https://www.linzhao15.com/" target="_blank" rel="noopener noreferrer">Previous Work</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer role="contentinfo">
+  <span class="footer-copy">&copy; 2026 Lin Zhao</span>
+  <span class="footer-note">Designed &amp; built with care</span>
+</footer>
+
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<script>
+/* ================================================================
+   ORGANIC SYSTEMS v4 — Full JS Engine
+   overdrive × threejs-motion × css-motion × animate × delight × polish
+   ================================================================ */
+
+const PRM    = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+
+if (window.gsap && window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
+
+/* ================================================================
+   1. COLOURED SAND FIELD — domain-warped flow + screen grain
+      Palette: Charlock · Glass Green · Country Air (3-stop)
+      Params:  col=0.80  grain=1.0  flow=0.30  push=0.30
+   ================================================================ */
+(function() {
+  const canvas = document.getElementById('glCanvas');
+  if (!canvas) return;
+
+  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  if (!gl) { canvas.style.display = 'none'; return; }
+
+  /* ── Shaders ──────────────────────────────────────────────── */
+  const VS = `
+    attribute vec2 a_pos;
+    void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }
+  `;
+
+  const FS = `
+    #ifdef GL_FRAGMENT_PRECISION_HIGH
+      precision highp float;
+    #else
+      precision mediump float;
+    #endif
+    uniform vec2  u_res;
+    uniform float u_time;
+    uniform vec2  u_mouse;
+    uniform vec2  u_mvel;   /* smoothed mouse velocity (px/frame) */
+
+    /* ── Hash / noise ─────────────────────────────────────────── */
+    float hash(vec2 p) {
+      p = fract(p * vec2(127.1, 311.7));
+      p += dot(p, p + 17.5453);
+      return fract(p.x * p.y);
+    }
+    float noise(vec2 p) {
+      vec2 i = floor(p); vec2 f = fract(p);
+      vec2 u = f * f * (3.0 - 2.0 * f);
+      return mix(
+        mix(hash(i), hash(i + vec2(1.0,0.0)), u.x),
+        mix(hash(i + vec2(0.0,1.0)), hash(i + vec2(1.0,1.0)), u.x),
+        u.y);
+    }
+
+    /* ── 3-stop palette: Charlock · Glass Green · Country Air ─── */
+    vec3 pal(float t) {
+      t = clamp(t, 0.0, 1.0);
+      vec3 c0 = vec3(0.898, 0.898, 0.576); /* Charlock    #E5E593 */
+      vec3 c1 = vec3(0.914, 0.914, 0.835); /* Glass Green #E9E9D5 */
+      vec3 c2 = vec3(0.843, 0.859, 0.949); /* Country Air #D7DBF2 */
+      float s = t * 2.0;
+      return c0 * max(0.0, 1.0 - abs(s - 0.0))
+           + c1 * max(0.0, 1.0 - abs(s - 1.0))
+           + c2 * max(0.0, 1.0 - abs(s - 2.0));
+    }
+
+    void main() {
+      vec2 uv  = gl_FragCoord.xy / u_res;
+      float asp = u_res.x / u_res.y;
+      float ts  = u_time * 0.003; /* ultra-slow drift */
+
+      vec2 p = vec2(uv.x * asp, uv.y);
+
+      /* ── Velocity-aware sand push ─────────────────────────── */
+      vec2 mNorm = vec2(u_mouse.x / u_res.x * asp,
+                        1.0 - u_mouse.y / u_res.y);
+      vec2 md   = p - mNorm;
+      float mD  = length(md);
+
+      /* push=0.30 → rc≈3.74, amt≈0.14 */
+      float rc   = mix(4.5, 1.2, 0.30);
+      float mAmt = exp(-mD * mD * rc) * mix(0.05, 0.28, 0.30);
+
+      /* Smooth direction — no spike at cursor centre */
+      float eps    = 0.055;
+      vec2 radDir  = (md / max(mD, eps)) * smoothstep(0.0, eps, mD);
+
+      /* Velocity-based asymmetry: forward push > backward */
+      vec2 velUV  = vec2(u_mvel.x / u_res.x * asp, -u_mvel.y / u_res.y);
+      float speed = length(velUV);
+      vec2 moveDir = normalize(velUV + vec2(1e-5));
+      float fwd    = dot(radDir, moveDir);
+      float asymm  = mix(1.0, clamp(fwd * 0.7 + 0.55, 0.15, 1.2),
+                         clamp(speed * 6.0, 0.0, 1.0));
+      vec2 swirl   = vec2(-radDir.y, radDir.x)
+                     * 0.18 * clamp(speed * 4.0, 0.0, 1.0);
+      p += normalize(radDir + swirl) * mAmt * asymm;
+
+      /* ── Two-level domain warping — organic sand flow ─────── */
+      /* flow=0.30 → fs≈mix(2.2,0.9,0.30)=1.87 */
+      float fs = mix(2.2, 0.9, 0.30);
+
+      vec2 q = vec2(
+        noise(p * fs       + vec2(0.0, 0.0) + ts * 0.9),
+        noise(p * fs       + vec2(4.1, 5.8) + ts * 0.7)
+      );
+      vec2 r = vec2(
+        noise(p * fs * 0.65 + 2.4 * q + vec2(1.7, 9.2) + ts),
+        noise(p * fs * 0.65 + 2.4 * q + vec2(8.3, 2.8) + ts * 0.85)
+      );
+      float f = noise(p * fs * 0.50 + 2.0 * r + ts * 0.7);
+
+      /* ── Colour mix — col=0.80 ────────────────────────────── */
+      vec3 bg  = vec3(0.9569, 0.9412, 0.9098); /* #F4F0E8 warm linen */
+      vec3 col = mix(bg, pal(f), 0.80 * 0.78);
+
+      /* ── Sand grain — grain=1.0 ───────────────────────────── */
+      float gSeed  = mod(floor(u_time * 0.05), 16.0); /* cap at 16 — prevents precision blowout */
+      vec2  gCoord = vec2(gl_FragCoord.x * 0.72, gl_FragCoord.y * 0.96)
+                     + gSeed * 17.3;
+      float grain  = (hash(gCoord) - 0.5) * 0.065;
+      vec2  g2     = vec2(gl_FragCoord.x * 1.35, gl_FragCoord.y * 1.2)
+                     + gSeed * 31.7;
+      float grain2 = (hash(g2) - 0.5) * 0.028;
+
+      col = clamp(col + grain + grain2, 0.0, 1.0);
+      gl_FragColor = vec4(col, 1.0);
+    }
+  `;
+
+  /* ── Compile helpers ─────────────────────────────────────── */
+  function compile(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+      console.warn('Shader error:', gl.getShaderInfoLog(s));
+      gl.deleteShader(s); return null;
+    }
+    return s;
+  }
+  const vs = compile(gl.VERTEX_SHADER, VS);
+  const fs = compile(gl.FRAGMENT_SHADER, FS);
+  if (!vs || !fs) { canvas.style.display='none'; return; }
+
+  const prog = gl.createProgram();
+  gl.attachShader(prog, vs); gl.attachShader(prog, fs);
+  gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+    canvas.style.display='none'; return;
+  }
+  gl.useProgram(prog);
+
+  /* ── Fullscreen quad ────────────────────────────────────── */
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER,
+    new Float32Array([-1,-1, 1,-1, -1,1, -1,1, 1,-1, 1,1]),
+    gl.STATIC_DRAW);
+  const aPosLoc = gl.getAttribLocation(prog, 'a_pos');
+  gl.enableVertexAttribArray(aPosLoc);
+  gl.vertexAttribPointer(aPosLoc, 2, gl.FLOAT, false, 0, 0);
+
+  /* ── Uniform locations ──────────────────────────────────── */
+  const uRes   = gl.getUniformLocation(prog, 'u_res');
+  const uTime  = gl.getUniformLocation(prog, 'u_time');
+  const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+  const uMVel  = gl.getUniformLocation(prog, 'u_mvel');
+
+  let W, H;
+  let mx = -9999, my = -9999;
+  let velX = 0, velY = 0, prevMx = -9999, prevMy = -9999;
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    gl.viewport(0, 0, W, H);
+    gl.uniform2f(uRes, W, H);
+  }
+
+  window.addEventListener('resize', resize, { passive: true });
+
+  if (!isTouch) {
+    document.addEventListener('mousemove', e => {
+      if (prevMx !== -9999) {
+        velX = velX * 0.5 + (e.clientX - prevMx) * 0.5;
+        velY = velY * 0.5 + (e.clientY - prevMy) * 0.5;
+      }
+      prevMx = e.clientX; prevMy = e.clientY;
+      mx = e.clientX; my = e.clientY;
+    }, { passive: true });
+    document.addEventListener('mouseleave', () => {
+      mx = -9999; my = -9999;
+      prevMx = -9999; prevMy = -9999;
+    });
+  }
+
+  resize();
+
+  function render(ts) {
+    gl.uniform1f(uTime, ts * 0.001);
+    gl.uniform2f(uMouse, mx, my);
+    gl.uniform2f(uMVel, velX, velY);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    velX *= 0.82; velY *= 0.82; /* velocity decay when cursor stops */
+    requestAnimationFrame(render);
+  }
+  if (!PRM) requestAnimationFrame(render);
+  else {
+    gl.uniform1f(uTime, 0);
+    gl.uniform2f(uMouse, -9999, -9999);
+    gl.uniform2f(uMVel, 0, 0);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+  }
+})();
+
+/* ================================================================
+   2. CURSOR SYSTEM — spring dot + aura + 10-dot spring trail
+      (overdrive: spring physics wins over simple translate)
+   ================================================================ */
+(function() {
+  if (PRM || isTouch) return;
+
+  const dot  = document.getElementById('cursor');
+  const aura = document.getElementById('cursor-aura');
+  if (!dot || !aura) return;
+
+  const TRAIL_N = 10;
+  const trails  = Array.from({ length: TRAIL_N }, (_, i) => {
+    const el = document.createElement('div');
+    el.className = 'c-trail';
+    const size = Math.max(2, 4.5 - i * 0.28);
+    el.style.cssText = `width:${size}px;height:${size}px;opacity:0;`;
+    document.body.appendChild(el);
+    return { el, x: -200, y: -200 };
+  });
+
+  let dotX = -200, dotY = -200;
+  let auraX = -200, auraY = -200;
+  let rawX  = -200, rawY  = -200;
+  let state = '';
+
+  function setClass(s) {
+    if (state === s) return;
+    dot.className  = s;
+    aura.className = s;
+    state = s;
+  }
+
+  document.addEventListener('mousemove', e => { rawX = e.clientX; rawY = e.clientY; }, { passive: true });
+  document.addEventListener('mouseleave', () => { rawX = -500; rawY = -500; });
+  document.addEventListener('mousedown', () => setClass('press'));
+  document.addEventListener('mouseup',   () => setClass(''));
+
+  // Hover state detection
+  document.addEventListener('mouseover', e => {
+    const el = e.target;
+    if (el.closest('.proj-card'))   return setClass('card');
+    if (el.closest('.work-outer'))  return; // drag handled separately
+    if (el.closest('a,button,[role="button"]')) return setClass('link');
+    setClass('');
+  });
+
+  const wo = document.getElementById('workOuter');
+  if (wo) {
+    wo.addEventListener('mouseenter', () => setClass(''));
+    wo.addEventListener('mousedown',  () => setClass('drag'));
+    document.addEventListener('mouseup', () => {
+      // Check if still over work outer
+      if (state === 'drag') setClass('');
+    });
+  }
+
+  function loop() {
+    // Dot — very tight follow
+    dotX += (rawX - dotX) * 0.90;
+    dotY += (rawY - dotY) * 0.90;
+    dot.style.transform = `translate(${dotX}px,${dotY}px) translate(-50%,-50%)`;
+
+    // Aura — loose follow
+    auraX += (rawX - auraX) * 0.10;
+    auraY += (rawY - auraY) * 0.10;
+    aura.style.transform = `translate(${auraX}px,${auraY}px) translate(-50%,-50%)`;
+
+    // Trail — each follows the previous
+    trails[0].x += (dotX - trails[0].x) * 0.55;
+    trails[0].y += (dotY - trails[0].y) * 0.55;
+    for (let i = 1; i < TRAIL_N; i++) {
+      trails[i].x += (trails[i-1].x - trails[i].x) * 0.50;
+      trails[i].y += (trails[i-1].y - trails[i].y) * 0.50;
+    }
+    trails.forEach((tr, i) => {
+      const op = (1 - i / TRAIL_N) * 0.18;
+      tr.el.style.opacity   = op.toFixed(3);
+      tr.el.style.transform = `translate(${tr.x}px,${tr.y}px) translate(-50%,-50%)`;
+    });
+
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
+
+/* ================================================================
+   3. MAGNETIC ELEMENTS — subtle spring on nav-name only
+      STR reduced to 0.06 so logo has gentle pull without displacing
+   ================================================================ */
+(function() {
+  if (PRM || isTouch) return;
+
+  document.querySelectorAll('.mag').forEach(el => {
+    let ox = 0, oy = 0, vx = 0, vy = 0;
+    let over = false;
+    const STR = 0.06, SPR = 0.16, DMP = 0.74;
+
+    el.addEventListener('mouseenter', () => { over = true; });
+    el.addEventListener('mouseleave', () => { over = false; });
+    el.addEventListener('mousemove', e => {
+      if (!over) return;
+      const r  = el.getBoundingClientRect();
+      const dx = e.clientX - (r.left + r.width  / 2);
+      const dy = e.clientY - (r.top  + r.height / 2);
+      vx += dx * STR;
+      vy += dy * STR;
+    });
+
+    (function tick() {
+      if (!over) { vx += (0 - ox) * SPR; vy += (0 - oy) * SPR; }
+      vx *= DMP; vy *= DMP;
+      ox += vx;  oy += vy;
+      el.style.transform = `translate(${ox.toFixed(2)}px,${oy.toFixed(2)}px)`;
+      requestAnimationFrame(tick);
+    })();
+  });
+})();
+
+/* ================================================================
+   4. SCROLL PROGRESS
+   ================================================================ */
+const prog = document.getElementById('scrollProgress');
+function updateProg() {
+  if (!prog) return;
+  const total = document.documentElement.scrollHeight - innerHeight;
+  prog.style.width = (scrollY / total * 100).toFixed(2) + '%';
+}
+addEventListener('scroll', updateProg, { passive: true });
+
+/* ================================================================
+   5. NAV SCROLL STATE
+   ================================================================ */
+const navEl = document.getElementById('nav');
+function updateNav() { navEl?.classList.toggle('scrolled', scrollY > 64); }
+addEventListener('scroll', updateNav, { passive: true });
+updateNav();
+
+document.querySelectorAll('nav a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+
+/* ================================================================
+   6. HERO ENTRANCE — char-by-char 3D animation
+      (animate: char-level stagger wins over block-level fade)
+   ================================================================ */
+(function() {
+  const nameEl = document.getElementById('heroName');
+  if (!nameEl) return;
+
+  // Split text into char spans
+  const raw = nameEl.textContent;
+  nameEl.innerHTML = raw.split('').map(ch =>
+    ch === ' '
+      ? '<span class="char-space" aria-hidden="true"> </span>'
+      : `<span class="char" aria-hidden="true">${ch}</span>`
+  ).join('');
+  nameEl.setAttribute('aria-label', raw);
+
+  if (PRM) {
+    nameEl.querySelectorAll('.char').forEach(c => {
+      c.style.opacity = '1'; c.style.transform = 'none';
+    });
+    return;
+  }
+
+  if (window.gsap) {
+    const tl = gsap.timeline({ delay: 0.18 });
+
+    tl.to('.hero-label',   { opacity:1, y:0, duration:0.8, ease:'power3.out' }, 0)
+      .to('.char',         {
+        opacity: 1, y: 0, rotateX: 0,
+        stagger: 0.038, duration: 0.9,
+        ease: 'power3.out'
+      }, 0.12)
+      .to('.hero-tagline', { opacity:1, y:0, duration:0.85, ease:'power3.out' }, 0.58)
+      .to('.hero-sub',     { opacity:1, y:0, duration:0.78, ease:'power3.out' }, 0.72)
+      .to('.hero-role',    { opacity:1, y:0, duration:0.68, ease:'power3.out' }, 0.84)
+      .to('.hero-orb',     { opacity:1, duration:1.4, ease:'power2.out' }, 0.22)
+      .to('.scroll-hint',  { opacity:1, duration:0.6, ease:'power2.out',
+        onComplete() {
+          document.querySelector('.scroll-hint')?.classList.add('go');
+        }
+      }, 1.05);
+
+    // Hero parallax on scroll
+    gsap.to('.hero-inner', {
+      y: 75, opacity: 0.08, ease: 'none',
+      scrollTrigger: { trigger:'#hero', start:'top top', end:'bottom top', scrub: 0.65 }
+    });
+  }
+})();
+
+/* ================================================================
+   7. INTERSECTION OBSERVER — JS fallback reveals
+      (css-motion: CSS scroll-driven wins on Chrome/Edge/Safari,
+       IO handles Firefox + older browsers)
+   ================================================================ */
+const supportsScrollDriven = CSS.supports('animation-timeline', 'scroll()');
+
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); }
+  });
+}, { threshold: 0.10, rootMargin: '0px 0px -48px 0px' });
+
+// Work header
+['#workTitle','#dragHint'].forEach(s => {
+  const el = document.querySelector(s); if (el) io.observe(el);
+});
+
+// Cards — staggered delay
+if (!supportsScrollDriven) {
+  document.querySelectorAll('.proj-wrap').forEach((w, i) => {
+    w.style.transitionDelay = `${(i * 0.09).toFixed(2)}s`;
+    io.observe(w);
+  });
+} else {
+  // Let CSS scroll-driven handle it; still add .on for border-spin
+  document.querySelectorAll('.proj-wrap').forEach(w => io.observe(w));
+}
+
+// About + Contact
+['.about-display','.about-rule','.about-bio','.about-detail','.about-links',
+ '.contact-display','.contact-email','.contact-social']
+.forEach(s => { const el = document.querySelector(s); if (el) io.observe(el); });
+
+/* ================================================================
+   8. CARD 3D TILT on hover
+      (animate: physical tilt that responds to actual mouse position)
+   ================================================================ */
+(function() {
+  if (PRM || isTouch) return;
+  document.querySelectorAll('.proj-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r    = card.getBoundingClientRect();
+      const xPct = (e.clientX - r.left)  / r.width  - 0.5;
+      const yPct = (e.clientY - r.top)   / r.height - 0.5;
+      card.style.transform = `
+        translateY(-10px) scale(1.007)
+        rotateY(${(xPct * 5).toFixed(2)}deg)
+        rotateX(${(-yPct * 3.5).toFixed(2)}deg)
+      `;
+      card.style.perspective = '900px';
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+    });
+  });
+})();
+
+/* ================================================================
+   9. HORIZONTAL DRAG SCROLL — momentum, no page hijack
+      (overdrive: momentum scroll with inertia wins over plain drag)
+   ================================================================ */
+(function() {
+  const outer = document.getElementById('workOuter');
+  if (!outer) return;
+
+  let isDown = false, startX = 0, scrollStart = 0;
+  let moved  = false, velX = 0, lastX = 0, lastT = 0;
+  let rafId;
+
+  outer.addEventListener('mousedown', e => {
+    isDown = true; moved = false; velX = 0;
+    startX = e.pageX - outer.offsetLeft;
+    scrollStart = outer.scrollLeft;
+    lastX = e.pageX; lastT = Date.now();
+    cancelAnimationFrame(rafId);
+    outer.classList.add('dragging');
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (!isDown) return;
+    isDown = false;
+    outer.classList.remove('dragging');
+    // Momentum glide
+    let v = velX;
+    function glide() {
+      if (Math.abs(v) < 0.5) return;
+      outer.scrollLeft -= v;
+      v *= 0.92;
+      rafId = requestAnimationFrame(glide);
+    }
+    glide();
+  });
+
+  outer.addEventListener('mousemove', e => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x   = e.pageX - outer.offsetLeft;
+    const dx  = (x - startX) * 1.55;
+    const now = Date.now();
+    velX = (e.pageX - lastX) / Math.max(1, now - lastT) * 16; // px/frame @ 60fps
+    lastX = e.pageX; lastT = now;
+    if (Math.abs(dx) > 4) moved = true;
+    outer.scrollLeft = scrollStart - dx;
+  });
+
+  // Block link clicks after drag
+  outer.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', e => { if (moved) { e.preventDefault(); moved = false; } });
+  });
+
+  // Keyboard navigation
+  outer.setAttribute('tabindex', '0');
+  outer.addEventListener('keydown', e => {
+    const card = outer.querySelector('.proj-card');
+    const step = card ? card.offsetWidth + 28 : 560;
+    if (e.key === 'ArrowRight') { e.preventDefault(); outer.scrollBy({ left:  step, behavior:'smooth' }); }
+    if (e.key === 'ArrowLeft')  { e.preventDefault(); outer.scrollBy({ left: -step, behavior:'smooth' }); }
+  });
+
+  // Horizontal wheel on track, vertical scrolls page (no hijack)
+  outer.addEventListener('wheel', e => {
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+      e.preventDefault();
+      outer.scrollLeft += e.deltaX;
+    }
+    // Vertical: fall through to page scroll naturally
+  }, { passive: false });
+})();
+
+/* ================================================================
+   10. DELIGHT — subtle easter eggs
+   ================================================================ */
+
+// (a) Konami code → contour lines briefly pulse sage-green intensely
+(function() {
+  const seq = [38,38,40,40,37,39,37,39,66,65];
+  let pos = 0;
+  document.addEventListener('keydown', e => {
+    if (e.keyCode === seq[pos]) { pos++; } else { pos = 0; }
+    if (pos === seq.length) {
+      pos = 0;
+      // Flash page background with sage tint as a playful reward
+      document.body.style.transition = 'background 0.4s';
+      document.body.style.background = 'rgba(92,110,77,0.08)';
+      setTimeout(() => { document.body.style.background = ''; }, 800);
+    }
+  });
+})();
+
+// (b) Hero name micro-hover: individual chars wiggle on mouseenter
+(function() {
+  if (PRM || isTouch) return;
+  document.querySelectorAll('#heroName .char').forEach(ch => {
+    ch.addEventListener('mouseenter', () => {
+      if (!window.gsap) return;
+      gsap.fromTo(ch,
+        { y: 0 },
+        { y: -6, duration: 0.2, ease: 'power2.out',
+          onComplete: () => gsap.to(ch, { y: 0, duration: 0.4, ease: 'elastic.out(1,0.5)' })
+        }
+      );
+    });
+  });
+})();
+
+// (c) Contact email: subtle pulse animation on section enter
+(function() {
+  const email = document.querySelector('.contact-email');
+  if (!email || PRM) return;
+  const pulseIO = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      email.style.animation = 'none';
+      void email.offsetWidth; // reflow
+      email.style.animation = '';
+      pulseIO.disconnect();
+    }
+  }, { threshold: 0.5 });
+  pulseIO.observe(email);
+})();
+</script>
+</body>
+</html>

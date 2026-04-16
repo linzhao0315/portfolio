@@ -1,0 +1,2461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Case Study — Building an AI-Governed Design Pipeline. How Lin Zhao made the design system machine-readable and turned it into a governed capability the whole team can use.">
+<meta property="og:title" content="AI-Governed Design Pipeline — Lin Zhao">
+<meta property="og:description" content="How I made the design system machine-readable — then turned it into a governed capability the whole team can use.">
+<meta property="og:type" content="article">
+<title>AI-Governed Design Pipeline — Lin Zhao</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ================================================================
+   ORGANIC SYSTEMS v4 — AI Pipeline Case Study
+   Full design language: WebGL · Spring Cursor · @property · Char Anim
+   ================================================================ */
+
+@property --border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:           #F4F0E8;
+  --bg-warm:      #EDE8DE;
+  --bg-surface:   rgba(237,232,222,0.60);
+  --sage:         #5C6E4D;
+  --sage-mid:     #8A9E78;
+  --terracotta:   #B87D5A;
+  --sand:         #C4B094;
+  --ink:          #252520;
+  --ink-mid:      #4A4A44;
+  --ink-muted:    #787668;
+  --ink-faint:    #B4B0A6;
+  --glass-bg:     rgba(253,250,246,0.68);
+  --glass-hi:     rgba(255,255,255,0.92);
+  --glass-border: rgba(255,255,255,0.88);
+
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body:    'DM Sans', system-ui, sans-serif;
+  --font-mono:    'DM Mono', 'SF Mono', monospace;
+
+  --radius:    16px;
+  --radius-lg: 24px;
+  --pad:       clamp(24px, 5.5vw, 88px);
+  --max-w:     1040px;
+
+  --ease-silk:   cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-expo:   cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+@media (hover: hover) { * { cursor: none !important; } }
+
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; }
+::selection { background: rgba(92,110,77,0.14); color: var(--sage); }
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--sand); border-radius: 2px; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0;
+  margin: -1px; overflow: hidden; clip: rect(0,0,0,0);
+  white-space: nowrap; border-width: 0;
+}
+.skip-link {
+  position: fixed; top: -100%; left: 50%; transform: translateX(-50%);
+  z-index: 20000; padding: 0.75rem 1.5rem;
+  background: var(--sage); color: #fff;
+  font-family: var(--font-body); font-size: 0.875rem; font-weight: 600;
+  border-radius: 0 0 12px 12px; transition: top 0.2s;
+}
+.skip-link:focus { top: 0; outline: none; }
+
+/* ── Cursor ──────────────────────────────────────────────────── */
+#cursor {
+  position: fixed; top: 0; left: 0;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--sage); pointer-events: none; z-index: 16000;
+  transform: translate(-50%,-50%); mix-blend-mode: multiply;
+  transition: width 0.35s var(--ease-silk), height 0.35s var(--ease-silk), background 0.3s;
+  will-change: transform;
+}
+#cursor-aura {
+  position: fixed; top: 0; left: 0;
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid rgba(92,110,77,0.22);
+  pointer-events: none; z-index: 15999;
+  transform: translate(-50%,-50%);
+  transition: width 0.5s var(--ease-silk), height 0.5s var(--ease-silk), border-color 0.4s;
+  will-change: transform;
+}
+#cursor.link    { width: 26px; height: 26px; background: var(--terracotta); }
+#cursor-aura.link { width: 68px; height: 68px; border-color: rgba(184,125,90,0.16); }
+.c-trail {
+  position: fixed; top: 0; left: 0; border-radius: 50%;
+  background: var(--sage); mix-blend-mode: multiply;
+  pointer-events: none; z-index: 15998;
+  transform: translate(-50%,-50%); will-change: transform, opacity;
+}
+
+/* ── WebGL Canvas ──────────────────────────────────────────── */
+#glCanvas {
+  position: fixed; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: -1;
+}
+
+/* ── Scroll Progress ───────────────────────────────────────── */
+#scrollProgress {
+  position: fixed; top: 0; left: 0; height: 1px; width: 0%;
+  background: linear-gradient(90deg, var(--sage), var(--terracotta), var(--sand));
+  z-index: 10002; pointer-events: none;
+}
+
+/* ── NAV ───────────────────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  padding: 1.5rem var(--pad);
+  display: flex; align-items: center; justify-content: space-between;
+  transition: padding 0.5s var(--ease-expo), background 0.55s var(--ease-expo),
+              backdrop-filter 0.55s;
+}
+nav.scrolled {
+  padding-top: 1rem; padding-bottom: 1rem;
+  background: rgba(244,240,232,0.84);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  box-shadow: 0 1px 0 rgba(92,110,77,0.07);
+}
+.nav-back {
+  font-family: var(--font-display); font-size: 1rem; font-weight: 500; font-style: italic;
+  color: var(--ink-muted); display: flex; align-items: center; gap: 0.5rem;
+  transition: color 0.3s; min-height: 44px;
+}
+.nav-back:hover { color: var(--sage); }
+.nav-back svg { transition: transform 0.35s var(--ease-silk); }
+.nav-back:hover svg { transform: translateX(-4px); }
+.nav-links { display: flex; gap: 2.5rem; }
+.nav-links a {
+  font-family: var(--font-body); font-size: 0.6875rem; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-muted);
+  display: inline-flex; align-items: center; min-height: 44px;
+  position: relative; transition: color 0.3s;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: 6px; left: 0;
+  width: 0; height: 1px; background: var(--sage);
+  transition: width 0.4s var(--ease-silk);
+}
+.nav-links a:hover { color: var(--sage); }
+.nav-links a:hover::after { width: 100%; }
+
+main { position: relative; z-index: 2; }
+
+/* ── Layout ────────────────────────────────────────────────── */
+.container { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad); }
+
+/* ── Eyebrow ───────────────────────────────────────────────── */
+.eyebrow {
+  font-family: var(--font-mono); font-size: 0.5625rem;
+  letter-spacing: 0.24em; text-transform: uppercase; color: var(--sage);
+  display: flex; align-items: center; gap: 0.875rem; margin-bottom: 1.5rem;
+  opacity: 0.75;
+}
+.eyebrow::before {
+  content: ''; display: block; width: 24px; height: 1px;
+  background: currentColor; flex-shrink: 0;
+}
+
+/* ── Reveal utility ────────────────────────────────────────── */
+.reveal {
+  opacity: 0; transform: translateY(24px);
+  transition: opacity 0.85s var(--ease-silk), transform 0.85s var(--ease-silk);
+}
+.reveal.on { opacity: 1; transform: none; }
+.reveal-delay-1 { transition-delay: 0.08s; }
+.reveal-delay-2 { transition-delay: 0.16s; }
+.reveal-delay-3 { transition-delay: 0.24s; }
+.reveal-delay-4 { transition-delay: 0.32s; }
+
+/* ================================================================
+   HERO
+   ================================================================ */
+#hero {
+  min-height: 100svh;
+  display: flex; align-items: flex-end;
+  padding: 140px var(--pad) 80px;
+  position: relative; overflow: hidden;
+}
+.hero-inner { max-width: var(--max-w); margin: 0 auto; width: 100%; }
+
+.hero-meta {
+  font-family: var(--font-mono); font-size: 0.5625rem;
+  letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-muted);
+  display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;
+  opacity: 0; transform: translateY(10px);
+}
+.hero-meta::before { content: ''; width: 22px; height: 1px; background: var(--sage); opacity: 0.5; }
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 9vw, 7.5rem);
+  font-weight: 300; font-style: italic;
+  letter-spacing: -0.04em; line-height: 0.88;
+  color: var(--ink); margin-bottom: 2.5rem;
+  opacity: 0; transform: translateY(36px); filter: blur(12px);
+}
+.hero-title em { color: var(--sage); font-style: inherit; }
+
+.hero-subtitle {
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 1.6vw, 1.1875rem);
+  line-height: 1.75; color: var(--ink-muted);
+  max-width: 560px; margin-bottom: 2.5rem;
+  opacity: 0; transform: translateY(18px);
+}
+
+.hero-pills {
+  display: flex; flex-wrap: wrap; gap: 0.5rem;
+  opacity: 0; transform: translateY(12px);
+}
+.hero-pill {
+  font-family: var(--font-mono); font-size: 0.5625rem;
+  letter-spacing: 0.1em; color: var(--ink-muted);
+  border: 1px solid rgba(120,118,104,0.22);
+  padding: 0.3rem 0.8rem; border-radius: 100px;
+}
+.hero-pill strong { color: var(--sage); font-weight: 500; }
+
+.hero-images {
+  position: absolute; right: 0; top: 0; bottom: 0;
+  width: clamp(200px, 30vw, 380px);
+  display: flex; flex-direction: column;
+  pointer-events: none; overflow: hidden;
+  opacity: 0;
+}
+.hero-img-stack {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.hero-img-stack img {
+  width: 100%; flex: 1;
+  object-fit: cover; object-position: center top;
+  filter: saturate(0.8) brightness(1.02);
+}
+@media (max-width: 768px) { .hero-images { display: none; } }
+
+/* ================================================================
+   DIVIDER
+   ================================================================ */
+.divider {
+  width: 100%; padding: 0 var(--pad);
+  margin: 0 auto;
+}
+.divider-line {
+  max-width: var(--max-w); margin: 0 auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(92,110,77,0.12), transparent);
+}
+
+/* ================================================================
+   CHAPTER
+   ================================================================ */
+.chapter { padding: clamp(80px, 12vw, 140px) var(--pad); }
+
+.chapter-num {
+  font-family: var(--font-mono); font-size: 0.625rem;
+  letter-spacing: 0.28em; text-transform: uppercase; color: var(--ink-faint);
+  margin-bottom: 1.25rem;
+}
+
+.chapter-heading {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.75rem);
+  font-weight: 300; font-style: italic;
+  letter-spacing: -0.03em; line-height: 0.92;
+  color: var(--ink); margin-bottom: 2rem;
+}
+.chapter-heading em { color: var(--sage); font-style: inherit; }
+
+.body-text {
+  font-family: var(--font-body);
+  font-size: clamp(0.9375rem, 1.5vw, 1.0625rem);
+  line-height: 1.82; color: var(--ink-muted);
+  max-width: 620px; margin-bottom: 2.5rem;
+}
+.body-text p + p { margin-top: 1rem; }
+.body-text strong { color: var(--ink); font-weight: 500; }
+
+/* ── Problem list ─────────────────────────────────────────── */
+.problem-list {
+  list-style: none; display: flex; flex-direction: column;
+  gap: 1rem; margin-bottom: 3rem;
+}
+.problem-list li {
+  display: flex; gap: 1rem; align-items: flex-start;
+  font-family: var(--font-body); font-size: 0.9375rem;
+  line-height: 1.65; color: var(--ink-muted);
+  padding: 1.25rem 1.5rem;
+  background: rgba(237,232,222,0.55);
+  border: 1px solid rgba(120,118,104,0.10);
+  border-radius: var(--radius);
+  transition: border-color 0.3s, background 0.3s;
+}
+.problem-list li:hover {
+  background: rgba(237,232,222,0.85);
+  border-color: rgba(92,110,77,0.12);
+}
+.problem-list li strong { color: var(--ink); font-weight: 500; }
+.problem-icon {
+  font-family: var(--font-mono); font-size: 0.75rem;
+  color: var(--terracotta); flex-shrink: 0; margin-top: 2px;
+  width: 18px; text-align: center;
+}
+
+/* ── Disconnect diagram ──────────────────────────────────── */
+.disconnect-diagram {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; flex-wrap: wrap; margin-top: 2.5rem;
+}
+.disconnect-box {
+  padding: 1.75rem 2.5rem; border-radius: var(--radius);
+  text-align: center; min-width: 180px;
+}
+.disconnect-box.left {
+  background: rgba(237,232,222,0.7);
+  border: 1px solid rgba(120,118,104,0.14);
+}
+.disconnect-box.right {
+  background: rgba(184,125,90,0.06);
+  border: 1px dashed rgba(184,125,90,0.28);
+}
+.disconnect-label {
+  font-family: var(--font-mono); font-size: 0.5rem;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--ink-faint); margin-bottom: 0.5rem;
+}
+.disconnect-value {
+  font-family: var(--font-display); font-size: 1.25rem;
+  font-style: italic; color: var(--ink);
+}
+.disconnect-arrow {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 4px; padding: 0 1.5rem; color: var(--sand);
+}
+.disconnect-arrow-line {
+  width: 48px; height: 1.5px;
+  background: repeating-linear-gradient(
+    90deg, var(--sand) 0, var(--sand) 5px, transparent 5px, transparent 9px
+  );
+}
+.disconnect-arrow-label {
+  font-family: var(--font-mono); font-size: 0.5rem;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--sand);
+}
+
+/* ================================================================
+   PULL QUOTE (Insight)
+   ================================================================ */
+.insight-section {
+  padding: clamp(80px,12vw,140px) var(--pad);
+  text-align: center;
+}
+.insight-quote-wrap {
+  position: relative; max-width: 680px; margin: 0 auto;
+}
+.insight-mark {
+  font-family: var(--font-display);
+  font-size: clamp(80px,15vw,160px);
+  font-weight: 300; color: var(--sage); opacity: 0.10;
+  line-height: 0.6;
+  position: absolute; top: -1rem; left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none; user-select: none;
+}
+.insight-quote {
+  font-family: var(--font-display);
+  font-size: clamp(1.375rem, 3vw, 2.25rem);
+  font-weight: 400; font-style: italic;
+  line-height: 1.5; color: var(--ink);
+  position: relative; z-index: 1;
+}
+.insight-quote em { color: var(--sage); font-style: inherit; }
+
+/* ================================================================
+   ARCHITECTURE LAYERS
+   ================================================================ */
+.arch-diagram { display: flex; flex-direction: column; gap: 0; margin-top: 3rem; }
+
+.arch-layer { display: grid; grid-template-columns: 3rem 1fr; gap: 0; }
+
+.arch-layer-spine {
+  display: flex; flex-direction: column; align-items: center;
+  padding-top: 1.75rem;
+}
+.arch-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  border: 1.5px solid var(--sage); background: var(--bg);
+  position: relative; z-index: 2; flex-shrink: 0;
+}
+.arch-dot.active { background: var(--sage); }
+.arch-spine-line { width: 1px; flex: 1; background: rgba(92,110,77,0.18); margin-top: 4px; }
+.arch-layer:last-child .arch-spine-line { display: none; }
+
+.arch-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    inset 0 1.5px 0 var(--glass-hi),
+    0 4px 24px rgba(92,110,77,0.06);
+  padding: 1.75rem 2rem;
+  margin-bottom: 1.25rem;
+  transition: box-shadow 0.5s var(--ease-silk), transform 0.5s var(--ease-silk);
+  position: relative; overflow: hidden;
+}
+.arch-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 40%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.32) 0%, transparent 100%);
+  border-radius: inherit; pointer-events: none;
+}
+.arch-card:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    inset 0 1.5px 0 var(--glass-hi),
+    0 12px 40px rgba(92,110,77,0.10);
+}
+.arch-card.highlight {
+  border-color: rgba(92,110,77,0.28);
+  background: rgba(244,240,232,0.78);
+}
+.arch-badge {
+  display: inline-flex; align-items: center;
+  font-family: var(--font-mono); font-size: 0.4375rem;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--sage); background: rgba(92,110,77,0.08);
+  border: 1px solid rgba(92,110,77,0.15);
+  padding: 0.15rem 0.55rem; border-radius: 100px;
+  margin-bottom: 0.75rem;
+}
+.arch-layer-label {
+  font-family: var(--font-mono); font-size: 0.5rem;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--sage); margin-bottom: 0.35rem;
+}
+.arch-title {
+  font-family: var(--font-display); font-size: 1.375rem;
+  font-weight: 500; font-style: italic; letter-spacing: -0.01em;
+  color: var(--ink); margin-bottom: 0.75rem;
+}
+.arch-desc {
+  font-family: var(--font-body); font-size: 0.875rem;
+  line-height: 1.72; color: var(--ink-muted); margin-bottom: 1rem;
+}
+.arch-desc strong { color: var(--ink); font-weight: 500; }
+.arch-code {
+  font-family: var(--font-mono); font-size: 0.6875rem;
+  line-height: 1.8; color: var(--ink-muted);
+  background: rgba(237,232,222,0.6);
+  border: 1px solid rgba(120,118,104,0.10);
+  border-radius: 8px; padding: 0.875rem 1rem;
+}
+.arch-code .desc { color: var(--sage-mid); opacity: 0.75; }
+
+/* Audit callout */
+.audit-callout {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;
+  margin-top: 2.5rem;
+}
+@media (max-width: 640px) { .audit-callout { grid-template-columns: 1fr; } }
+.audit-card {
+  padding: 1.5rem 1.75rem; border-radius: var(--radius);
+  font-family: var(--font-body); font-size: 0.875rem;
+  line-height: 1.68; color: var(--ink-muted);
+}
+.audit-card strong { color: var(--ink); font-weight: 500; }
+.audit-card-label {
+  font-family: var(--font-mono); font-size: 0.4375rem;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  margin-bottom: 0.75rem; display: block;
+}
+.audit-card.problem {
+  background: rgba(184,125,90,0.06);
+  border: 1px solid rgba(184,125,90,0.18);
+}
+.audit-card.problem .audit-card-label { color: var(--terracotta); }
+.audit-card.solution {
+  background: rgba(92,110,77,0.06);
+  border: 1px solid rgba(92,110,77,0.18);
+}
+.audit-card.solution .audit-card-label { color: var(--sage); }
+
+/* ================================================================
+   TOKEN COMPARISON
+   ================================================================ */
+.token-comparison {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;
+  margin-top: 2rem;
+}
+@media (max-width: 640px) { .token-comparison { grid-template-columns: 1fr; } }
+.token-card {
+  padding: 1.5rem 1.75rem; border-radius: var(--radius);
+  font-family: var(--font-mono); font-size: 0.6875rem; line-height: 1.9;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  box-shadow: inset 0 1px 0 var(--glass-hi), 0 4px 16px rgba(92,110,77,0.05);
+}
+.token-card-label {
+  font-family: var(--font-body); font-size: 0.75rem; font-weight: 500;
+  color: var(--ink); margin-bottom: 1rem; letter-spacing: 0;
+}
+.token-line .key   { color: var(--sage); }
+.token-line .value { color: var(--ink); }
+.token-line .desc  { color: var(--sage-mid); opacity: 0.75; }
+
+/* Rules callout */
+.rules-callout {
+  margin-top: 2.5rem; padding: 2rem 2.25rem;
+  border-radius: var(--radius-lg);
+  background: var(--glass-bg);
+  backdrop-filter: blur(30px) saturate(160%);
+  -webkit-backdrop-filter: blur(30px) saturate(160%);
+  border: 1px solid rgba(92,110,77,0.22);
+  box-shadow: inset 0 1.5px 0 var(--glass-hi), 0 8px 32px rgba(92,110,77,0.07);
+}
+.rules-eyebrow {
+  font-family: var(--font-mono); font-size: 0.4375rem;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--sage); margin-bottom: 0.75rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.rules-title {
+  font-family: var(--font-display); font-size: 1.5rem;
+  font-weight: 500; font-style: italic; letter-spacing: -0.01em;
+  color: var(--ink); margin-bottom: 1rem;
+}
+.rules-body {
+  font-family: var(--font-body); font-size: 0.9375rem;
+  line-height: 1.75; color: var(--ink-muted); margin-bottom: 1.25rem;
+}
+.rules-body strong { color: var(--ink); font-weight: 500; }
+.rules-code {
+  font-family: var(--font-mono); font-size: 0.625rem; line-height: 1.9;
+  color: var(--ink-muted);
+  background: rgba(237,232,222,0.55);
+  border: 1px solid rgba(120,118,104,0.10);
+  border-radius: 8px; padding: 1rem 1.25rem;
+}
+
+/* Method grid */
+.method-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1.25rem; margin-top: 2rem;
+}
+@media (max-width: 640px) { .method-grid { grid-template-columns: 1fr; } }
+.method-card {
+  padding: 1.5rem 1.75rem;
+  background: rgba(237,232,222,0.50);
+  border: 1px solid rgba(120,118,104,0.10);
+  border-radius: var(--radius);
+  transition: background 0.35s, border-color 0.35s, transform 0.4s var(--ease-silk);
+}
+.method-card:hover {
+  background: rgba(237,232,222,0.85);
+  border-color: rgba(92,110,77,0.14);
+  transform: translateY(-2px);
+}
+.method-num {
+  font-family: var(--font-mono); font-size: 0.5rem;
+  letter-spacing: 0.18em; color: var(--sage); margin-bottom: 0.75rem;
+}
+.method-title {
+  font-family: var(--font-display); font-size: 1.125rem;
+  font-weight: 500; font-style: italic; letter-spacing: -0.01em;
+  color: var(--ink); margin-bottom: 0.5rem;
+}
+.method-desc {
+  font-family: var(--font-body); font-size: 0.875rem;
+  line-height: 1.68; color: var(--ink-muted);
+}
+
+/* ================================================================
+   DEMO CARDS (Before / After)
+   ================================================================ */
+.demo-cards {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1.25rem; margin-top: 2rem;
+}
+@media (max-width: 640px) { .demo-cards { grid-template-columns: 1fr; } }
+
+/* @property animated border on the "after" card */
+.demo-card-wrap {
+  border-radius: calc(var(--radius-lg) + 1.5px);
+  padding: 1.5px;
+  background: rgba(237,232,222,0.4);
+  transition: box-shadow 0.6s var(--ease-silk);
+}
+.demo-card-wrap.after {
+  background: conic-gradient(
+    from var(--border-angle) at 50% 50%,
+    transparent 0deg, transparent 190deg,
+    rgba(92,110,77, 0.32) 240deg,
+    rgba(184,125,90, 0.26) 278deg,
+    rgba(196,176,148,0.20) 305deg,
+    transparent 330deg
+  );
+  animation: borderSpin 5s linear infinite;
+}
+.demo-card-wrap.after:hover {
+  box-shadow: 0 16px 48px rgba(92,110,77,0.12);
+}
+@keyframes borderSpin {
+  from { --border-angle: 0deg; }
+  to   { --border-angle: 360deg; }
+}
+
+.demo-card {
+  padding: 1.75rem 2rem;
+  border-radius: calc(var(--radius-lg) - 1.5px);
+  height: 100%;
+  transition: transform 0.5s var(--ease-silk);
+}
+.demo-card-wrap.before .demo-card {
+  background: rgba(237,232,222,0.55);
+  border: 1px solid rgba(120,118,104,0.12);
+}
+.demo-card-wrap.after .demo-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(32px) saturate(180%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  box-shadow: inset 0 1.5px 0 var(--glass-hi);
+}
+.demo-card-wrap:hover .demo-card { transform: translateY(-3px); }
+
+.demo-card-badge {
+  font-family: var(--font-mono); font-size: 0.4375rem;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  display: inline-block; padding: 0.15rem 0.6rem; border-radius: 100px;
+  margin-bottom: 1rem;
+}
+.demo-card-wrap.before .demo-card-badge {
+  color: var(--terracotta); background: rgba(184,125,90,0.08);
+  border: 1px solid rgba(184,125,90,0.18);
+}
+.demo-card-wrap.after .demo-card-badge {
+  color: var(--sage); background: rgba(92,110,77,0.08);
+  border: 1px solid rgba(92,110,77,0.18);
+}
+.demo-card-title {
+  font-family: var(--font-display); font-size: 1.25rem;
+  font-weight: 500; font-style: italic; letter-spacing: -0.01em;
+  color: var(--ink); margin-bottom: 0.75rem;
+}
+.demo-card-desc {
+  font-family: var(--font-body); font-size: 0.875rem;
+  line-height: 1.68; color: var(--ink-muted); margin-bottom: 1.25rem;
+}
+.demo-link {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-family: var(--font-body); font-size: 0.8125rem; font-weight: 500;
+  padding-bottom: 2px; min-height: 44px;
+  transition: color 0.2s, opacity 0.2s;
+}
+.demo-card-wrap.before .demo-link {
+  color: var(--ink-muted); border-bottom: 1px solid rgba(120,118,104,0.22);
+}
+.demo-card-wrap.before .demo-link:hover { color: var(--ink); }
+.demo-card-wrap.after .demo-link {
+  color: var(--sage); border-bottom: 1px solid rgba(92,110,77,0.28);
+}
+.demo-card-wrap.after .demo-link:hover { color: var(--terracotta); }
+
+.demo-note {
+  margin-top: 2rem; text-align: center;
+  font-family: var(--font-body); font-size: 0.875rem;
+  font-style: italic; color: var(--ink-faint);
+  max-width: 560px; margin-left: auto; margin-right: auto;
+}
+
+.demo-specs {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  gap: 1rem; margin-top: 2.5rem;
+}
+@media (max-width: 640px) { .demo-specs { grid-template-columns: repeat(2,1fr); } }
+.demo-spec {
+  text-align: center; padding: 1.25rem 0.75rem;
+  background: rgba(237,232,222,0.50);
+  border: 1px solid rgba(120,118,104,0.08);
+  border-radius: var(--radius);
+}
+.demo-spec-check {
+  font-size: 0.875rem; color: var(--sage); margin-bottom: 0.4rem;
+}
+.demo-spec-text {
+  font-family: var(--font-mono); font-size: 0.5rem;
+  letter-spacing: 0.1em; line-height: 1.5; color: var(--ink-muted);
+}
+
+/* ================================================================
+   SCALE TIMELINE
+   ================================================================ */
+.scale-timeline {
+  margin-top: 2.5rem; position: relative; padding-left: 2rem;
+}
+.scale-timeline::before {
+  content: ''; position: absolute;
+  left: 8px; top: 0; bottom: 0; width: 1px;
+  background: linear-gradient(180deg, var(--sage) 0%, rgba(92,110,77,0.12) 100%);
+}
+.scale-item {
+  position: relative; padding: 0 0 2.5rem 2rem;
+}
+.scale-item:last-child { padding-bottom: 0; }
+.scale-item::before {
+  content: ''; position: absolute;
+  left: -28px; top: 5px;
+  width: 9px; height: 9px;
+  background: var(--sage); border-radius: 50%;
+  border: 2px solid var(--bg);
+  box-shadow: 0 0 0 3px rgba(92,110,77,0.15);
+}
+.scale-item-title {
+  font-family: var(--font-display); font-size: 1.25rem;
+  font-weight: 500; font-style: italic; letter-spacing: -0.01em;
+  color: var(--ink); margin-bottom: 0.4rem;
+}
+.scale-item-desc {
+  font-family: var(--font-body); font-size: 0.9375rem;
+  line-height: 1.7; color: var(--ink-muted);
+}
+
+/* ================================================================
+   VIDEO FEATURE
+   ================================================================ */
+.video-feature {
+  margin-top: 2.5rem; padding: 2.25rem 2.5rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(32px) saturate(180%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: inset 0 1.5px 0 var(--glass-hi), 0 8px 32px rgba(92,110,77,0.07);
+}
+.video-brief {
+  font-family: var(--font-body); font-size: 1rem;
+  line-height: 1.75; color: var(--ink-muted); margin-bottom: 2rem;
+}
+.video-brief strong { color: var(--ink); font-weight: 500; }
+.video-details {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1.25rem; margin-bottom: 1.5rem;
+}
+@media (max-width: 600px) { .video-details { grid-template-columns: 1fr; } }
+.video-detail {
+  display: flex; gap: 1rem; align-items: flex-start;
+}
+.video-detail-icon {
+  font-family: var(--font-mono); font-size: 0.625rem; font-weight: 500;
+  letter-spacing: 0.06em; color: var(--sage);
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1px solid rgba(92,110,77,0.22);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.video-detail-text {
+  font-family: var(--font-body); font-size: 0.875rem;
+  line-height: 1.65; color: var(--ink-muted);
+}
+.video-detail-text strong { color: var(--ink); font-weight: 500; display: block; margin-bottom: 0.1rem; }
+.video-loopback {
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(120,118,104,0.10);
+  font-family: var(--font-body); font-size: 0.875rem;
+  line-height: 1.7; color: var(--ink-muted); font-style: italic;
+}
+.video-loopback strong { color: var(--sage); font-style: normal; font-weight: 500; }
+
+/* ================================================================
+   IMPACT
+   ================================================================ */
+.impact-grid {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 1.25rem; margin-top: 2.5rem;
+}
+@media (max-width: 680px) { .impact-grid { grid-template-columns: 1fr; } }
+.impact-card {
+  padding: 2rem 1.75rem; text-align: center;
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: inset 0 1.5px 0 var(--glass-hi), 0 4px 16px rgba(92,110,77,0.05);
+  transition: transform 0.5s var(--ease-silk), box-shadow 0.5s var(--ease-silk);
+}
+.impact-card:hover {
+  transform: translateY(-4px);
+  box-shadow: inset 0 1.5px 0 var(--glass-hi), 0 16px 40px rgba(92,110,77,0.10);
+}
+.impact-card.wide { grid-column: span 2; }
+@media (max-width: 680px) { .impact-card.wide { grid-column: span 1; } }
+.impact-number {
+  font-family: var(--font-display); font-size: clamp(1.5rem,4vw,2.5rem);
+  font-weight: 500; font-style: italic; letter-spacing: -0.02em;
+  color: var(--sage); line-height: 1.1; margin-bottom: 0.75rem;
+}
+.impact-label {
+  font-family: var(--font-body); font-size: 0.875rem;
+  line-height: 1.6; color: var(--ink-muted);
+}
+
+/* ================================================================
+   REFLECTION
+   ================================================================ */
+.reflection-section {
+  padding: clamp(80px,12vw,130px) var(--pad);
+  text-align: center;
+}
+.reflection-quote {
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 2.5vw, 1.875rem);
+  font-weight: 400; font-style: italic;
+  line-height: 1.6; color: var(--ink-muted);
+  max-width: 580px; margin: 0 auto;
+}
+
+/* ================================================================
+   FOOTER / CONTACT
+   ================================================================ */
+#contact {
+  padding: clamp(100px,14vw,160px) var(--pad) 0;
+  position: relative;
+}
+#contact::before {
+  content: ''; position: absolute;
+  top: 0; left: var(--pad); right: var(--pad); height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(92,110,77,0.14), transparent);
+}
+.contact-inner { max-width: var(--max-w); margin: 0 auto; }
+.contact-display {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 10vw, 8rem);
+  font-weight: 300; font-style: italic;
+  letter-spacing: -0.04em; line-height: 0.88;
+  color: var(--ink); margin-bottom: 2rem;
+}
+.contact-display em { color: var(--sage); font-style: inherit; }
+.contact-sub {
+  font-family: var(--font-body); font-size: 1rem;
+  line-height: 1.75; color: var(--ink-muted);
+  max-width: 440px; margin-bottom: 2rem;
+}
+.contact-email {
+  font-family: var(--font-display); font-size: clamp(1rem,2vw,1.375rem);
+  font-weight: 400; color: var(--terracotta);
+  border-bottom: 1px solid rgba(184,125,90,0.22);
+  padding-bottom: 4px; display: inline-flex; align-items: center;
+  transition: color 0.3s, border-color 0.3s; min-height: 44px;
+}
+.contact-email:hover { color: var(--sage); border-color: rgba(92,110,77,0.32); }
+footer {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 1rem;
+  max-width: var(--max-w); margin: 4rem auto 0; padding: 1.5rem var(--pad);
+  border-top: 1px solid rgba(92,110,77,0.07);
+}
+.footer-note, .footer-links a {
+  font-family: var(--font-mono); font-size: 0.5rem;
+  color: var(--ink-faint); letter-spacing: 0.14em;
+}
+.footer-links { display: flex; gap: 1.5rem; }
+.footer-links a { transition: color 0.25s; }
+.footer-links a:hover { color: var(--sage); }
+.footer-accent { color: var(--sage); }
+
+/* ================================================================
+   ACCESSIBILITY
+   ================================================================ */
+:focus-visible { outline: 2px solid var(--sage); outline-offset: 3px; border-radius: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  #cursor, #cursor-aura, .c-trail, #glCanvas { display: none; }
+  body { cursor: auto !important; } * { cursor: auto !important; }
+  .reveal { opacity:1 !important; transform:none !important; }
+  .hero-meta,.hero-title,.hero-subtitle,.hero-pills,.hero-images { opacity:1 !important; transform:none !important; filter:none !important; }
+  .ds-figure-img { transition: none; }
+  #ds-lightbox, #ds-lightbox-img { transition: none; }
+}
+@media (prefers-contrast: more) {
+  :root { --ink:#000; --ink-muted:#222; --sage:#2d4220; --terracotta:#7a3a10; }
+  #glCanvas { display: none; }
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .arch-card,.demo-card,.impact-card,.video-feature,.rules-callout
+  { background: rgba(244,240,232,0.97); }
+}
+
+/* ================================================================
+   CLEAN MODE
+   No WebGL · No custom cursor · No GSAP entrance animations
+   Hero text visible immediately · Hero images hidden
+   ================================================================ */
+
+/* Kill WebGL canvas and cursor effects */
+#glCanvas                         { display: none !important; }
+#cursor, #cursor-aura, .c-trail   { display: none !important; }
+@media (hover: hover)             { * { cursor: default !important; } }
+
+/* Hero: visible immediately, no entrance animation */
+.hero-meta,
+.hero-title,
+.hero-subtitle,
+.hero-pills {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+  animation: none !important;
+}
+
+/* Hide the right-side image stack — it overflows at 100svh height */
+.hero-images { display: none !important; }
+
+/* Give hero more vertical rhythm without competing right column */
+#hero { align-items: center; }
+.hero-inner { max-width: var(--max-w); }
+
+/* Hero title: mid-scale — readable without dominating */
+.hero-title {
+  font-size: clamp(2.5rem, 5.5vw, 4.5rem) !important;
+  line-height: 1.1 !important;
+}
+
+/* ================================================================
+   STYLE SYNC — match homepage glass language
+   · Prismatic white borders only (no gray, no sage-colored borders)
+   · Higher transparency on all glass surfaces
+   · No hover-lift transforms on cards
+   · No spinning gradient borders
+   ================================================================ */
+
+/* Shared glass surface token */
+:root {
+  --cs-glass:    rgba(255, 252, 248, 0.48);
+  --cs-glass-hi: rgba(255, 252, 248, 0.64);
+  --cs-border-t: rgba(255,255,255,0.90);
+  --cs-border-l: rgba(255,255,255,0.68);
+  --cs-border-r: rgba(255,255,255,0.26);
+  --cs-border-b: rgba(255,255,255,0.20);
+  --cs-inset:    inset 0 1.5px 0 rgba(255,255,255,0.95),
+                 inset 1px 0 0 rgba(255,255,255,0.38),
+                 0 8px 32px -4px rgba(30,30,26,0.01);
+}
+
+/* Apply glass surface to all cards */
+.arch-card,
+.token-card,
+.rules-callout,
+.video-feature,
+.impact-card {
+  background:             var(--cs-glass) !important;
+  backdrop-filter:        blur(48px) saturate(150%) brightness(102%) !important;
+  -webkit-backdrop-filter: blur(48px) saturate(150%) brightness(102%) !important;
+  border-top:    1px solid var(--cs-border-t) !important;
+  border-left:   1px solid var(--cs-border-l) !important;
+  border-right:  1px solid var(--cs-border-r) !important;
+  border-bottom: 1px solid var(--cs-border-b) !important;
+  box-shadow:    var(--cs-inset) !important;
+  transition:    none !important;
+}
+
+/* Highlighted arch card — slightly more opaque */
+.arch-card.highlight {
+  background: var(--cs-glass-hi) !important;
+}
+
+/* Method cards */
+.method-card {
+  background:  rgba(255, 252, 248, 0.40) !important;
+  border:      none !important;
+  box-shadow:  var(--cs-inset) !important;
+  transition:  none !important;
+}
+
+/* Demo cards — kill spinning border, unify glass */
+.demo-card-wrap {
+  background:   transparent !important;
+  padding:      0 !important;
+  animation:    none !important;
+  transition:   none !important;
+  border-radius: var(--radius-lg) !important;
+}
+.demo-card-wrap.before .demo-card {
+  background:  rgba(237, 232, 222, 0.45) !important;
+  border-top:    1px solid var(--cs-border-t) !important;
+  border-left:   1px solid var(--cs-border-l) !important;
+  border-right:  1px solid var(--cs-border-r) !important;
+  border-bottom: 1px solid var(--cs-border-b) !important;
+  box-shadow:  var(--cs-inset) !important;
+}
+.demo-card-wrap.after .demo-card {
+  background:  var(--cs-glass) !important;
+  border-top:    1px solid var(--cs-border-t) !important;
+  border-left:   1px solid var(--cs-border-l) !important;
+  border-right:  1px solid var(--cs-border-r) !important;
+  border-bottom: 1px solid var(--cs-border-b) !important;
+  box-shadow:  var(--cs-inset) !important;
+}
+
+/* Demo spec tiles */
+.demo-spec {
+  background:  rgba(255, 252, 248, 0.42) !important;
+  border:      none !important;
+  box-shadow:  var(--cs-inset) !important;
+}
+
+/* Audit cards — keep tonal fills, remove gray border */
+.audit-card.problem,
+.audit-card.solution {
+  border: none !important;
+  box-shadow: var(--cs-inset) !important;
+}
+
+/* Kill all card hover lifts */
+.arch-card:hover,
+.token-card:hover,
+.method-card:hover,
+.impact-card:hover,
+.demo-card-wrap:hover .demo-card,
+.demo-card-wrap.after:hover,
+.video-feature:hover {
+  transform:  none !important;
+  box-shadow: var(--cs-inset) !important;
+}
+
+/* ================================================================
+   DS FIGURES — Figma documentation screenshots
+   ================================================================ */
+.ds-figure { margin: 3rem 0 0; }
+.ds-figure-img {
+  width: 100%; border-radius: var(--radius-lg);
+  border-top:    1px solid rgba(255,255,255,0.90);
+  border-left:   1px solid rgba(255,255,255,0.68);
+  border-right:  1px solid rgba(255,255,255,0.26);
+  border-bottom: 1px solid rgba(255,255,255,0.20);
+  box-shadow: inset 0 1.5px 0 rgba(255,255,255,0.95), 0 4px 28px rgba(92,110,77,0.08);
+  cursor: zoom-in; display: block;
+  transition: transform 0.45s var(--ease-silk), box-shadow 0.45s var(--ease-silk);
+}
+.ds-figure-img:hover {
+  transform: scale(1.008);
+  box-shadow: inset 0 1.5px 0 rgba(255,255,255,0.95), 0 16px 52px rgba(92,110,77,0.14);
+}
+.ds-figure-caption {
+  margin-top: 0.875rem;
+  font-family: var(--font-mono); font-size: 0.5rem;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--ink-faint); text-align: center;
+}
+
+/* ── Lightbox ────────────────────────────────────────────────── */
+#ds-lightbox {
+  position: fixed; inset: 0;
+  background: rgba(37,37,32,0.90);
+  backdrop-filter: blur(24px) saturate(120%);
+  -webkit-backdrop-filter: blur(24px) saturate(120%);
+  z-index: 18000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 2rem; opacity: 0; pointer-events: none;
+  transition: opacity 0.3s var(--ease-silk);
+}
+#ds-lightbox.open { opacity: 1; pointer-events: all; }
+#ds-lightbox-img {
+  max-width: min(92vw, 1200px); max-height: 88vh;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 32px 96px rgba(0,0,0,0.48);
+  transform: scale(0.93); object-fit: contain;
+  transition: transform 0.4s var(--ease-spring);
+}
+#ds-lightbox.open #ds-lightbox-img { transform: scale(1); }
+#ds-lightbox-close {
+  position: absolute; top: 1.25rem; right: 1.25rem;
+  width: 44px; height: 44px;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.18); border-radius: 50%;
+  color: rgba(255,255,255,0.80);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 1.25rem; line-height: 1;
+  transition: background 0.22s, color 0.22s;
+}
+#ds-lightbox-close:hover { background: rgba(255,255,255,0.22); color: #fff; }
+#ds-lightbox-caption {
+  position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+  font-family: var(--font-mono); font-size: 0.4375rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(255,255,255,0.38); white-space: nowrap;
+}
+
+/* ================================================================
+   TOKEN MAP — three-category reference table with tab switcher
+   ================================================================ */
+.token-map-section { margin-top: 3rem; }
+.token-map-eyebrow {
+  font-family: var(--font-mono); font-size: 0.5rem;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--sage); margin-bottom: 0.875rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.token-map-intro {
+  font-family: var(--font-body); font-size: 0.9375rem;
+  line-height: 1.72; color: var(--ink-muted);
+  max-width: 580px; margin-bottom: 1.75rem;
+}
+.token-map-intro strong { color: var(--ink); font-weight: 500; }
+.token-map-tabs {
+  display: flex; gap: 0.5rem; flex-wrap: wrap;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(120,118,104,0.14);
+}
+.token-map-tab {
+  font-family: var(--font-body); font-size: 0.8125rem;
+  font-weight: 500; letter-spacing: 0; text-transform: none;
+  color: var(--ink-muted);
+  padding: 0.4375rem 1rem;
+  background: rgba(120,118,104,0.06);
+  border: 1px solid rgba(120,118,104,0.18);
+  border-radius: 100px; cursor: pointer;
+  transition: color 0.2s, background 0.2s, border-color 0.2s;
+  min-height: 36px; white-space: nowrap;
+}
+.token-map-tab:hover {
+  color: var(--sage);
+  border-color: rgba(92,110,77,0.35);
+  background: rgba(92,110,77,0.06);
+}
+.token-map-tab.active {
+  color: #fff;
+  background: var(--sage);
+  border-color: var(--sage);
+}
+.token-map-panel { display: none; padding-top: 0.75rem; }
+.token-map-panel.active { display: block; }
+.token-map-table {
+  width: 100%; border-collapse: separate; border-spacing: 0;
+  border-radius: var(--radius); overflow: hidden;
+  background: rgba(255,252,248,0.48);
+  backdrop-filter: blur(48px) saturate(150%) brightness(102%);
+  -webkit-backdrop-filter: blur(48px) saturate(150%) brightness(102%);
+  border-top:    1px solid rgba(255,255,255,0.90);
+  border-left:   1px solid rgba(255,255,255,0.68);
+  border-right:  1px solid rgba(255,255,255,0.26);
+  border-bottom: 1px solid rgba(255,255,255,0.20);
+  box-shadow: inset 0 1.5px 0 rgba(255,255,255,0.95), 0 4px 20px rgba(92,110,77,0.06);
+}
+.token-map-table thead tr { background: rgba(34,56,41,0.92); }
+.token-map-table thead th {
+  font-family: var(--font-mono); font-size: 0.4375rem;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(255,255,255,0.78); font-weight: 500;
+  padding: 0.75rem 1rem; text-align: left; white-space: nowrap; border: none;
+}
+.token-map-table tbody tr {
+  transition: background 0.2s;
+}
+.token-map-table tbody tr:nth-child(even) { background: rgba(92,110,77,0.025); }
+.token-map-table tbody tr:hover          { background: rgba(92,110,77,0.055); }
+.token-map-table tbody td {
+  font-family: var(--font-body); font-size: 0.8125rem;
+  color: var(--ink-muted); padding: 0.625rem 1rem; vertical-align: middle;
+  border-bottom: 1px solid rgba(120,118,104,0.06);
+}
+.token-map-table tbody tr:last-child td { border-bottom: none; }
+.tm-token { color: var(--ink); font-weight: 500; }
+.tm-html, .tm-tw {
+  font-family: var(--font-mono); font-size: 0.625rem;
+  padding: 0.125rem 0.45rem; border-radius: 4px;
+  display: inline-block; white-space: nowrap;
+}
+.tm-html { color: var(--sage);       background: rgba(92,110,77,0.09); }
+.tm-tw   { color: var(--terracotta); background: rgba(184,125,90,0.09); }
+.tm-size { font-family: var(--font-mono); font-size: 0.625rem; color: var(--ink-muted); }
+.tm-note { font-size: 0.75rem; color: var(--ink-faint); font-style: italic; }
+.tm-prim { font-family: var(--font-mono); font-size: 0.5625rem; color: var(--ink-faint); }
+.tm-swatch {
+  display: inline-block; width: 12px; height: 12px;
+  border-radius: 3px; vertical-align: middle; margin-right: 0.35rem;
+  border: 1px solid rgba(120,118,104,0.18); flex-shrink: 0;
+}
+.token-map-note {
+  margin-top: 1rem; padding: 1rem 1.25rem;
+  background: rgba(92,110,77,0.06);
+  border: 1px solid rgba(92,110,77,0.12);
+  border-radius: var(--radius);
+  font-family: var(--font-body); font-size: 0.8125rem;
+  line-height: 1.65; color: var(--ink-muted);
+}
+.token-map-note strong { color: var(--ink); font-weight: 500; }
+@media (max-width: 640px) {
+  .token-map-table thead th,
+  .token-map-table tbody td { padding: 0.5rem 0.625rem; }
+  .tm-note { display: none; }
+}
+
+/* ================================================================
+   GALLERY — Full-width tab + fade-slide transition
+   ================================================================ */
+.gallery-section { margin-top: 3.5rem; }
+.gallery-eyebrow {
+  font-family: var(--font-mono); font-size: 0.5rem;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--sage); margin-bottom: 0.625rem;
+  display: flex; align-items: center; gap: 0.625rem;
+}
+.gallery-intro-text {
+  font-family: var(--font-body); font-size: 0.9375rem;
+  line-height: 1.72; color: var(--ink-muted);
+  max-width: 640px; margin-bottom: 1.75rem;
+}
+.gallery-intro-text strong { color: var(--ink); font-weight: 500; }
+.gallery-tabs {
+  display: flex; gap: 0.5rem; flex-wrap: wrap;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(120,118,104,0.14);
+}
+.gallery-tab {
+  font-family: var(--font-body); font-size: 0.8125rem;
+  font-weight: 500; letter-spacing: 0; text-transform: none;
+  color: var(--ink-muted);
+  padding: 0.4375rem 1rem;
+  background: rgba(120,118,104,0.06);
+  border: 1px solid rgba(120,118,104,0.18);
+  border-radius: 100px; cursor: pointer;
+  transition: color 0.2s, background 0.2s, border-color 0.2s;
+  min-height: 36px; white-space: nowrap;
+}
+.gallery-tab:hover {
+  color: var(--sage);
+  border-color: rgba(92,110,77,0.35);
+  background: rgba(92,110,77,0.06);
+}
+.gallery-tab.active {
+  color: #fff;
+  background: var(--sage);
+  border-color: var(--sage);
+}
+.gallery-panel { display: none; }
+.gallery-panel.active {
+  display: block;
+  animation: galleryFadeIn 0.38s var(--ease-silk) both;
+}
+@keyframes galleryFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+.gallery-img {
+  width: 100%; display: block;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  border-left:   1px solid rgba(255,255,255,0.68);
+  border-right:  1px solid rgba(255,255,255,0.26);
+  border-bottom: 1px solid rgba(255,255,255,0.20);
+  box-shadow: 0 8px 32px rgba(92,110,77,0.09);
+  cursor: zoom-in;
+  transition: box-shadow 0.4s var(--ease-silk);
+  image-rendering: -webkit-optimize-contrast;
+}
+.gallery-img:hover { box-shadow: 0 16px 52px rgba(92,110,77,0.15); }
+
+
+/* ── Demo iframe preview ─────────────────────────────────────── */
+.demo-iframe-wrap {
+  position: relative; width: 100%; aspect-ratio: 4/2.6;
+  overflow: hidden; border-radius: var(--radius);
+  margin: 0.875rem 0 1.25rem;
+  border-top:    1px solid rgba(255,255,255,0.90);
+  border-left:   1px solid rgba(255,255,255,0.68);
+  border-right:  1px solid rgba(255,255,255,0.26);
+  border-bottom: 1px solid rgba(255,255,255,0.20);
+  background: rgba(237,232,222,0.35);
+}
+.demo-iframe {
+  position: absolute; top: 0; left: 0;
+  width: 250%; height: 250%;
+  border: none; pointer-events: none;
+  transform: scale(0.4); transform-origin: top left;
+}
+
+/* ── Demo iframe placeholder (for unavailable previews) ─────── */
+.iframe-ph {
+  position: absolute; inset: 0;
+  background: linear-gradient(155deg, rgba(244,240,232,0.72) 0%, rgba(228,235,224,0.85) 100%);
+  display: flex; flex-direction: column; padding: 10px; gap: 7px;
+}
+.iframe-ph-topbar {
+  height: 18px; background: rgba(92,110,77,0.10);
+  border-radius: 3px; flex-shrink: 0;
+  display: flex; align-items: center; padding: 0 7px; gap: 5px;
+}
+.iframe-ph-topbar::before {
+  content: ''; width: 36px; height: 7px;
+  background: rgba(92,110,77,0.22); border-radius: 2px;
+}
+.iframe-ph-topbar::after {
+  content: ''; flex: 1; height: 5px;
+  background: rgba(120,118,104,0.12); border-radius: 2px; max-width: 80px;
+}
+.iframe-ph-body { display: flex; gap: 7px; flex: 1; min-height: 0; }
+.iframe-ph-side {
+  width: 52px; flex-shrink: 0;
+  background: rgba(92,110,77,0.07); border-radius: 3px;
+  display: flex; flex-direction: column; gap: 4px; padding: 7px 5px;
+}
+.iframe-ph-side::before, .iframe-ph-side::after {
+  content: ''; height: 6px; border-radius: 2px;
+  background: rgba(92,110,77,0.18);
+}
+.iframe-ph-side::after { width: 60%; opacity: 0.6; }
+.iframe-ph-main { flex: 1; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.iframe-ph-banner {
+  height: 32px; border-radius: 3px;
+  background: linear-gradient(90deg, rgba(92,110,77,0.13) 0%, rgba(92,110,77,0.07) 100%);
+  flex-shrink: 0;
+}
+.iframe-ph-grid { display: flex; gap: 5px; flex: 1; }
+.iframe-ph-tile {
+  flex: 1; border-radius: 3px;
+  background: rgba(255,255,255,0.55);
+  border: 1px solid rgba(92,110,77,0.09);
+}
+.iframe-ph-tile:nth-child(2) { background: rgba(255,255,255,0.38); }
+.iframe-ph-tile:nth-child(3) { background: rgba(92,110,77,0.06); }
+
+/* ── Variable pair ───────────────────────────────────────────── */
+.ds-figure-pair {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1.25rem; margin: 3rem 0 0;
+}
+@media (max-width: 640px) { .ds-figure-pair { grid-template-columns: 1fr; } }
+.ds-figure-pair .ds-figure { margin: 0; }
+
+/* Gallery reduced-motion override */
+@media (prefers-reduced-motion: reduce) {
+  .gallery-panel.active { animation: none !important; }
+  .gallery-img { transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div id="cursor" aria-hidden="true"></div>
+<div id="cursor-aura" aria-hidden="true"></div>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<div id="scrollProgress" aria-hidden="true"></div>
+<canvas id="glCanvas" role="presentation" aria-hidden="true"></canvas>
+
+<!-- NAV -->
+<nav id="nav" role="navigation" aria-label="Main navigation">
+  <a class="nav-back" href="index.html" aria-label="Back to Lin Zhao portfolio">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Lin Zhao
+  </a>
+  <div class="nav-links">
+    <a href="index.html#work" class="mag">Work</a>
+    <a href="index.html#about" class="mag">About</a>
+    <a href="index.html#contact" class="mag">Contact</a>
+  </div>
+</nav>
+
+<main id="main-content">
+
+<!-- ── HERO ──────────────────────────────────────────────────── -->
+<section id="hero" aria-labelledby="hero-heading">
+  <div class="hero-inner">
+    <div class="hero-meta">Kiva &middot; Principal Designer &times; AI Systems Architect Lead &middot; 2025–2026</div>
+    <h1 class="hero-title" id="hero-heading">Building an<br>AI-Ready<br><em>Design System</em></h1>
+    <p class="hero-subtitle">How I turned an AI hallucination problem into an infrastructure initiative — researching the gap, rebuilding the system from the ground up, and walking 100+ teammates through a new way of working.</p>
+    <div class="hero-pills" role="list" aria-label="Project context">
+      <span class="hero-pill" role="listitem"><strong>Role</strong>&nbsp; Principal Designer &times; AI Systems Architect</span>
+      <span class="hero-pill" role="listitem"><strong>Timeline</strong>&nbsp; Q3 2025 – Q2 2026</span>
+      <span class="hero-pill" role="listitem"><strong>Team</strong>&nbsp; Engineering, Design, Stakeholders</span>
+    </div>
+  </div>
+
+  <!-- Right side image stack -->
+  <div class="hero-images" aria-hidden="true">
+    <div class="hero-img-stack">
+      <img src="portfolio-assets/ds-color-system.png" alt="" loading="eager">
+      <img src="portfolio-assets/ds-typography.png" alt="" loading="eager">
+      <img src="portfolio-assets/ds-variables.png" alt="" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<div class="divider"><div class="divider-line"></div></div>
+
+<!-- ── CHAPTER 1: RESEARCH & DISCOVERY ───────────────────────── -->
+<section class="chapter" aria-labelledby="ch0-heading">
+  <div class="container">
+    <div class="chapter-num reveal">Chapter 01</div>
+    <h2 class="chapter-heading reveal" id="ch0-heading">Starting with <em>research</em></h2>
+    <div class="body-text reveal">
+      <p>Before building anything, I needed to understand where the system was failing — and for whom. I ran structured surveys and interviews across four functions to map the pain points directly, then audited our existing design system against what actually shipped in production.</p>
+    </div>
+
+    <div class="method-grid reveal">
+      <div class="method-card">
+        <div class="method-num">10</div>
+        <div class="method-title">Designers</div>
+        <div class="method-desc">Spending 40%+ of prototyping time correcting AI output. Key complaint: AI approximated design system values instead of using them — wrong spacing, wrong font weights, wrong color tokens. Every prototype needed a full manual pass before it was usable.</div>
+      </div>
+      <div class="method-card">
+        <div class="method-num">9</div>
+        <div class="method-title">Product Managers</div>
+        <div class="method-desc">AI-generated prototypes didn't look like the product they knew — delaying stakeholder sign-off. They couldn't tell whether a prototype was intentionally different or just inaccurate. Trust in AI output was low across the board.</div>
+      </div>
+      <div class="method-card">
+        <div class="method-num">30+</div>
+        <div class="method-title">Engineers</div>
+        <div class="method-desc">AI-generated code diverged from the token system, requiring manual overrides on every build. Tokens were defined in Figma, but engineers didn't trust them enough to use them — so they stopped, and hardcoded values crept in instead.</div>
+      </div>
+      <div class="method-card">
+        <div class="method-num">+</div>
+        <div class="method-title">Marketing &amp; Ops</div>
+        <div class="method-desc">Couldn't self-serve design-consistent assets without routing through a designer. Every ad, email, and one-pager required human intervention — not because the work was complex, but because the system wasn't accessible enough to use independently.</div>
+      </div>
+    </div>
+
+    <div class="body-text reveal" style="margin-top: 2.5rem;">
+      <p>Then I benchmarked how top-tier companies — Atlassian, Shopify, IBM — structured their design tokens and documentation. The pattern was consistent: where they succeeded with AI, they had built semantic meaning into the system itself. Where we were failing, we had given AI nothing meaningful to work with.</p>
+      <p>Hex codes. Pixel values. No context, no usage rules, no relationships. <strong>The AI wasn't hallucinating randomly — it was filling a vacuum we had created.</strong></p>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"><div class="divider-line"></div></div>
+
+<!-- ── CHAPTER 2: THE PROBLEM ─────────────────────────────── -->
+<section class="chapter" aria-labelledby="ch1-heading">
+  <div class="container">
+    <div class="chapter-num reveal">Chapter 02</div>
+    <h2 class="chapter-heading reveal" id="ch1-heading">AI couldn't read our <em>design system</em></h2>
+    <div class="body-text reveal">
+      <p>We had design tokens. We had variables in Figma. We even had AI tools in the workflow. But the output was inconsistent — sometimes on-brand, often generic, never reliably correct. Every AI prototype needed heavy manual correction, which defeated the purpose entirely.</p>
+    </div>
+
+    <ul class="problem-list reveal" role="list">
+      <li role="listitem">
+        <span class="problem-icon" aria-hidden="true">×</span>
+        <span><strong>Tokens existed but carried no semantic meaning for machines.</strong> AI tools saw hex codes and pixel values — not intent, context, or usage rules.</span>
+      </li>
+      <li role="listitem">
+        <span class="problem-icon" aria-hidden="true">×</span>
+        <span><strong>AI prototyping produced inconsistent output.</strong> Hallucinations alone could take hundreds of rounds of prompting to fix. Button styling off, spacing wrong, colors approximated.</span>
+      </li>
+      <li role="listitem">
+        <span class="problem-icon" aria-hidden="true">×</span>
+        <span><strong>Engineers manually overrode tokens</strong> because the system output wasn't trustworthy. Changing one value had unpredictable ripple effects.</span>
+      </li>
+      <li role="listitem">
+        <span class="problem-icon" aria-hidden="true">×</span>
+        <span><strong>The capability lived with one person</strong> — not scalable, not resilient, not transferable.</span>
+      </li>
+    </ul>
+
+    <div class="disconnect-diagram reveal" role="img" aria-label="Disconnect between design system and AI tools">
+      <div class="disconnect-box left">
+        <div class="disconnect-label">Design System</div>
+        <div class="disconnect-value">Tokens &amp; Variables</div>
+      </div>
+      <div class="disconnect-arrow" aria-hidden="true">
+        <div class="disconnect-arrow-line"></div>
+        <div class="disconnect-arrow-label">Gap</div>
+      </div>
+      <div class="disconnect-box right">
+        <div class="disconnect-label">AI Tools</div>
+        <div class="disconnect-value">Guessing</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><div class="divider-line"></div></div>
+
+<!-- ── CHAPTER 2: THE INSIGHT ────────────────────────────── -->
+<section class="insight-section" aria-labelledby="ch2-heading">
+  <h2 class="sr-only" id="ch2-heading">The Insight</h2>
+  <div class="insight-quote-wrap reveal">
+    <span class="insight-mark" aria-hidden="true">"</span>
+    <blockquote class="insight-quote">
+      The problem wasn't the AI tool. It was that the design system wasn't machine-readable. <em>Fix the input → fix the output.</em>
+    </blockquote>
+  </div>
+</section>
+
+<div class="divider"><div class="divider-line"></div></div>
+
+<!-- ── CHAPTER 3: THREE-LAYER ARCHITECTURE ───────────────── -->
+<section class="chapter" aria-labelledby="ch3-heading">
+  <div class="container">
+    <div class="chapter-num reveal">Chapter 03</div>
+    <h2 class="chapter-heading reveal" id="ch3-heading">Rebuilding the <em>foundation</em></h2>
+    <div class="body-text reveal">
+      <p>A flat token structure — even a well-named one — creates a hidden consumer problem. Engineers writing Tailwind, designers selecting variables, and AI tools reading exported context each need something fundamentally different from a token at the point of use. When those needs are collapsed into a single layer, any change becomes fragile, and AI gets noise instead of signal.</p>
+      <p>The fix wasn't cleaning up the existing tokens. It was rethinking the architecture to serve three distinct consumers explicitly. <strong>Three layers because three different jobs:</strong> Layer 1 gives engineering a source of truth they can trust and maintain. Layer 2 gives designers and AI semantic meaning — intent, not just value. Layer 3 gives QA provable coverage: every component traces back to a token, no hardcoding, no exceptions.</p>
+    </div>
+
+    <div class="arch-diagram reveal" role="list" aria-label="Three-layer token architecture">
+
+      <div class="arch-layer" role="listitem">
+        <div class="arch-layer-spine" aria-hidden="true">
+          <div class="arch-dot"></div>
+          <div class="arch-spine-line"></div>
+        </div>
+        <div class="arch-card">
+          <div class="arch-layer-label">Layer 1</div>
+          <div class="arch-title">Global — Primitive Layer</div>
+          <div class="arch-desc">Raw values pulled from existing JSON primitive files that engineering maintains. Typography, spacing, color, layout, radius, elevation, border. Naming conventions reuse existing tokens — maps directly into the Tailwind config with no translation needed.</div>
+          <div class="arch-code">
+            color/green/500: #5B8F7B<br>
+            spacing/16: 1rem<br>
+            radius/lg: 16px
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-layer" role="listitem">
+        <div class="arch-layer-spine" aria-hidden="true">
+          <div class="arch-dot active"></div>
+          <div class="arch-spine-line"></div>
+        </div>
+        <div class="arch-card highlight">
+          <div class="arch-badge">The new part</div>
+          <div class="arch-layer-label">Layer 2</div>
+          <div class="arch-title">Alias — Semantic Layer</div>
+          <div class="arch-desc">Ties values back to Global, now with <strong>detailed meaning</strong>. Every complex alias variable has a description: <strong>when</strong> to use it, <strong>where</strong> it goes, <strong>how</strong> it should behave. When exported to AI, the AI picks up all that context immediately — you describe intent in natural language, and it follows the design rules accurately.</div>
+          <div class="arch-code">
+            color/text/primary → color/green/900<br>
+            <span class="desc">// "Primary text color for body content.</span><br>
+            <span class="desc">// Use on headings and key labels.</span><br>
+            <span class="desc">// Meets WCAG AA on surface backgrounds."</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-layer" role="listitem">
+        <div class="arch-layer-spine" aria-hidden="true">
+          <div class="arch-dot"></div>
+        </div>
+        <div class="arch-card">
+          <div class="arch-layer-label">Layer 3</div>
+          <div class="arch-title">Mapped — Component Layer</div>
+          <div class="arch-desc">Tokens applied to specific components. Connects everything end-to-end: change a global value → aliases update → components update → no manual override needed anywhere. The system becomes trustworthy by design.</div>
+          <div class="arch-code">
+            button/primary/bg → color/action/primary<br>
+            card/padding → spacing/content/md
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Variable library gallery — what the alias layer looks like in Figma Variables panel -->
+    <div class="gallery-section reveal" style="margin-top: 3rem;">
+      <div class="gallery-eyebrow">⊞&nbsp; Variable Library</div>
+      <p class="gallery-intro-text">What the alias layer looks like inside Figma's Variable panel — each collection maps semantic intent to global primitives across responsive breakpoints.</p>
+
+      <div class="gallery-tabs" role="tablist" aria-label="Variable library collections">
+        <button class="gallery-tab active" role="tab" aria-selected="true" data-panel="vl-overview">Library Overview</button>
+        <button class="gallery-tab" role="tab" aria-selected="false" data-panel="vl-typography">Typography</button>
+        <button class="gallery-tab" role="tab" aria-selected="false" data-panel="vl-spacing">Spacing</button>
+        <button class="gallery-tab" role="tab" aria-selected="false" data-panel="vl-color">Color</button>
+        <button class="gallery-tab" role="tab" aria-selected="false" data-panel="vl-layout">Layout</button>
+      </div>
+
+      <div class="gallery-panel active" id="vl-overview">
+        <img class="gallery-img ds-figure-img" src="portfolio-assets/ds-variables.png"
+             alt="Figma Variables panel showing all collections — Global (174), Alias-Color (39), Alias-Text/Spacing/Layout (68), Alias-Elevation, Alias-Radius, Alias-Border, and Mapped (21)"
+             loading="lazy">
+      </div>
+      <div class="gallery-panel" id="vl-typography">
+        <img class="gallery-img ds-figure-img" src="portfolio-assets/ds-vars-typography.png"
+             alt="Alias-Text/Spacing/Layout variable collection — typography group showing font-family, font-size, font-weight, line-height, and letter-spacing tokens for Display, Headline 1–2, Subheadline, Title, Base, Button, Upper, Label, Caption across all responsive breakpoints"
+             loading="lazy">
+      </div>
+      <div class="gallery-panel" id="vl-spacing">
+        <img class="gallery-img ds-figure-img" src="portfolio-assets/ds-vars-spacing.png"
+             alt="Alias-Text/Spacing/Layout variable collection — spacing group showing structure (XL/L/M/S), component gap (L/M/S), component inset (XL/L/M/S/XS), and micro tokens mapped to global scale values across responsive breakpoints"
+             loading="lazy">
+      </div>
+      <div class="gallery-panel" id="vl-color">
+        <img class="gallery-img ds-figure-img" src="portfolio-assets/ds-vars-color.png"
+             alt="Alias-Color variable collection showing 39 semantic color tokens — text, background, and border groups — mapped across 5 themes (default, green-light, green-dark, marigold, stone)"
+             loading="lazy">
+      </div>
+      <div class="gallery-panel" id="vl-layout">
+        <img class="gallery-img ds-figure-img" src="portfolio-assets/ds-vars-layout.png"
+             alt="Alias-Text/Spacing/Layout variable collection — layout group showing breakpoint, grid-columns, grid-margin, grid-gutter, and content-max-width tokens across all 5 responsive breakpoints"
+             loading="lazy">
+      </div>
+    </div>
+
+    <div class="body-text reveal" style="margin-top: 2.5rem; margin-bottom: 0;">
+      <p>Rebuilding the architecture in Figma is one thing. Proving it matches what actually runs in production is another — and that gap is where engineering trust breaks down. I ran a full audit of token consumption across the production codebase before declaring the rebuild complete.</p>
+    </div>
+
+    <div class="audit-callout reveal" style="margin-top: 1.5rem;">
+      <div class="audit-card problem">
+        <span class="audit-card-label">CSS Audit: Before</span>
+        <strong>36+ silent bugs</strong> found — tokens defined in Figma but never applied in code, overrides masking system values, deprecated tokens still referenced in production. Engineers had stopped trusting the system and were hardcoding values directly. The design system and the product had quietly diverged.
+      </div>
+      <div class="audit-card solution">
+        <span class="audit-card-label">CSS Audit: After</span>
+        Every discrepancy fixed systematically. <strong>For the first time, what was in Figma matched what shipped.</strong> That alignment is the precondition for everything else — token descriptions, AI rules, documentation — all of it requires the structural layer to be trustworthy first.
+      </div>
+    </div>
+
+    <div class="body-text reveal" style="margin-top: 2.5rem; margin-bottom: 0;">
+      <p>The three-layer architecture is a claim. The table below is the proof: every token traced end-to-end from Figma alias → HTML element → Tailwind class. <strong>This is the cross-team contract</strong> — the artifact that makes the architecture auditable and the system legible to all three audiences at once.</p>
+    </div>
+
+    <!-- Token / HTML / Tailwind mapping table — the cross-team contract -->
+    <div class="token-map-section reveal">
+      <div class="token-map-eyebrow">&lt;/&gt;&nbsp; Cross-Team Contract</div>
+      <p class="token-map-intro">Every token maps to a precise HTML element and Tailwind class. <strong>Designers work with token names, engineers write Tailwind, AI tools read both</strong> — same source, zero translation loss across all three audiences.</p>
+
+      <div class="token-map-tabs" role="tablist" aria-label="Token mapping categories">
+        <button class="token-map-tab active" role="tab" aria-selected="true" data-panel="typ">Typography</button>
+        <button class="token-map-tab" role="tab" aria-selected="false" data-panel="col">Color</button>
+        <button class="token-map-tab" role="tab" aria-selected="false" data-panel="spc">Spacing</button>
+        <button class="token-map-tab" role="tab" aria-selected="false" data-panel="lay">Layout</button>
+      </div>
+
+      <!-- TYPOGRAPHY PANEL -->
+      <div class="token-map-panel active" id="panel-typ" role="tabpanel">
+        <table class="token-map-table" aria-label="Typography token mapping">
+          <thead>
+            <tr>
+              <th>Style Token</th>
+              <th>HTML Element</th>
+              <th>Tailwind Class</th>
+              <th>Mobile</th>
+              <th>Tablet</th>
+              <th>Desktop</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="tm-token">Display</td><td><code class="tm-html">&lt;h1&gt;</code></td><td><code class="tm-tw">tw-text-display</code></td><td class="tm-size">36px</td><td class="tm-size">40px</td><td class="tm-size">44px</td><td class="tm-note">Marketing hero only. CSS override needed for Contentful.</td></tr>
+            <tr><td class="tm-token">Headline 1</td><td><code class="tm-html">&lt;h2&gt;</code></td><td><code class="tm-tw">tw-text-headline</code></td><td class="tm-size">22px</td><td class="tm-size">22px</td><td class="tm-size">26px</td><td class="tm-note">Global h1 default via base CSS.</td></tr>
+            <tr><td class="tm-token">Headline 2</td><td><code class="tm-html">&lt;h3&gt;</code></td><td><code class="tm-tw">tw-text-headline-two</code></td><td class="tm-size">20px</td><td class="tm-size">20px</td><td class="tm-size">22px</td><td class="tm-note">Global h2 default via base CSS.</td></tr>
+            <tr><td class="tm-token">Subheadline</td><td><code class="tm-html">&lt;h4&gt;</code></td><td><code class="tm-tw">tw-text-subheadline</code></td><td class="tm-size">18px</td><td class="tm-size">18px</td><td class="tm-size">20px</td><td class="tm-note">Global h3 default via base CSS.</td></tr>
+            <tr><td class="tm-token">Title</td><td><code class="tm-html">&lt;h5&gt;</code></td><td><code class="tm-tw">tw-text-title</code></td><td class="tm-size">18px</td><td class="tm-size">18px</td><td class="tm-size">20px</td><td class="tm-note">Global h4 default via base CSS.</td></tr>
+            <tr><td class="tm-token">Base / Body</td><td><code class="tm-html">&lt;p&gt;, &lt;body&gt;</code></td><td><code class="tm-tw">tw-text-base</code></td><td class="tm-size">16px</td><td class="tm-size">16px</td><td class="tm-size">16px</td><td class="tm-note">Global paragraph and body default.</td></tr>
+            <tr><td class="tm-token">Button</td><td><code class="tm-html">&lt;button&gt;</code></td><td><code class="tm-tw">tw-text-button-link</code></td><td class="tm-size">16px</td><td class="tm-size">16px</td><td class="tm-size">16px</td><td class="tm-note">Global button default. CTA labels.</td></tr>
+            <tr><td class="tm-token">Label</td><td><code class="tm-html">&lt;label&gt;</code></td><td><code class="tm-tw">tw-text-label</code></td><td class="tm-size">14px</td><td class="tm-size">14px</td><td class="tm-size">14px</td><td class="tm-note">Form labels, filter names.</td></tr>
+            <tr><td class="tm-token">Caption</td><td><code class="tm-html">&lt;figcaption&gt;</code></td><td><code class="tm-tw">tw-text-caption</code></td><td class="tm-size">14px</td><td class="tm-size">14px</td><td class="tm-size">14px</td><td class="tm-note">Disclaimers, captions.</td></tr>
+            <tr><td class="tm-token">Upper</td><td><code class="tm-html">—</code></td><td><code class="tm-tw">tw-text-upper</code></td><td class="tm-size">14px</td><td class="tm-size">14px</td><td class="tm-size">14px</td><td class="tm-note">Utility class only. Always UPPERCASE.</td></tr>
+            <tr><td class="tm-token">Small</td><td><code class="tm-html">&lt;small&gt;</code></td><td><code class="tm-tw">tw-text-small</code></td><td class="tm-size">14px</td><td class="tm-size">14px</td><td class="tm-size">14px</td><td class="tm-note">Supportive UI text.</td></tr>
+            <tr><td class="tm-token">Blockquote</td><td><code class="tm-html">&lt;blockquote&gt;</code></td><td><code class="tm-tw">tw-text-blockquote</code></td><td class="tm-size">20px</td><td class="tm-size">20px</td><td class="tm-size">22px</td><td class="tm-note">Italic Dovetail serif.</td></tr>
+            <tr><td class="tm-token">Link</td><td><code class="tm-html">&lt;a&gt;</code></td><td><code class="tm-tw">tw-text-link</code></td><td class="tm-size">—</td><td class="tm-size">—</td><td class="tm-size">—</td><td class="tm-note">Inherits size from parent element.</td></tr>
+          </tbody>
+        </table>
+        <p class="token-map-note">Heading levels h1–h4 only. <strong>Do not use &lt;h5&gt; or &lt;h6&gt;.</strong> For deeper hierarchy, use tokens as classes: <code class="tm-tw">tw-text-title</code>, <code class="tm-tw">tw-text-label</code>, <code class="tm-tw">tw-text-caption</code>.</p>
+      </div>
+
+      <!-- COLOR PANEL -->
+      <div class="token-map-panel" id="panel-col" role="tabpanel">
+        <table class="token-map-table" aria-label="Color token mapping">
+          <thead>
+            <tr>
+              <th>Alias Token</th>
+              <th>Global Primitive</th>
+              <th>Default Value</th>
+              <th>Tailwind Class</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="tm-token">text/primary</td><td class="tm-prim">eco-green/4</td><td><span class="tm-swatch" style="background:#223829;"></span>#223829</td><td><code class="tm-tw">tw-text-primary</code></td><td class="tm-note">Primary content, headings</td></tr>
+            <tr><td class="tm-token">text/secondary</td><td class="tm-prim">gray/500</td><td><span class="tm-swatch" style="background:#757575;"></span>#757575</td><td><code class="tm-tw">tw-text-secondary</code></td><td class="tm-note">Body copy, supporting text</td></tr>
+            <tr><td class="tm-token">text/tertiary</td><td class="tm-prim">gray/400</td><td><span class="tm-swatch" style="background:#9E9E9E;"></span>#9E9E9E</td><td><code class="tm-tw">tw-text-tertiary</code></td><td class="tm-note">Placeholder, hint text</td></tr>
+            <tr><td class="tm-token">text/action</td><td class="tm-prim">eco-green/3</td><td><span class="tm-swatch" style="background:#276A43;"></span>#276A43</td><td><code class="tm-tw">tw-text-action</code></td><td class="tm-note">Links, interactive labels</td></tr>
+            <tr><td class="tm-token">text/caution</td><td class="tm-prim">marigold/4</td><td><span class="tm-swatch" style="background:#593207;"></span>#593207</td><td><code class="tm-tw">tw-text-caution</code></td><td class="tm-note">Warning messages</td></tr>
+            <tr><td class="tm-token">text/danger</td><td class="tm-prim">desert-rose/4</td><td><span class="tm-swatch" style="background:#5C2A22;"></span>#5C2A22</td><td><code class="tm-tw">tw-text-danger</code></td><td class="tm-note">Error messages</td></tr>
+            <tr><td class="tm-token">background/primary</td><td class="tm-prim">white</td><td><span class="tm-swatch" style="background:#FFFFFF; border-color:#C4C4C4;"></span>#FFFFFF</td><td><code class="tm-tw">tw-bg-primary</code></td><td class="tm-note">Page, card backgrounds</td></tr>
+            <tr><td class="tm-token">background/primary-inverse</td><td class="tm-prim">eco-green/4</td><td><span class="tm-swatch" style="background:#223829;"></span>#223829</td><td><code class="tm-tw">tw-bg-primary-inverse</code></td><td class="tm-note">Dark hero, footer, overlays</td></tr>
+            <tr><td class="tm-token">background/secondary</td><td class="tm-prim">eco-green/1</td><td><span class="tm-swatch" style="background:#EDF4F1;"></span>#EDF4F1</td><td><code class="tm-tw">tw-bg-secondary</code></td><td class="tm-note">Subtle section fills</td></tr>
+            <tr><td class="tm-token">background/action</td><td class="tm-prim">eco-green/3</td><td><span class="tm-swatch" style="background:#276A43;"></span>#276A43</td><td><code class="tm-tw">tw-bg-action</code></td><td class="tm-note">CTA button fills</td></tr>
+            <tr><td class="tm-token">border/primary</td><td class="tm-prim">gray/600</td><td><span class="tm-swatch" style="background:#505050;"></span>#505050</td><td><code class="tm-tw">tw-border-primary</code></td><td class="tm-note">Default stroke</td></tr>
+            <tr><td class="tm-token">border/tertiary</td><td class="tm-prim">gray/300</td><td><span class="tm-swatch" style="background:#C4C4C4;"></span>#C4C4C4</td><td><code class="tm-tw">tw-border-tertiary</code></td><td class="tm-note">Dividers, subtle separators</td></tr>
+            <tr><td class="tm-token">border/action</td><td class="tm-prim">eco-green/3</td><td><span class="tm-swatch" style="background:#276A43;"></span>#276A43</td><td><code class="tm-tw">tw-border-action</code></td><td class="tm-note">Focus rings, active states</td></tr>
+          </tbody>
+        </table>
+        <p class="token-map-note">Theme variants (green-dark, marigold-light, stone-light) override alias values via CSS custom properties on <code class="tm-tw">data-theme</code> attributes. <strong>Never reference raw hex values in component code — always use alias tokens.</strong></p>
+      </div>
+
+      <!-- SPACING PANEL — alias semantic tokens -->
+      <div class="token-map-panel" id="panel-spc" role="tabpanel">
+        <table class="token-map-table" aria-label="Spacing alias token mapping">
+          <thead>
+            <tr>
+              <th>Alias Token</th>
+              <th>Global maps to</th>
+              <th>Desktop</th>
+              <th>Tablet</th>
+              <th>Mobile</th>
+              <th>Use Case</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="6" style="padding: 0.5rem 1rem; font-size: 0.625rem; font-family: var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--sage); background: rgba(92,110,77,0.04);">spacing / structure</td></tr>
+            <tr><td class="tm-token">spacing/structure/XL</td><td class="tm-prim">scale/4</td><td class="tm-size">32px</td><td class="tm-size">32px</td><td class="tm-size">24px</td><td class="tm-note">Between major page sections</td></tr>
+            <tr><td class="tm-token">spacing/structure/L</td><td class="tm-prim">scale/3</td><td class="tm-size">24px</td><td class="tm-size">24px</td><td class="tm-size">24px</td><td class="tm-note">Between large components</td></tr>
+            <tr><td class="tm-token">spacing/structure/M</td><td class="tm-prim">scale/2</td><td class="tm-size">16px</td><td class="tm-size">16px</td><td class="tm-size">16px</td><td class="tm-note">Between components</td></tr>
+            <tr><td class="tm-token">spacing/structure/S</td><td class="tm-prim">scale/1</td><td class="tm-size">8px</td><td class="tm-size">8px</td><td class="tm-size">8px</td><td class="tm-note">Between header and subheader</td></tr>
+            <tr><td colspan="6" style="padding: 0.5rem 1rem; font-size: 0.625rem; font-family: var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--sage); background: rgba(92,110,77,0.04);">spacing / component / gap</td></tr>
+            <tr><td class="tm-token">spacing/component/gap/L</td><td class="tm-prim">scale/2</td><td class="tm-size">16px</td><td class="tm-size">16px</td><td class="tm-size">16px</td><td class="tm-note">Between cards in a grid</td></tr>
+            <tr><td class="tm-token">spacing/component/gap/M</td><td class="tm-prim">scale/1</td><td class="tm-size">8px</td><td class="tm-size">8px</td><td class="tm-size">8px</td><td class="tm-note">Content &amp; button inside a card</td></tr>
+            <tr><td class="tm-token">spacing/component/gap/S</td><td class="tm-prim">scale/0-5</td><td class="tm-size">4px</td><td class="tm-size">4px</td><td class="tm-size">4px</td><td class="tm-note">Tags, compact contexts</td></tr>
+            <tr><td colspan="6" style="padding: 0.5rem 1rem; font-size: 0.625rem; font-family: var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--sage); background: rgba(92,110,77,0.04);">spacing / component / inset</td></tr>
+            <tr><td class="tm-token">spacing/component/inset/XL</td><td class="tm-prim">scale/4</td><td class="tm-size">32px</td><td class="tm-size">24px</td><td class="tm-size">20px</td><td class="tm-note">Modals, lightboxes, sidesheets</td></tr>
+            <tr><td class="tm-token">spacing/component/inset/L</td><td class="tm-prim">scale/3</td><td class="tm-size">24px</td><td class="tm-size">24px</td><td class="tm-size">20px</td><td class="tm-note">Large widgets, expanded panels</td></tr>
+            <tr><td class="tm-token">spacing/component/inset/M</td><td class="tm-prim">scale/2</td><td class="tm-size">16px</td><td class="tm-size">16px</td><td class="tm-size">16px</td><td class="tm-note">Medium cards, standard containers</td></tr>
+            <tr><td class="tm-token">spacing/component/inset/S</td><td class="tm-prim">scale/1</td><td class="tm-size">8px</td><td class="tm-size">8px</td><td class="tm-size">8px</td><td class="tm-note">Small cards, compact containers</td></tr>
+            <tr><td class="tm-token">spacing/component/inset/XS</td><td class="tm-prim">scale/0-5</td><td class="tm-size">4px</td><td class="tm-size">4px</td><td class="tm-size">4px</td><td class="tm-note">Location chips, tags, badges</td></tr>
+            <tr><td colspan="6" style="padding: 0.5rem 1rem; font-size: 0.625rem; font-family: var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--sage); background: rgba(92,110,77,0.04);">spacing / micro</td></tr>
+            <tr><td class="tm-token">spacing/micro</td><td class="tm-prim">scale/0-5</td><td class="tm-size">4px</td><td class="tm-size">4px</td><td class="tm-size">4px</td><td class="tm-note">Icon + text pairs, inline elements</td></tr>
+          </tbody>
+        </table>
+        <p class="token-map-note">These are <strong>alias tokens</strong> — they reference global scale values and carry semantic intent. Use the alias token name in code, never the raw scale value. Responsive variants collapse at breakpoints below xl (1440px).</p>
+      </div>
+
+      <!-- LAYOUT PANEL -->
+      <div class="token-map-panel" id="panel-lay" role="tabpanel">
+        <table class="token-map-table" aria-label="Layout token mapping">
+          <thead>
+            <tr>
+              <th>Alias Token</th>
+              <th>HTML</th>
+              <th>Desktop xl</th>
+              <th>Desktop lg</th>
+              <th>Tablet md</th>
+              <th>Mobile sm</th>
+              <th>Mobile xs</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="tm-token">layout/breakpoint</td><td><code class="tm-html">@media</code></td><td class="tm-size">1440px</td><td class="tm-size">1280px</td><td class="tm-size">768px</td><td class="tm-size">480px</td><td class="tm-size">0px</td></tr>
+            <tr><td class="tm-token">layout/grid-columns</td><td><code class="tm-html">.container</code></td><td class="tm-size">12</td><td class="tm-size">12</td><td class="tm-size">12</td><td class="tm-size">4</td><td class="tm-size">4</td></tr>
+            <tr><td class="tm-token">layout/grid-margin</td><td><code class="tm-html">.container</code></td><td class="tm-size">88px</td><td class="tm-size">64px</td><td class="tm-size">40px</td><td class="tm-size">24px</td><td class="tm-size">16px</td></tr>
+            <tr><td class="tm-token">layout/grid-gutter</td><td><code class="tm-html">.grid</code></td><td class="tm-size">24px</td><td class="tm-size">24px</td><td class="tm-size">16px</td><td class="tm-size">16px</td><td class="tm-size">16px</td></tr>
+            <tr><td class="tm-token">layout/content-max-width</td><td><code class="tm-html">.container</code></td><td class="tm-size">1264px</td><td class="tm-size">1152px</td><td class="tm-size">688px</td><td class="tm-size">432px</td><td class="tm-size">—</td></tr>
+          </tbody>
+        </table>
+        <p class="token-map-note">Layout tokens are applied as <strong>CSS custom properties</strong> on layout containers — no direct Tailwind utility maps to them. Reference via <code class="tm-tw">var(--layout-grid-margin)</code> etc. in component CSS. Grid column count drives the 12-column system used across all Kiva page templates.</p>
+      </div>
+    </div>
+
+    <!-- Structure gallery — 4 tabs -->
+    <div class="gallery-section reveal">
+      <div class="gallery-eyebrow">⊞&nbsp; Structure Documentation</div>
+      <p class="gallery-intro-text">Sample structure documentation — type scales, spacing system, layout grids, and color accessibility — documented as machine-readable artifacts.</p>
+
+      <div class="gallery-tabs" role="tablist" aria-label="Structure documentation">
+        <button class="gallery-tab active" role="tab" aria-selected="true" data-panel="sg-type">Type Scales &amp; Tokens</button>
+        <button class="gallery-tab" role="tab" aria-selected="false" data-panel="sg-spacing">Spacing Scales &amp; Tokens</button>
+        <button class="gallery-tab" role="tab" aria-selected="false" data-panel="sg-layout">Layout Grids</button>
+        <button class="gallery-tab" role="tab" aria-selected="false" data-panel="sg-color">Color Accessibility</button>
+      </div>
+
+      <div class="gallery-panel active" id="sg-type">
+        <img class="gallery-img ds-figure-img" src="portfolio-assets/Type%20Scales%20%26%20Tokens.png"
+             alt="Type Scales and Tokens — 13 semantic type tokens (Display, Headline 1–2, Subheadline, Title, Base, Button, Label, Caption, Upper, Small, Blockquote, Link) with responsive sizes, typefaces, weights, and line heights across mobile, tablet, and desktop"
+             loading="lazy">
+      </div>
+      <div class="gallery-panel" id="sg-spacing">
+        <img class="gallery-img ds-figure-img" src="portfolio-assets/Spacing%20Scales%20%26%20Tokens.png"
+             alt="Spacing Scales and Tokens — structure (XL/L/M/S), component gap (L/M/S), component inset (XL/L/M/S/XS), micro, and spacing ramp documented with token names, responsive values, and use-case examples"
+             loading="lazy">
+      </div>
+      <div class="gallery-panel" id="sg-layout">
+        <img class="gallery-img ds-figure-img" src="portfolio-assets/ds-layout-grids.png"
+             alt="Layout Grids documentation — 12-column grid with gutter, margin, and breakpoint specifications across mobile, tablet, and desktop"
+             loading="lazy">
+      </div>
+      <div class="gallery-panel" id="sg-color">
+        <img class="gallery-img ds-figure-img" src="portfolio-assets/ds-color-accessibility.png"
+             alt="Color Accessibility documentation — WCAG AA/AAA contrast ratios across all semantic color pairs, theme variants, and usage constraints"
+             loading="lazy">
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"><div class="divider-line"></div></div>
+
+<!-- ── CHAPTER 4: MACHINE-READABLE ───────────────────────── -->
+<section class="chapter" aria-labelledby="ch4-heading">
+  <div class="container">
+    <div class="chapter-num reveal">Chapter 04</div>
+    <h2 class="chapter-heading reveal" id="ch4-heading">Teaching AI to follow <em>design rules</em></h2>
+    <div class="body-text reveal">
+      <p>Chapter 3 solved the structure problem. This chapter solves a different one: making the system machine-readable.</p>
+      <p>A perfectly layered token architecture with no semantic annotations is still noise to an AI tool — a well-organized vocabulary with no grammar. The gap between <em>AI uses our tokens</em> and <em>AI uses our tokens correctly</em> comes down to one thing: whether the token communicates intent, not just value. That's what this chapter is about.</p>
+    </div>
+
+    <h3 class="chapter-heading reveal" style="font-size: clamp(1.375rem, 2.5vw, 2rem); margin-bottom: 1.25rem;">Token Descriptions — The Semantic Layer</h3>
+    <div class="body-text reveal" style="margin-bottom: 1.5rem;">
+      <p>Most teams export variables to AI and assume it will figure out the rest. That assumption is the root cause of the hallucination problem. AI doesn't infer design intent from structure alone — it needs the same contextual knowledge a junior designer has after a week of onboarding: <strong>when to use this token, where it belongs, what constraint it carries.</strong> Without that, it guesses. With it, it infers correctly the first time.</p>
+    </div>
+
+    <div class="token-comparison reveal">
+      <div class="token-card">
+        <div class="token-card-label">Without descriptions</div>
+        <div class="token-line"><span class="key">name: </span><span class="value">color-action-primary</span></div>
+        <div class="token-line"><span class="key">value: </span><span class="value">#2E5245</span></div>
+        <div class="token-line" style="margin-top: 0.75rem; color: var(--terracotta); font-style: italic; font-family: var(--font-body); font-size: 0.75rem;">AI sees a hex code. Guesses where to apply it.</div>
+      </div>
+      <div class="token-card">
+        <div class="token-card-label">With descriptions</div>
+        <div class="token-line"><span class="key">name: </span><span class="value">color-action-primary</span></div>
+        <div class="token-line"><span class="key">value: </span><span class="value">#2E5245</span></div>
+        <div class="token-line"><span class="key">description:</span></div>
+        <div class="token-line"><span class="desc">"Primary action color. Use for CTAs and</span></div>
+        <div class="token-line"><span class="desc">interactive elements. Must meet AA on</span></div>
+        <div class="token-line"><span class="desc">surface. Never use for decorative fills."</span></div>
+        <div class="token-line" style="margin-top: 0.75rem; color: var(--sage); font-style: italic; font-family: var(--font-body); font-size: 0.75rem;">AI understands intent. Applies it correctly.</div>
+      </div>
+    </div>
+
+    <div class="rules-callout reveal" style="margin-top: 2.5rem;">
+      <div class="rules-eyebrow">&lt;/&gt;&nbsp; Strongest Differentiator</div>
+      <div class="rules-title">AI Rules File in the Codebase</div>
+      <div class="rules-body">
+        <p>A project-level rules file committed to the Kiva repository. <strong>Any designer or engineer using AI coding tools automatically works within design system constraints</strong> — without specifying it in every prompt.</p>
+        <p style="margin-top: 0.75rem;">Most designers stop at personal workflow. This embeds constraints at the system level — the guardrails are inherited, not requested.</p>
+      </div>
+      <div class="rules-code">
+        # .ai-rules (committed to repo)<br>
+        design_system: kiva-ds-2026<br>
+        tokens: ./tokens/alias.json<br>
+        constraints:<br>
+        &nbsp;&nbsp;- Use semantic tokens, never raw values<br>
+        &nbsp;&nbsp;- Follow spacing scale (4px base)<br>
+        &nbsp;&nbsp;- All text must meet WCAG AA contrast<br>
+        &nbsp;&nbsp;- Responsive breakpoints: 480 / 768 / 1024
+      </div>
+    </div>
+
+    <h3 class="chapter-heading reveal" style="font-size: clamp(1.375rem, 2.5vw, 2rem); margin-top: 3.5rem; margin-bottom: 1rem;">Making It Usable</h3>
+    <div class="body-text reveal" style="margin-bottom: 1.5rem;">
+      <p>A well-designed system only produces reliable output if people know how to use it correctly. The token descriptions and rules file solve the data problem — they don't solve the workflow problem. If designers don't know how to export variables, how to prompt against the system, or how to validate what AI returns, the system provides no behavioral guarantee. These four deliverables are the bridge between system quality and workflow practice.</p>
+    </div>
+    <div class="method-grid reveal">
+      <div class="method-card">
+        <div class="method-num">01</div>
+        <div class="method-title">Variable Export Workflow</div>
+        <div class="method-desc">How to export Figma variables to AI tools correctly. Includes which formats work, what gets lost in translation, and how to structure prompts around the variable system.</div>
+      </div>
+      <div class="method-card">
+        <div class="method-num">02</div>
+        <div class="method-title">Prompt Guide</div>
+        <div class="method-desc">Step-by-step AI prototyping process for designers, not engineers. Describe what you want in natural language — don't tweak pixel by pixel. The AI follows design intent accurately.</div>
+      </div>
+      <div class="method-card">
+        <div class="method-num">03</div>
+        <div class="method-title">Automated Design QA</div>
+        <div class="method-desc">A vibe-coded Figma plugin: open the file and it auto-audits every frame against design system guidelines and applies corrections — no checklist, no manual process. Paired with a SKILL.md that gives AI coding tools the same constraints, so AI-generated prototypes self-correct before review.</div>
+      </div>
+      <div class="method-card">
+        <div class="method-num">04</div>
+        <div class="method-title">Multi-Audience Documentation</div>
+        <div class="method-desc">Most design system documentation is written for one reader. This is written for three: concise token-to-code reference for engineers, visual usage examples with rationale for designers, and structured rule sets that give AI tools parseable context to follow guidelines without human correction. Same system, different entry points.</div>
+      </div>
+    </div>
+
+    <!-- Documentation gallery — where the semantic layer becomes usable output -->
+    <h3 class="chapter-heading reveal" style="font-size: clamp(1.375rem, 2.5vw, 2rem); margin-top: 3.5rem; margin-bottom: 1rem;">The Documentation</h3>
+    <div class="body-text reveal" style="margin-bottom: 0;">
+      <p>Documentation is where a design system's intelligence becomes transferable. The token descriptions, rules file, and workflow guides built in this chapter are only useful if they're backed by documentation thorough enough that someone — or something — can follow them independently.</p>
+      <p>Each of these four guidelines is written at the intersection of three audiences. <strong>For designers:</strong> the implementation rules and hierarchy rationale that prevent guesswork. <strong>For engineers:</strong> the code references and constraint context that eliminate manual overrides. <strong>For AI tools:</strong> the structured, parseable surface that closes the hallucination gap at source — not at the prompt layer, but before a single query is made.</p>
+    </div>
+
+    <!-- Documentation gallery — 4 tabs -->
+    <div class="gallery-section reveal">
+      <div class="gallery-tabs" role="tablist" aria-label="Design system documentation">
+        <button class="gallery-tab active" role="tab" aria-selected="true" data-panel="dg-type">Type Guidelines</button>
+        <button class="gallery-tab" role="tab" aria-selected="false" data-panel="dg-spacing">Spacing Guidelines</button>
+        <button class="gallery-tab" role="tab" aria-selected="false" data-panel="dg-layout">Layout Guidelines</button>
+        <button class="gallery-tab" role="tab" aria-selected="false" data-panel="dg-color">Color Guidelines</button>
+      </div>
+
+      <div class="gallery-panel active" id="dg-type">
+        <img class="gallery-img ds-figure-img" src="portfolio-assets/ds-type-guidelines.png"
+             alt="Typography guidelines — usage rules for each type token across hierarchy levels, pairing constraints, responsive behavior, and AI implementation notes"
+             loading="lazy">
+      </div>
+      <div class="gallery-panel" id="dg-spacing">
+        <img class="gallery-img ds-figure-img" src="portfolio-assets/ds-spacing-guidelines.png"
+             alt="Spacing guidelines — when to use each spacing step, component vs. structural spacing, and Tailwind implementation with visual examples"
+             loading="lazy">
+      </div>
+      <div class="gallery-panel" id="dg-layout">
+        <img class="gallery-img ds-figure-img" src="portfolio-assets/ds-layout-guidelines.png"
+             alt="Layout guidelines — grid usage rules, breakpoint behavior, container widths, and page-level layout patterns with engineering annotations"
+             loading="lazy">
+      </div>
+      <div class="gallery-panel" id="dg-color">
+        <img class="gallery-img ds-figure-img" src="portfolio-assets/ds-color-guidelines.png"
+             alt="Color guidelines — semantic color usage by context, do and don't examples, multi-theme behavior, and WCAG compliance requirements"
+             loading="lazy">
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"><div class="divider-line"></div></div>
+
+<!-- ── CHAPTER 5: SEE THE DIFFERENCE ─────────────────────── -->
+<section class="chapter" aria-labelledby="ch5-heading">
+  <div class="container">
+    <div class="chapter-num reveal">Chapter 05</div>
+    <h2 class="chapter-heading reveal" id="ch5-heading">See the <em>difference</em></h2>
+    <div class="body-text reveal">
+      <p>We took a static impact dashboard and had AI rebuild it as an interactive prototype using our design tokens. Same AI tool, same prompt structure — the only variable was the quality of design system input.</p>
+    </div>
+
+    <div class="demo-cards reveal">
+      <div class="demo-card-wrap before">
+        <div class="demo-card">
+          <div class="demo-card-badge">Before</div>
+          <div class="demo-card-title">Without Semantic Tokens</div>
+          <div class="demo-iframe-wrap" aria-hidden="true">
+            <iframe class="demo-iframe" src="https://kiva-original.surge.sh"
+                    title="Before — AI output without semantic token descriptions"
+                    loading="lazy"
+                    sandbox="allow-scripts allow-same-origin"></iframe>
+          </div>
+          <div class="demo-card-desc">AI output with exported variables but no descriptions, no semantic layer, no usage rules. The tokens are there — but the AI has no way to understand intent.</div>
+          <a class="demo-link" href="https://kiva-original.surge.sh" target="_blank" rel="noopener" aria-label="Open before demo in new tab">Open full demo →</a>
+        </div>
+      </div>
+      <div class="demo-card-wrap after">
+        <div class="demo-card">
+          <div class="demo-card-badge">After</div>
+          <div class="demo-card-title">With Full Token Descriptions</div>
+          <div class="demo-iframe-wrap" aria-hidden="true">
+            <iframe class="demo-iframe" src="https://kiva-refined.surge.sh"
+                    title="After — AI output with full semantic token descriptions"
+                    loading="lazy"
+                    sandbox="allow-scripts allow-same-origin"></iframe>
+          </div>
+          <div class="demo-card-desc">AI output with semantic annotations, usage context, and relationship mappings. Same tool, same prompt — dramatically closer to production fidelity.</div>
+          <a class="demo-link" href="https://kiva-refined.surge.sh" target="_blank" rel="noopener" aria-label="Open after demo in new tab">Open full demo →</a>
+        </div>
+      </div>
+    </div>
+
+    <p class="demo-note reveal">Even with all variables exported, AI doesn't nail everything — still about 10–15% off. That's why we built the documentation.</p>
+
+    <div class="demo-specs reveal" role="list">
+      <div class="demo-spec" role="listitem">
+        <div class="demo-spec-check" aria-hidden="true">✓</div>
+        <div class="demo-spec-text">CSS uses design tokens</div>
+      </div>
+      <div class="demo-spec" role="listitem">
+        <div class="demo-spec-check" aria-hidden="true">✓</div>
+        <div class="demo-spec-text">Animations pure CSS, zero JS</div>
+      </div>
+      <div class="demo-spec" role="listitem">
+        <div class="demo-spec-check" aria-hidden="true">✓</div>
+        <div class="demo-spec-text">Responds to breakpoints</div>
+      </div>
+      <div class="demo-spec" role="listitem">
+        <div class="demo-spec-check" aria-hidden="true">✓</div>
+        <div class="demo-spec-text">Styling reference for eng</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><div class="divider-line"></div></div>
+
+<!-- ── CHAPTER 6: SCALING ────────────────────────────────── -->
+<section class="chapter" aria-labelledby="ch6-heading">
+  <div class="container">
+    <div class="chapter-num reveal">Chapter 06</div>
+    <h2 class="chapter-heading reveal" id="ch6-heading">Scaling beyond <em>one person</em></h2>
+    <div class="body-text reveal">
+      <p>There's a specific failure mode in infrastructure work that looks like success: the system is well-built, people are using it, but all the tacit knowledge — the edge case judgment, the context behind decisions, the "ask Lin" reflex — still lives with one person. It scales as long as that person is reachable. The moment they're not, the system degrades.</p>
+      <p>The measure of a truly sustainable system isn't adoption. It's <strong>independence under normal conditions</strong>: designers building correctly without asking, engineers making token decisions with confidence, new team members onboarding from documentation rather than institutional memory. That requires deliberate effort to move knowledge out of your head and into the system itself — before you think you need to.</p>
+    </div>
+
+    <div class="scale-timeline reveal" role="list">
+      <div class="scale-item" role="listitem">
+        <div class="scale-item-title">Prompt Guide for Knowledge Transfer</div>
+        <div class="scale-item-desc">The first test of whether the system was actually self-sustaining: could someone run the AI prototyping workflow without asking me? I wrote the guide to be that proof — not a tutorial, but a complete transfer of methodology. Colleagues ran it independently in the first week. That was the bar, not the document quality.</div>
+      </div>
+      <div class="scale-item" role="listitem">
+        <div class="scale-item-title">100+ Colleague Demo — CEO &amp; CTO in Attendance</div>
+        <div class="scale-item-desc">A 90-minute session with 100+ colleagues across every function — CEO, CTO, 10 designers, 9 PMs, 30+ engineers, plus marketing and operations. The goal wasn't to demonstrate the tool. It was to reframe what the design system was: not a design team deliverable, but shared product infrastructure that engineering, design, and AI tools all relied on. The question in the room shifted from "is this useful?" to "how do we govern this?" That shift was the outcome.</div>
+      </div>
+      <div class="scale-item" role="listitem">
+        <div class="scale-item-title">Two-Week Formal Adoption Window</div>
+        <div class="scale-item-desc">After the demo, a structured two-week window for teams to pilot the workflow and surface issues in real use. Deliberately not a soft launch — a designed feedback loop. Every issue was triaged and resolved before becoming a habit. The problems that emerged during this window were more valuable than any pre-launch testing, because they came from actual team behavior under real conditions.</div>
+      </div>
+      <div class="scale-item" role="listitem">
+        <div class="scale-item-title">Automated Design QA Process</div>
+        <div class="scale-item-desc">Compliance at scale requires removing friction from the right path, not adding gates. The automated QA plugin opens a Figma file and runs a complete audit against guidelines — flagging and correcting deviations without a checklist. The paired SKILL.md brings the same behavior into AI coding tools, so prototypes generated by Claude Code or Cursor inherit the same QA pass automatically. The constraint is built in; it doesn't require discipline to enforce.</div>
+      </div>
+      <div class="scale-item" role="listitem">
+        <div class="scale-item-title">Design System as Shared Infrastructure</div>
+        <div class="scale-item-desc">The final repositioning: moving the design system's organizational identity from "design team output" to shared product infrastructure with engineering co-ownership. This changed how token updates were reviewed, how documentation gaps were prioritized, and who had a stake in keeping the system current. Sustainability isn't just a property of documentation — it's a property of who feels responsible for it.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><div class="divider-line"></div></div>
+
+<!-- ── CHAPTER 7: AI READINESS AS PRACTICE ───────────────────── -->
+<section class="chapter" aria-labelledby="ch7-heading">
+  <div class="container">
+    <div class="chapter-num reveal">Chapter 07</div>
+    <h2 class="chapter-heading reveal" id="ch7-heading">AI readiness as a <em>practice</em></h2>
+    <div class="body-text reveal">
+      <p>Chapter 6 is about people — making the system usable and resilient to human turnover. This chapter is about something different: making the system resilient to the AI tools themselves changing underneath it.</p>
+      <p>A design system's AI readiness isn't a state you reach and maintain. It has an expiration date tied to model updates you don't control. A token description that steered a model correctly in Q1 may produce different output in Q3 — not because the documentation changed, but because the model's interpretation of it did. New fine-tuning shifts how context is weighted. New tool interfaces change what gets passed to the model and what gets stripped. New hallucination patterns emerge from new training distributions. <strong>This means AI accuracy is a metric that requires measurement, not assumption.</strong></p>
+      <p>The maintenance cycle below isn't process for its own sake. It's the mechanism that keeps a point-in-time build accurate over time — and the cadence that makes improvement legible to stakeholders beyond the design team.</p>
+    </div>
+
+    <div class="scale-timeline reveal" role="list">
+      <div class="scale-item" role="listitem">
+        <div class="scale-item-title">Stress Test</div>
+        <div class="scale-item-desc">Run the current AI tools against the design system across a structured prompt battery — covering layout, components, patterns, and documentation interpretation. The goal isn't to catch every failure; it's to get a representative sample across failure categories: token-level misapplication, component-level reinvention, pattern-level drift. What the model got right last cycle is not assumed to still be correct — it's re-verified.</div>
+      </div>
+      <div class="scale-item" role="listitem">
+        <div class="scale-item-title">Gap Analysis</div>
+        <div class="scale-item-desc">Quantify the hallucination surface from the stress test: which tokens are misapplied and under what conditions, which components are being generated from scratch instead of referenced, which documented constraints are being ignored. Findings are logged and compared against the previous cycle — the output is a tracked delta, not a subjective impression. Design and engineering review together, because some gaps require system changes and some require code changes.</div>
+      </div>
+      <div class="scale-item" role="listitem">
+        <div class="scale-item-title">Update Cycle</div>
+        <div class="scale-item-desc">Based on the gap analysis: refine token descriptions to close the most common misapplication patterns, tighten the HTML/Tailwind mapping where it's producing ambiguity, update documentation examples to address observed edge cases. Each update is scoped and reviewed by engineering before merging — the system is a technical contract, not a design artifact, and changes to it affect code. The target isn't a perfect cycle. It's a measurably smaller gap than the last one.</div>
+      </div>
+      <div class="scale-item" role="listitem">
+        <div class="scale-item-title">Cross-Functional Demo &amp; Review</div>
+        <div class="scale-item-desc">Present the before/after delta to a cross-functional audience each quarter. This step does two things: it keeps stakeholders calibrated on where AI accuracy actually stands (not where it was at launch), and it creates organizational accountability for the maintenance work. Showing improvement over time is what converts AI readiness from a design team initiative into a company-level practice with shared ownership.</div>
+      </div>
+    </div>
+
+    <div class="body-text reveal" style="margin-top: 2.5rem;">
+      <p>Validated across three tools — Figma Make, Claude Code, and Google Stitch. Each showed measurable fidelity improvement after each review cycle. The target was never zero hallucination — that's not achievable with current technology, and claiming otherwise would undermine the credibility of everything else. The target was a shrinking gap, tracked visibly, quarter over quarter. That's now a standing practice.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><div class="divider-line"></div></div>
+
+<!-- ── IMPACT ────────────────────────────────────────────── -->
+<section class="chapter" aria-labelledby="impact-heading">
+  <div class="container">
+    <div class="eyebrow">Results</div>
+    <h2 class="chapter-heading reveal" id="impact-heading">Impact</h2>
+
+    <div class="impact-grid reveal" role="list">
+      <div class="impact-card wide reveal reveal-delay-1" role="listitem">
+        <div class="impact-number">100+</div>
+        <div class="impact-label">Colleagues across design, engineering, product, and marketing trained in a single company-wide session — CEO and CTO in attendance. Design system repositioned as shared AI infrastructure, not a design team asset.</div>
+      </div>
+      <div class="impact-card reveal reveal-delay-2" role="listitem">
+        <div class="impact-number">36+</div>
+        <div class="impact-label">CSS inconsistencies found &amp; fixed in token audit — engineers now trust what's in Figma matches what ships</div>
+      </div>
+      <div class="impact-card reveal reveal-delay-1" role="listitem">
+        <div class="impact-number">Days → hours</div>
+        <div class="impact-label">Prototype iteration time compressed — ~60% reduction in design-to-delivery cycle across teams</div>
+      </div>
+      <div class="impact-card reveal reveal-delay-2" role="listitem">
+        <div class="impact-number">3 tools</div>
+        <div class="impact-label">Figma Make, Claude Code, and Google Stitch validated — all producing measurable fidelity improvements after each AI Readiness Review cycle</div>
+      </div>
+      <div class="impact-card reveal reveal-delay-3" role="listitem">
+        <div class="impact-number">Quarterly</div>
+        <div class="impact-label">AI Readiness Reviews established as standing company practice — stress test, gap analysis, update cycle, cross-functional demo</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><div class="divider-line"></div></div>
+
+<!-- ── REFLECTION ────────────────────────────────────────── -->
+<section class="reflection-section" aria-labelledby="reflection-heading">
+  <div class="container">
+    <h2 class="sr-only" id="reflection-heading">Reflection</h2>
+    <blockquote class="reflection-quote reveal">
+      "An AI-ready design system isn't a project you finish. It's a standard you maintain. Every quarter, the gap gets smaller — and that's the whole job."
+    </blockquote>
+  </div>
+</section>
+
+<!-- ── CONTACT ────────────────────────────────────────────── -->
+<section id="contact" aria-labelledby="contact-heading">
+  <div class="contact-inner">
+    <div class="eyebrow">What's next</div>
+    <h2 class="contact-display reveal" id="contact-heading">Let's<br><em>connect.</em></h2>
+    <p class="contact-sub reveal">Looking for teams where design infrastructure is treated as a product — not a support function.</p>
+    <a class="contact-email reveal" href="mailto:lin@linzhao.design">lin@linzhao.design</a>
+  </div>
+  <footer role="contentinfo">
+    <div class="footer-note">Built with <span class="footer-accent">Claude Code</span></div>
+    <div class="footer-links">
+      <a href="https://www.linkedin.com/in/linzhao15/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      <a href="https://www.linzhao15.com/" target="_blank" rel="noopener noreferrer">Previous Work</a>
+    </div>
+  </footer>
+</section>
+
+</main>
+
+<!-- DS Lightbox -->
+<div id="ds-lightbox" role="dialog" aria-modal="true" aria-label="Image viewer">
+  <button id="ds-lightbox-close" aria-label="Close image viewer">&times;</button>
+  <img id="ds-lightbox-img" src="" alt="">
+  <div id="ds-lightbox-caption"></div>
+</div>
+
+<!-- GSAP removed: hero uses CSS-only visibility, no entrance animations -->
+
+<script>
+/* ================================================================
+   ORGANIC SYSTEMS v4 — Case Study JS
+   WebGL · Spring Cursor Trail · Magnetic · Reveals
+   ================================================================ */
+const PRM     = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+if (window.gsap && window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
+
+/* ── 1. WebGL Living Sand ─────────────────────────────────────── */
+(function() {
+  const canvas = document.getElementById('glCanvas');
+  if (!canvas) return;
+  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  if (!gl) { canvas.style.display = 'none'; return; }
+
+  const VS = `attribute vec2 a_pos; void main(){gl_Position=vec4(a_pos,0.,1.);}`;
+  const FS = `
+    precision mediump float;
+    uniform vec2 u_res; uniform float u_time; uniform vec2 u_mouse;
+    float hash(vec2 p){p=fract(p*vec2(127.1,311.7));p+=dot(p,p+17.5453);return fract(p.x*p.y);}
+    float noise(vec2 p){vec2 i=floor(p);vec2 f=fract(p);vec2 u=f*f*(3.-2.*f);
+      float a=hash(i);float b=hash(i+vec2(1.,0.));float c=hash(i+vec2(0.,1.));float d=hash(i+vec2(1.,1.));
+      return mix(mix(a,b,u.x),mix(c,d,u.x),u.y)*2.-1.;}
+    void main(){
+      vec2 uv=gl_FragCoord.xy/u_res;
+      float asp=u_res.x/u_res.y;
+      vec2 p=vec2(uv.x*asp,uv.y);
+      vec2 m=vec2(u_mouse.x/u_res.x*asp,1.-u_mouse.y/u_res.y);
+      vec2 d=p-m; float dist=length(d);
+      p+=normalize(d+vec2(1e-5))*smoothstep(.24,.0,dist)*.095;
+      float t=u_time*.055;
+      float n=noise(p*2.5+vec2(t,t*.68))*.60
+             +noise(p*5.+vec2(-t*.5,t*.82))*.27
+             +noise(p*1.1+vec2(t*.22,-t*.35))*.13;
+      float f=fract(n*22.);
+      float df=min(f,1.-f);
+      float line=1.-smoothstep(0.,.044,df);
+      vec3 bg=vec3(.9569,.9412,.9098);
+      vec3 sage=vec3(.3608,.4314,.3020);
+      gl_FragColor=vec4(mix(bg,sage,line*.088),1.);
+    }`;
+
+  function mkShader(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src); gl.compileShader(s);
+    return gl.getShaderParameter(s, gl.COMPILE_STATUS) ? s : null;
+  }
+  const vs = mkShader(gl.VERTEX_SHADER, VS);
+  const fs = mkShader(gl.FRAGMENT_SHADER, FS);
+  if (!vs || !fs) { canvas.style.display = 'none'; return; }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { canvas.style.display='none'; return; }
+  gl.useProgram(prog);
+
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]), gl.STATIC_DRAW);
+  const ap = gl.getAttribLocation(prog, 'a_pos');
+  gl.enableVertexAttribArray(ap); gl.vertexAttribPointer(ap, 2, gl.FLOAT, false, 0, 0);
+
+  const uRes   = gl.getUniformLocation(prog, 'u_res');
+  const uTime  = gl.getUniformLocation(prog, 'u_time');
+  const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+  let W, H, mx = -9999, my = -9999;
+
+  function resize() {
+    W = canvas.width  = innerWidth;
+    H = canvas.height = innerHeight;
+    gl.viewport(0, 0, W, H); gl.uniform2f(uRes, W, H);
+  }
+  addEventListener('resize', resize, { passive:true });
+  if (!isTouch) {
+    document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; }, {passive:true});
+    document.addEventListener('mouseleave', () => { mx=-9999; my=-9999; });
+  }
+  resize();
+  function render(ts) {
+    gl.uniform1f(uTime, ts*.001); gl.uniform2f(uMouse, mx, my);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    requestAnimationFrame(render);
+  }
+  if (!PRM) requestAnimationFrame(render);
+  else { gl.uniform1f(uTime,0); gl.uniform2f(uMouse,-9999,-9999); gl.drawArrays(gl.TRIANGLES,0,6); }
+})();
+
+/* ── 2. Cursor + Trail ────────────────────────────────────────── */
+(function() {
+  if (PRM || isTouch) return;
+  const dot = document.getElementById('cursor');
+  const aura = document.getElementById('cursor-aura');
+  if (!dot || !aura) return;
+
+  const N = 8;
+  const trails = Array.from({length:N}, (_,i) => {
+    const el = document.createElement('div');
+    el.className = 'c-trail';
+    const sz = Math.max(2, 4 - i * 0.25);
+    el.style.cssText = `width:${sz}px;height:${sz}px;opacity:0;`;
+    document.body.appendChild(el);
+    return { el, x:-200, y:-200 };
+  });
+
+  let dx=-200, dy=-200, ax=-200, ay=-200, rx=-200, ry=-200, st='';
+  document.addEventListener('mousemove', e => { rx=e.clientX; ry=e.clientY; }, {passive:true});
+  document.addEventListener('mouseleave', () => { rx=-500; ry=-500; });
+  document.addEventListener('mouseover', e => {
+    const t = e.target;
+    const cls = t.closest('a,button,[role="button"]') ? 'link' : '';
+    if (st !== cls) { dot.className = cls; aura.className = cls; st = cls; }
+  });
+
+  function loop() {
+    dx += (rx - dx) * .90; dy += (ry - dy) * .90;
+    dot.style.transform = `translate(${dx}px,${dy}px) translate(-50%,-50%)`;
+    ax += (rx - ax) * .10; ay += (ry - ay) * .10;
+    aura.style.transform = `translate(${ax}px,${ay}px) translate(-50%,-50%)`;
+    trails[0].x += (dx - trails[0].x) * .55;
+    trails[0].y += (dy - trails[0].y) * .55;
+    for (let i=1; i<N; i++) {
+      trails[i].x += (trails[i-1].x - trails[i].x) * .50;
+      trails[i].y += (trails[i-1].y - trails[i].y) * .50;
+    }
+    trails.forEach((tr,i) => {
+      tr.el.style.opacity = ((1-i/N)*.18).toFixed(3);
+      tr.el.style.transform = `translate(${tr.x}px,${tr.y}px) translate(-50%,-50%)`;
+    });
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
+
+/* ── 3. Magnetic ─────────────────────────────────────────────── */
+(function() {
+  if (PRM || isTouch) return;
+  document.querySelectorAll('.mag').forEach(el => {
+    let ox=0, oy=0, vx=0, vy=0, over=false;
+    el.addEventListener('mouseenter', () => over=true);
+    el.addEventListener('mouseleave', () => over=false);
+    el.addEventListener('mousemove', e => {
+      if (!over) return;
+      const r=el.getBoundingClientRect();
+      vx += (e.clientX-(r.left+r.width/2))*.36;
+      vy += (e.clientY-(r.top+r.height/2))*.36;
+    });
+    (function tick() {
+      if (!over) { vx+=(0-ox)*.16; vy+=(0-oy)*.16; }
+      vx*=.74; vy*=.74; ox+=vx; oy+=vy;
+      el.style.transform = `translate(${ox.toFixed(2)}px,${oy.toFixed(2)}px)`;
+      requestAnimationFrame(tick);
+    })();
+  });
+})();
+
+/* ── 4. Scroll Progress ──────────────────────────────────────── */
+const prog = document.getElementById('scrollProgress');
+addEventListener('scroll', () => {
+  if (!prog) return;
+  prog.style.width = (scrollY/(document.documentElement.scrollHeight-innerHeight)*100).toFixed(2)+'%';
+}, {passive:true});
+
+/* ── 5. Nav ──────────────────────────────────────────────────── */
+const nav = document.getElementById('nav');
+addEventListener('scroll', () => nav?.classList.toggle('scrolled', scrollY > 60), {passive:true});
+
+/* ── 6. Hero GSAP entrance ───────────────────────────────────── */
+if (!PRM && window.gsap) {
+  const tl = gsap.timeline({ delay: 0.15 });
+  tl.to('.hero-meta',     { opacity:1, y:0, duration:0.8,  ease:'power3.out' }, 0)
+    .to('.hero-title',    { opacity:1, y:0, filter:'blur(0px)', duration:1.15, ease:'power3.out' }, 0.12)
+    .to('.hero-subtitle', { opacity:1, y:0, duration:0.9,  ease:'power3.out' }, 0.52)
+    .to('.hero-pills',    { opacity:1, y:0, duration:0.75, ease:'power3.out' }, 0.68)
+    .to('.hero-images',   { opacity:1, duration:1.4, ease:'power2.out' }, 0.22);
+
+  gsap.to('.hero-inner', {
+    y: 65, opacity: 0.08, ease: 'none',
+    scrollTrigger: { trigger:'#hero', start:'top top', end:'bottom top', scrub:0.65 }
+  });
+} else {
+  ['.hero-meta','.hero-title','.hero-subtitle','.hero-pills','.hero-images'].forEach(s => {
+    const el = document.querySelector(s);
+    if (el) { el.style.opacity='1'; el.style.transform='none'; el.style.filter='none'; }
+  });
+}
+
+/* ── 7. Intersection Observer reveals ───────────────────────── */
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); } });
+}, { threshold: 0.09, rootMargin: '0px 0px -44px 0px' });
+
+document.querySelectorAll('.reveal').forEach((el, i) => {
+  io.observe(el);
+});
+
+/* ── Hard fallback: if anything above failed, force all visible after 3s ── */
+setTimeout(() => {
+  ['.hero-meta','.hero-title','.hero-subtitle','.hero-pills','.hero-images'].forEach(s => {
+    const el = document.querySelector(s);
+    if (el && parseFloat(getComputedStyle(el).opacity) < 0.5) {
+      el.style.opacity = '1'; el.style.transform = 'none'; el.style.filter = 'none';
+    }
+  });
+  document.querySelectorAll('.reveal:not(.on)').forEach(el => el.classList.add('on'));
+}, 3000);
+
+/* ── 8. DS Figures — Lightbox ─────────────────────────────────── */
+(function() {
+  const lb     = document.getElementById('ds-lightbox');
+  const lbImg  = document.getElementById('ds-lightbox-img');
+  const lbCap  = document.getElementById('ds-lightbox-caption');
+  const lbClose= document.getElementById('ds-lightbox-close');
+  if (!lb) return;
+
+  function open(img) {
+    lbImg.src = img.src;
+    lbImg.alt = img.alt;
+    lbCap.textContent = img.closest('figure')?.querySelector('figcaption')?.textContent || '';
+    lb.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    lbClose.focus();
+  }
+  function close() {
+    lb.classList.remove('open');
+    document.body.style.overflow = '';
+    setTimeout(() => { lbImg.src = ''; }, 320);
+  }
+
+  document.querySelectorAll('.ds-figure-img').forEach(img => {
+    img.addEventListener('click', () => open(img));
+    img.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(img); } });
+    img.setAttribute('tabindex', '0');
+    img.setAttribute('role', 'button');
+  });
+  lbClose.addEventListener('click', close);
+  lb.addEventListener('click', e => { if (e.target === lb) close(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && lb.classList.contains('open')) close(); });
+})();
+
+/* ── 9. Token Map — Tab switching ─────────────────────────────── */
+(function() {
+  const tabs = document.querySelectorAll('.token-map-tab');
+  if (!tabs.length) return;
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const panel = tab.dataset.panel;
+      tabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+      document.querySelectorAll('.token-map-panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected','true');
+      const target = document.getElementById('panel-' + panel);
+      if (target) target.classList.add('active');
+    });
+  });
+})();
+
+/* ── 10. Gallery — Tab switching with fade-slide transition ──── */
+(function() {
+  document.querySelectorAll('.gallery-tabs').forEach(tabList => {
+    const tabs = tabList.querySelectorAll('.gallery-tab');
+    if (!tabs.length) return;
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        if (tab.classList.contains('active')) return;
+
+        const panelId = tab.dataset.panel;
+
+        // Deactivate all tabs in this tablist
+        tabs.forEach(t => {
+          t.classList.remove('active');
+          t.setAttribute('aria-selected', 'false');
+        });
+
+        // Find all sibling panels (next sibling container of tablist)
+        const gallerySection = tabList.closest('.gallery-section') ||
+                               tabList.parentElement;
+        gallerySection.querySelectorAll('.gallery-panel').forEach(p => {
+          p.classList.remove('active');
+        });
+
+        // Activate clicked tab and target panel
+        tab.classList.add('active');
+        tab.setAttribute('aria-selected', 'true');
+        const target = document.getElementById(panelId);
+        if (target) target.classList.add('active');
+      });
+    });
+  });
+
+  // Register gallery images with the lightbox
+  document.querySelectorAll('.gallery-img').forEach(img => {
+    img.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); img.click(); }
+    });
+    img.setAttribute('tabindex', '0');
+    img.setAttribute('role', 'button');
+  });
+})();
+</script>
+</body>
+</html>

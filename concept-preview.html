@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Concept — Coloured Sand Field</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg:#F4F0E8; --ink:#252520; --muted:#787668; --faint:#B4B0A6; --sage:#5C6E4D;
+}
+html,body { width:100%;height:100%;overflow:hidden;background:var(--bg);-webkit-font-smoothing:antialiased; }
+
+#c { position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0; }
+
+/* ── Content ──────────────────────────────────────────────── */
+.stage {
+  position:fixed;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;z-index:2;pointer-events:none;
+}
+.hero-name {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(5rem,13vw,10rem);font-weight:300;font-style:italic;
+  letter-spacing:-0.04em;line-height:0.88;color:var(--ink);
+  text-align:center;margin-bottom:0.9rem;
+}
+.hero-sub {
+  font-family:'DM Mono',monospace;font-size:0.58rem;
+  letter-spacing:0.22em;text-transform:uppercase;color:var(--muted);
+  margin-bottom:3rem;
+}
+.card {
+  width:min(460px,88vw);
+  background:rgba(253,250,246,0.88);
+  backdrop-filter:blur(20px) saturate(140%);
+  -webkit-backdrop-filter:blur(20px) saturate(140%);
+  border:1px solid rgba(255,255,255,0.92);
+  border-radius:28px;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,0.99),0 20px 60px rgba(92,110,77,0.09);
+  padding:22px 26px 24px;
+}
+.card-eye {
+  font-family:'DM Mono',monospace;font-size:0.48rem;letter-spacing:0.22em;
+  text-transform:uppercase;color:var(--sage);opacity:.8;margin-bottom:.5rem;
+}
+.card-title {
+  font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:500;
+  letter-spacing:-0.02em;line-height:1.18;color:var(--ink);margin-bottom:.6rem;
+}
+.card-desc {
+  font-family:'DM Sans',sans-serif;font-size:.84rem;line-height:1.68;
+  color:var(--muted);margin-bottom:.9rem;
+}
+.tags { display:flex;flex-wrap:wrap;gap:.35rem; }
+.tag {
+  font-family:'DM Mono',monospace;font-size:.48rem;color:var(--sage);
+  background:rgba(92,110,77,.07);border:1px solid rgba(92,110,77,.15);
+  padding:.2rem .6rem;border-radius:100px;letter-spacing:.04em;
+}
+
+/* ── Controls ─────────────────────────────────────────────── */
+.ctrl {
+  position:fixed;top:1.5rem;right:1.75rem;z-index:20;
+  display:flex;flex-direction:column;gap:.65rem;align-items:flex-end;
+  font-family:'DM Mono',monospace;
+}
+.ctrl-head {
+  font-size:.44rem;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);
+}
+.row { display:flex;align-items:center;gap:.6rem; }
+.row span {
+  font-size:.44rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);min-width:60px;text-align:right;
+}
+input[type=range] {
+  -webkit-appearance:none;appearance:none;
+  width:96px;height:2px;border-radius:2px;outline:none;cursor:pointer;
+  background:rgba(92,110,77,.18);
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance:none;appearance:none;
+  width:11px;height:11px;border-radius:50%;background:var(--sage);cursor:pointer;
+}
+
+.hint {
+  position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);
+  font-family:'DM Mono',monospace;font-size:.44rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--faint);z-index:10;
+  white-space:nowrap;pointer-events:none;
+}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div class="stage">
+  <div class="hero-name">Lin Zhao</div>
+  <div class="hero-sub">Principal Product Designer &middot; Kiva</div>
+  <div class="card">
+    <div class="card-eye">Kiva &middot; 2025–2026</div>
+    <div class="card-title">Building an AI-Governed Design Pipeline</div>
+    <div class="card-desc">Made the design system machine-readable so AI tools produce consistent, on-brand output — then scaled the methodology across the company.</div>
+    <div class="tags">
+      <span class="tag">90%+ AI fidelity</span>
+      <span class="tag">36+ components</span>
+      <span class="tag">Team-wide adoption</span>
+    </div>
+  </div>
+</div>
+
+<div class="ctrl">
+  <div class="ctrl-head">Live tuning</div>
+  <div class="row"><span>Colour</span><input type="range" id="sC" min="0" max="100" value="80"></div>
+  <div class="row"><span>Sand grain</span><input type="range" id="sG" min="0" max="100" value="100"></div>
+  <div class="row"><span>Flow scale</span><input type="range" id="sF" min="0" max="100" value="30"></div>
+  <div class="row"><span>Mouse push</span><input type="range" id="sM" min="0" max="100" value="30"></div>
+</div>
+
+<div class="hint">Drag cursor across canvas — sand follows</div>
+
+<script>
+/* ================================================================
+   COLOURED SAND FIELD  —  Domain-warped flow + screen grain
+   Reference: RIMOWA iridescent / aerial sand dunes / "Be present"
+   No contour lines. Colour IS the surface. Grain IS the texture.
+   ================================================================ */
+
+const canvas = document.getElementById('c');
+const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+if (!gl) { console.error('WebGL unavailable'); }
+
+/* ── Vertex ─────────────────────────────────────────────────── */
+const VS = `attribute vec2 a; void main(){gl_Position=vec4(a,0,1);}`;
+
+/* ── Fragment ────────────────────────────────────────────────── */
+const FS = `
+precision highp float;
+uniform vec2  u_res;
+uniform float u_time;
+uniform vec2  u_mouse;
+uniform float u_col;    /* colour intensity  0-1 */
+uniform float u_grain;  /* grain amount      0-1 */
+uniform float u_flow;   /* flow scale        0-1 */
+uniform float u_push;   /* mouse push        0-1 */
+uniform vec2  u_mvel;   /* mouse velocity (px/frame, smoothed) */
+
+/* ── Hash (fast, GPU-friendly) ──────────────────────────────── */
+float hash(vec2 p){
+  p=fract(p*vec2(127.1,311.7));
+  p+=dot(p,p+17.5453);
+  return fract(p.x*p.y);
+}
+
+/* ── Smooth value noise ─────────────────────────────────────── */
+float noise(vec2 p){
+  vec2 i=floor(p), f=fract(p), u=f*f*(3.-2.*f);
+  return mix(
+    mix(hash(i),hash(i+vec2(1,0)),u.x),
+    mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),u.x),
+    u.y);
+}
+
+/* ── Palette trial: wood + Charlock + Glass Green + Country Air ── */
+/*   淡竹/杉木 → wild yellow-green → pale sage → soft periwinkle   */
+/*   Warm-to-cool arc. Wood anchors the warm end without pink.      */
+vec3 pal(float t){
+  t=clamp(t,0.,1.);
+  vec3 c0=vec3(.804,.722,.588); /* 淡木色 light cedar #CDB896 warm gold   */
+  vec3 c1=vec3(.898,.898,.576); /* Charlock           #E5E593 yellow-green */
+  vec3 c2=vec3(.914,.914,.835); /* Glass Green        #E9E9D5 pale sage    */
+  vec3 c3=vec3(.843,.859,.949); /* Country Air        #D7DBF2 periwinkle   */
+  float s=t*3.;
+  return c0*max(0.,1.-abs(s-0.))
+       + c1*max(0.,1.-abs(s-1.))
+       + c2*max(0.,1.-abs(s-2.))
+       + c3*max(0.,1.-abs(s-3.));
+}
+
+void main(){
+  vec2 uv=gl_FragCoord.xy/u_res;
+  float asp=u_res.x/u_res.y;
+
+  /* Ultra-slow drift: full cycle takes ~20 minutes             */
+  float ts=u_time*0.003;
+
+  /* ── Domain coord ───────────────────────────────────────── */
+  vec2 p=vec2(uv.x*asp, uv.y);
+
+  /* ── Mouse sand push — velocity-aware, naturally asymmetric ─ */
+  vec2 mNorm=vec2(u_mouse.x/u_res.x*asp, 1.-u_mouse.y/u_res.y);
+  vec2 md=p-mNorm;
+  float mD=length(md);
+
+  /* Gaussian falloff — softer & wider for more organic feel    */
+  float rc=mix(4.5, 1.2, u_push);
+  float mAmt=exp(-mD*mD*rc)*mix(.05,.28,u_push);
+
+  /* Smooth direction: zero at cursor centre, avoids spike       */
+  float eps=0.055;
+  vec2 radialDir=(md/max(mD,eps))*smoothstep(0.,eps,mD);
+
+  /* Velocity direction in aspect-corrected UV space             */
+  vec2 velUV=vec2(u_mvel.x/u_res.x*asp, -u_mvel.y/u_res.y);
+  float speed=length(velUV);                    /* 0 = still     */
+  vec2 moveDir=normalize(velUV+vec2(1e-5));
+
+  /* When moving: sand ahead gets pushed forward,               */
+  /* sand behind is pulled into the wake and settles gently.    */
+  float fwd=dot(radialDir, moveDir);            /* +1=front,-1=back */
+  /* Asymmetry: front push = full, behind = soft pull-back      */
+  float asymm=mix(1.0, clamp(fwd*.7+.55, .15, 1.2), clamp(speed*6.,0.,1.));
+
+  /* Slight lateral swirl — sand wraps around the finger        */
+  vec2 swirl=vec2(-radialDir.y, radialDir.x)*0.18*clamp(speed*4.,0.,1.);
+  vec2 finalDir=normalize(radialDir+swirl);
+
+  p+=finalDir*mAmt*asymm;
+
+  /* ── Flow scale from slider (0=tight features, 1=large) ──── */
+  float fs=mix(2.2, 0.9, u_flow);  /* noise frequency multiplier */
+
+  /* ── Two-level domain warping  (Inigo Quilez technique) ───── */
+  /*   Creates the organic "sand river" banding effect            */
+
+  /* Level 1: gentle warp field                                  */
+  vec2 q=vec2(
+    noise(p*fs      + vec2(0.0,0.0) + ts*0.9),
+    noise(p*fs      + vec2(4.1,5.8) + ts*0.7)
+  );
+
+  /* Level 2: warp of warp — amplifies organic structure         */
+  vec2 r=vec2(
+    noise(p*fs*0.65 + 2.4*q + vec2(1.7, 9.2) + ts),
+    noise(p*fs*0.65 + 2.4*q + vec2(8.3, 2.8) + ts*0.85)
+  );
+
+  /* Final scalar field — mapped through palette                 */
+  float f=noise(p*fs*0.50 + 2.0*r + ts*0.7);
+
+  /* ── Colour ──────────────────────────────────────────────── */
+  vec3 palCol=pal(f);
+  vec3 bg=vec3(.9569,.9412,.9098);  /* warm linen #F4F0E8 */
+
+  /* Mix intensity: even at max (u_col=1) keep 25% bg so text   */
+  /* is never fighting a solid colour wall                       */
+  float mix_amt=mix(0.0, 0.78, u_col);
+  vec3 col=mix(bg, palCol, mix_amt);
+
+  /* ── Sand grain texture ─────────────────────────────────── */
+  /* Semi-static: refreshes every 20 s (texture, not flicker)   */
+  float gSeed=floor(u_time*0.05);
+
+  /* Slightly elongated in x → faint horizontal grain direction  */
+  vec2 gCoord=vec2(gl_FragCoord.x*0.72, gl_FragCoord.y*0.96)+gSeed*17.3;
+  float grain=(hash(gCoord)-0.5)*mix(0., 0.065, u_grain);
+
+  /* Second finer grain layer for depth                          */
+  vec2 g2=vec2(gl_FragCoord.x*1.35, gl_FragCoord.y*1.2)+gSeed*31.7;
+  float grain2=(hash(g2)-0.5)*mix(0., 0.028, u_grain);
+
+  col=clamp(col+grain+grain2, 0., 1.);
+
+  gl_FragColor=vec4(col,1.);
+}
+`;
+
+/* ── Compile ────────────────────────────────────────────────── */
+function sh(type,src){
+  const s=gl.createShader(type);
+  gl.shaderSource(s,src); gl.compileShader(s);
+  if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)){
+    console.error('Shader:',gl.getShaderInfoLog(s)); return null;
+  }
+  return s;
+}
+const prog=gl.createProgram();
+gl.attachShader(prog,sh(gl.VERTEX_SHADER,VS));
+gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,FS));
+gl.linkProgram(prog);
+if(!gl.getProgramParameter(prog,gl.LINK_STATUS))
+  console.error('Link:',gl.getProgramInfoLog(prog));
+gl.useProgram(prog);
+
+const buf=gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);
+const aLoc=gl.getAttribLocation(prog,'a');
+gl.enableVertexAttribArray(aLoc);
+gl.vertexAttribPointer(aLoc,2,gl.FLOAT,false,0,0);
+
+const uRes  =gl.getUniformLocation(prog,'u_res');
+const uTime =gl.getUniformLocation(prog,'u_time');
+const uMouse=gl.getUniformLocation(prog,'u_mouse');
+const uMVel =gl.getUniformLocation(prog,'u_mvel');
+const uCol  =gl.getUniformLocation(prog,'u_col');
+const uGrain=gl.getUniformLocation(prog,'u_grain');
+const uFlow =gl.getUniformLocation(prog,'u_flow');
+const uPush =gl.getUniformLocation(prog,'u_push');
+
+let W,H,mx=-9999,my=-9999;
+let velX=0,velY=0,prevMx=-9999,prevMy=-9999;
+
+function resize(){
+  W=canvas.width=innerWidth; H=canvas.height=innerHeight;
+  gl.viewport(0,0,W,H); gl.uniform2f(uRes,W,H);
+}
+addEventListener('resize',resize,{passive:true});
+
+document.addEventListener('mousemove',e=>{
+  if(prevMx!==-9999){
+    /* Exponential smooth: 50% new, 50% history — removes jitter */
+    velX=velX*.5+(e.clientX-prevMx)*.5;
+    velY=velY*.5+(e.clientY-prevMy)*.5;
+  }
+  prevMx=e.clientX; prevMy=e.clientY;
+  mx=e.clientX; my=e.clientY;
+},{passive:true});
+
+document.addEventListener('mouseleave',()=>{
+  mx=-9999; my=-9999;
+  prevMx=-9999; prevMy=-9999;
+});
+
+resize();
+
+const sC=document.getElementById('sC');
+const sG=document.getElementById('sG');
+const sF=document.getElementById('sF');
+const sM=document.getElementById('sM');
+
+function render(ts){
+  gl.uniform1f(uTime,  ts*.001);
+  gl.uniform2f(uMouse, mx, my);
+  gl.uniform2f(uMVel,  velX, velY);
+  gl.uniform1f(uCol,   sC.value/100);
+  gl.uniform1f(uGrain, sG.value/100);
+  gl.uniform1f(uFlow,  sF.value/100);
+  gl.uniform1f(uPush,  sM.value/100);
+  gl.drawArrays(gl.TRIANGLES,0,6);
+  /* Velocity decays each frame — sand settles when cursor stops */
+  velX*=.82; velY*=.82;
+  requestAnimationFrame(render);
+}
+requestAnimationFrame(render);
+</script>
+</body>
+</html>
