@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Governed Design Pipeline — Case Study Reel</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+<style>
+@property --border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:         #F4F0E8;
+  --bg-warm:    #EDE8DE;
+  --sage:       #5C6E4D;
+  --sage-mid:   #8A9E78;
+  --terracotta: #B87D5A;
+  --sand:       #C4B094;
+  --ink:        #252520;
+  --ink-mid:    #4A4A44;
+  --ink-muted:  #787668;
+  --ink-faint:  #B4B0A6;
+  --glass-bg:   rgba(253,250,246,0.68);
+  --glass-hi:   rgba(255,255,255,0.92);
+  --glass-border: rgba(255,255,255,0.88);
+
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body:    'DM Sans', system-ui, sans-serif;
+  --font-mono:    'DM Mono', 'SF Mono', monospace;
+
+  --ease-silk:   cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-expo:   cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  font-family: var(--font-body);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Progress Bar ─────────────────────────────── */
+#progress {
+  position: fixed; top: 0; left: 0; height: 2px; width: 0%;
+  background: linear-gradient(90deg, var(--sage), var(--terracotta), var(--sand));
+  z-index: 1000;
+  transition: none;
+}
+
+/* ── Viewport ─────────────────────────────────── */
+#viewport {
+  width: 100vw; height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Film Grain ───────────────────────────────── */
+#viewport::before {
+  content: '';
+  position: absolute; inset: -50%;
+  width: 200%; height: 200%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  animation: grainDrift 8s linear infinite;
+}
+@keyframes grainDrift {
+  0%   { transform: translate(0, 0); }
+  100% { transform: translate(-10%, -10%); }
+}
+
+/* ── Scenes ───────────────────────────────────── */
+.scene {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+  opacity: 0;
+  z-index: 1;
+  padding: 4vw;
+}
+
+/* ── Scene 1: Opening ─────────────────────────── */
+.s1-meta {
+  font-family: var(--font-mono);
+  font-size: clamp(0.5rem, 0.9vw, 0.75rem);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-bottom: 2.5vh;
+  opacity: 0;
+}
+.s1-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 7vw, 6.5rem);
+  font-weight: 300;
+  font-style: italic;
+  letter-spacing: -0.04em;
+  line-height: 0.92;
+  text-align: center;
+  color: var(--ink);
+  overflow: hidden;
+}
+.s1-title em { color: var(--sage); font-style: inherit; }
+.s1-title .line {
+  display: block;
+  overflow: hidden;
+}
+.s1-title .line-inner {
+  display: block;
+  transform: translateY(110%);
+}
+.s1-sub {
+  font-family: var(--font-body);
+  font-size: clamp(0.875rem, 1.2vw, 1.125rem);
+  color: var(--ink-muted);
+  margin-top: 3vh;
+  text-align: center;
+  max-width: 560px;
+  line-height: 1.7;
+  opacity: 0;
+}
+.s1-pills {
+  display: flex; gap: 0.5rem;
+  margin-top: 2vh;
+  opacity: 0;
+}
+.s1-pill {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.1em;
+  color: var(--ink-muted);
+  border: 1px solid rgba(120,118,104,0.22);
+  padding: 0.3rem 0.8rem;
+  border-radius: 100px;
+}
+.s1-pill strong { color: var(--sage); font-weight: 500; }
+
+/* ── Scene 2: Problem ─────────────────────────── */
+.s2-heading {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 300;
+  font-style: italic;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  text-align: center;
+  color: var(--ink);
+  margin-bottom: 4vh;
+}
+.s2-heading em { color: var(--sage); font-style: inherit; }
+
+.s2-diagram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 4vh;
+}
+.s2-box {
+  padding: 1.5rem 2.5rem;
+  border-radius: 16px;
+  text-align: center;
+  min-width: 180px;
+  opacity: 0;
+}
+.s2-box.left {
+  background: rgba(237,232,222,0.7);
+  border: 1px solid rgba(120,118,104,0.14);
+}
+.s2-box.right {
+  background: rgba(184,125,90,0.06);
+  border: 1px dashed rgba(184,125,90,0.28);
+}
+.s2-box-label {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 0.5rem;
+}
+.s2-box-value {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-style: italic;
+  color: var(--ink);
+}
+.s2-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 0 1.5rem;
+  opacity: 0;
+}
+.s2-arrow-line {
+  width: 56px; height: 1.5px;
+  background: repeating-linear-gradient(90deg, var(--sand) 0, var(--sand) 5px, transparent 5px, transparent 9px);
+}
+.s2-arrow-label {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sand);
+}
+
+.s2-stats {
+  display: flex; gap: 2rem;
+}
+.s2-stat {
+  display: flex; align-items: center; gap: 0.75rem;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  color: var(--ink-muted);
+  opacity: 0;
+}
+.s2-stat-icon {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--terracotta);
+}
+
+/* ── Scene 3: Insight ─────────────────────────── */
+.s3-mark {
+  font-family: var(--font-display);
+  font-size: clamp(80px, 18vw, 200px);
+  font-weight: 300;
+  color: var(--sage);
+  opacity: 0;
+  line-height: 0.5;
+  user-select: none;
+}
+.s3-quote {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3.5vw, 2.75rem);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.45;
+  color: var(--ink);
+  text-align: center;
+  max-width: 700px;
+  margin-top: 1rem;
+  opacity: 0;
+}
+.s3-quote em { color: var(--sage); font-style: inherit; }
+
+/* ── Scene 4: Architecture ────────────────────── */
+.s4-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--sage);
+  margin-bottom: 3vh;
+  opacity: 0;
+}
+.s4-layers {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: min(560px, 80vw);
+}
+.s4-layer {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr;
+  gap: 0;
+  opacity: 0;
+}
+.s4-spine {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 1.5rem;
+}
+.s4-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid var(--sage);
+  background: var(--bg);
+  flex-shrink: 0;
+  z-index: 2;
+  position: relative;
+}
+.s4-dot.active { background: var(--sage); }
+.s4-spine-line {
+  width: 1px; flex: 1;
+  background: rgba(92,110,77,0.18);
+  margin-top: 4px;
+  transform-origin: top;
+  transform: scaleY(0);
+}
+.s4-card {
+  background: rgba(255,252,248,0.48);
+  border-top: 1px solid rgba(255,255,255,0.90);
+  border-left: 1px solid rgba(255,255,255,0.68);
+  border-right: 1px solid rgba(255,255,255,0.26);
+  border-bottom: 1px solid rgba(255,255,255,0.20);
+  box-shadow: inset 0 1.5px 0 rgba(255,255,255,0.95), 0 8px 32px -4px rgba(30,30,26,0.01);
+  border-radius: 20px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 0.75rem;
+  position: relative;
+}
+.s4-card.highlight {
+  background: rgba(255,252,248,0.64);
+}
+.s4-badge {
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 0.4375rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--sage);
+  background: rgba(92,110,77,0.08);
+  border: 1px solid rgba(92,110,77,0.15);
+  padding: 0.1rem 0.5rem;
+  border-radius: 100px;
+  margin-bottom: 0.5rem;
+}
+.s4-label {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--sage);
+  margin-bottom: 0.25rem;
+}
+.s4-title {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 1.8vw, 1.375rem);
+  font-weight: 500;
+  font-style: italic;
+  color: var(--ink);
+  margin-bottom: 0.4rem;
+}
+.s4-code {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  line-height: 1.8;
+  color: var(--ink-muted);
+  background: rgba(237,232,222,0.5);
+  border: 1px solid rgba(120,118,104,0.08);
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+  margin-top: 0.4rem;
+}
+.s4-code .desc { color: var(--sage-mid); opacity: 0.75; }
+
+/* ── Scene 5: Before/After ────────────────────── */
+.s5-heading {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 4vw, 3rem);
+  font-weight: 300;
+  font-style: italic;
+  letter-spacing: -0.03em;
+  text-align: center;
+  color: var(--ink);
+  margin-bottom: 3.5vh;
+  opacity: 0;
+}
+.s5-heading em { color: var(--sage); font-style: inherit; }
+
+.s5-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  width: min(680px, 85vw);
+}
+.s5-card-wrap {
+  border-radius: 22px;
+  padding: 1.5px;
+  opacity: 0;
+}
+.s5-card-wrap.before {
+  background: rgba(237,232,222,0.4);
+}
+.s5-card-wrap.after {
+  background: conic-gradient(
+    from var(--border-angle) at 50% 50%,
+    transparent 0deg, transparent 190deg,
+    rgba(92,110,77,0.32) 240deg,
+    rgba(184,125,90,0.26) 278deg,
+    rgba(196,176,148,0.20) 305deg,
+    transparent 330deg
+  );
+  animation: borderSpin 5s linear infinite paused;
+}
+@keyframes borderSpin {
+  from { --border-angle: 0deg; }
+  to   { --border-angle: 360deg; }
+}
+.s5-card {
+  padding: 1.75rem 2rem;
+  border-radius: 20.5px;
+  height: 100%;
+}
+.s5-card-wrap.before .s5-card {
+  background: rgba(237,232,222,0.55);
+  border: 1px solid rgba(120,118,104,0.12);
+}
+.s5-card-wrap.after .s5-card {
+  background: rgba(253,250,246,0.68);
+  backdrop-filter: blur(32px) saturate(180%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.88);
+  box-shadow: inset 0 1.5px 0 rgba(255,255,255,0.92);
+}
+.s5-badge {
+  font-family: var(--font-mono);
+  font-size: 0.4375rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 100px;
+  margin-bottom: 1rem;
+}
+.s5-card-wrap.before .s5-badge {
+  color: var(--terracotta);
+  background: rgba(184,125,90,0.08);
+  border: 1px solid rgba(184,125,90,0.18);
+}
+.s5-card-wrap.after .s5-badge {
+  color: var(--sage);
+  background: rgba(92,110,77,0.08);
+  border: 1px solid rgba(92,110,77,0.18);
+}
+.s5-card-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 500;
+  font-style: italic;
+  color: var(--ink);
+  margin-bottom: 0.75rem;
+}
+.s5-items {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.s5-item {
+  display: flex; gap: 0.6rem;
+  align-items: flex-start;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+.s5-item-icon {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.s5-card-wrap.before .s5-item-icon { color: var(--terracotta); }
+.s5-card-wrap.after .s5-item-icon { color: var(--sage); }
+
+/* ── Scene 6: Impact ──────────────────────────── */
+.s6-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--sage);
+  margin-bottom: 1.5vh;
+  opacity: 0;
+}
+.s6-heading {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4.5vw, 3.5rem);
+  font-weight: 300;
+  font-style: italic;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  margin-bottom: 3.5vh;
+  opacity: 0;
+}
+.s6-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  width: min(720px, 85vw);
+}
+.s6-card {
+  padding: 1.5rem 1.25rem;
+  text-align: center;
+  background: rgba(255,252,248,0.48);
+  border-top: 1px solid rgba(255,255,255,0.90);
+  border-left: 1px solid rgba(255,255,255,0.68);
+  border-right: 1px solid rgba(255,255,255,0.26);
+  border-bottom: 1px solid rgba(255,255,255,0.20);
+  box-shadow: inset 0 1.5px 0 rgba(255,255,255,0.95), 0 8px 32px -4px rgba(30,30,26,0.01);
+  border-radius: 20px;
+  opacity: 0;
+}
+.s6-card.wide { grid-column: span 2; }
+.s6-number {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: -0.02em;
+  color: var(--sage);
+  line-height: 1.1;
+  margin-bottom: 0.5rem;
+}
+.s6-label {
+  font-family: var(--font-body);
+  font-size: clamp(0.6875rem, 1vw, 0.8125rem);
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+/* ── Scene 7: Closing ─────────────────────────── */
+.s7-quote {
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 2.5vw, 1.875rem);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.6;
+  color: var(--ink-muted);
+  text-align: center;
+  max-width: 560px;
+  opacity: 0;
+}
+.s7-divider {
+  width: 40px; height: 1px;
+  background: var(--sand);
+  margin: 3vh 0;
+  opacity: 0;
+}
+.s7-name {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 1.6vw, 1.25rem);
+  font-weight: 500;
+  font-style: italic;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+  opacity: 0;
+}
+.s7-role {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-bottom: 2vh;
+  opacity: 0;
+}
+.s7-email {
+  font-family: var(--font-display);
+  font-size: clamp(0.875rem, 1.4vw, 1.125rem);
+  font-weight: 400;
+  color: var(--terracotta);
+  opacity: 0;
+}
+
+/* ── Responsive ───────────────────────────────── */
+@media (max-width: 640px) {
+  .s2-diagram { flex-direction: column; gap: 0.75rem; }
+  .s2-arrow { transform: rotate(90deg); padding: 0; }
+  .s2-stats { flex-direction: column; gap: 1rem; }
+  .s5-cards { grid-template-columns: 1fr; }
+  .s6-grid { grid-template-columns: 1fr 1fr; }
+  .s6-card.wide { grid-column: span 2; }
+}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<div id="viewport">
+
+  <!-- Scene 1: Opening -->
+  <div class="scene" id="scene1">
+    <div class="s1-meta">Kiva &middot; Principal Designer &times; AI Systems Architect &middot; 2025&ndash;2026</div>
+    <h1 class="s1-title">
+      <span class="line"><span class="line-inner">Building an</span></span>
+      <span class="line"><span class="line-inner">AI-Ready</span></span>
+      <span class="line"><span class="line-inner"><em>Design System</em></span></span>
+    </h1>
+    <p class="s1-sub">How I turned an AI hallucination problem into an infrastructure initiative the whole team can use.</p>
+    <div class="s1-pills">
+      <span class="s1-pill"><strong>Role</strong>&nbsp; Principal Designer</span>
+      <span class="s1-pill"><strong>Timeline</strong>&nbsp; Q3 2025 &ndash; Q2 2026</span>
+      <span class="s1-pill"><strong>Team</strong>&nbsp; Cross-functional</span>
+    </div>
+  </div>
+
+  <!-- Scene 2: Problem -->
+  <div class="scene" id="scene2">
+    <h2 class="s2-heading">AI couldn't read our <em>design system</em></h2>
+    <div class="s2-diagram">
+      <div class="s2-box left">
+        <div class="s2-box-label">Design System</div>
+        <div class="s2-box-value">Tokens &amp; Variables</div>
+      </div>
+      <div class="s2-arrow">
+        <div class="s2-arrow-line"></div>
+        <div class="s2-arrow-label">Gap</div>
+      </div>
+      <div class="s2-box right">
+        <div class="s2-box-label">AI Tools</div>
+        <div class="s2-box-value">Guessing</div>
+      </div>
+    </div>
+    <div class="s2-stats">
+      <div class="s2-stat">
+        <span class="s2-stat-icon">&times;</span>
+        <span><strong>40%+</strong> prototyping time wasted on corrections</span>
+      </div>
+      <div class="s2-stat">
+        <span class="s2-stat-icon">&times;</span>
+        <span>AI <strong>hallucinating</strong> design token values</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scene 3: Insight -->
+  <div class="scene" id="scene3">
+    <div class="s3-mark">&ldquo;</div>
+    <blockquote class="s3-quote">
+      The problem wasn't the AI tool. It was that the design system wasn't machine-readable.<br><em>Fix the input &rarr; fix the output.</em>
+    </blockquote>
+  </div>
+
+  <!-- Scene 4: Architecture -->
+  <div class="scene" id="scene4">
+    <div class="s4-eyebrow">Three-Layer Token Architecture</div>
+    <div class="s4-layers">
+      <div class="s4-layer" id="s4-l1">
+        <div class="s4-spine">
+          <div class="s4-dot"></div>
+          <div class="s4-spine-line"></div>
+        </div>
+        <div class="s4-card">
+          <div class="s4-label">Layer 1</div>
+          <div class="s4-title">Global &mdash; Primitive Layer</div>
+          <div class="s4-code">color/green/500: #5B8F7B<br>spacing/16: 1rem<br>radius/lg: 16px</div>
+        </div>
+      </div>
+      <div class="s4-layer" id="s4-l2">
+        <div class="s4-spine">
+          <div class="s4-dot active"></div>
+          <div class="s4-spine-line"></div>
+        </div>
+        <div class="s4-card highlight">
+          <div class="s4-badge">The new part</div>
+          <div class="s4-label">Layer 2</div>
+          <div class="s4-title">Alias &mdash; Semantic Layer</div>
+          <div class="s4-code">color/text/primary &rarr; color/green/900<br><span class="desc">// "Primary text color for body content.<br>// Use on headings and key labels."</span></div>
+        </div>
+      </div>
+      <div class="s4-layer" id="s4-l3">
+        <div class="s4-spine">
+          <div class="s4-dot"></div>
+        </div>
+        <div class="s4-card">
+          <div class="s4-label">Layer 3</div>
+          <div class="s4-title">Mapped &mdash; Component Layer</div>
+          <div class="s4-code">button/primary/bg &rarr; color/action/primary<br>card/padding &rarr; spacing/content/md</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scene 5: Before/After -->
+  <div class="scene" id="scene5">
+    <h2 class="s5-heading">See the <em>difference</em></h2>
+    <div class="s5-cards">
+      <div class="s5-card-wrap before">
+        <div class="s5-card">
+          <div class="s5-badge">Before</div>
+          <div class="s5-card-title">Without Semantic Tokens</div>
+          <ul class="s5-items">
+            <li class="s5-item"><span class="s5-item-icon">&times;</span><span>Hex codes with no context</span></li>
+            <li class="s5-item"><span class="s5-item-icon">&times;</span><span>AI guesses where to apply values</span></li>
+            <li class="s5-item"><span class="s5-item-icon">&times;</span><span>Every prototype needs manual fixes</span></li>
+            <li class="s5-item"><span class="s5-item-icon">&times;</span><span>Engineers hardcode overrides</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="s5-card-wrap after">
+        <div class="s5-card">
+          <div class="s5-badge">After</div>
+          <div class="s5-card-title">With Full Token Descriptions</div>
+          <ul class="s5-items">
+            <li class="s5-item"><span class="s5-item-icon">&check;</span><span>Semantic meaning in every token</span></li>
+            <li class="s5-item"><span class="s5-item-icon">&check;</span><span>AI understands design intent</span></li>
+            <li class="s5-item"><span class="s5-item-icon">&check;</span><span>Production-fidelity from first pass</span></li>
+            <li class="s5-item"><span class="s5-item-icon">&check;</span><span>AI rules file governs the codebase</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scene 6: Impact -->
+  <div class="scene" id="scene6">
+    <div class="s6-eyebrow">Results</div>
+    <h2 class="s6-heading">Impact</h2>
+    <div class="s6-grid">
+      <div class="s6-card wide" id="imp-0">
+        <div class="s6-number" data-target="100" data-suffix="+">0</div>
+        <div class="s6-label">Colleagues trained, CEO &amp; CTO present</div>
+      </div>
+      <div class="s6-card" id="imp-1">
+        <div class="s6-number" data-target="36" data-suffix="+">0</div>
+        <div class="s6-label">CSS bugs found &amp; fixed</div>
+      </div>
+      <div class="s6-card" id="imp-2">
+        <div class="s6-number" data-text="Days &rarr; Hours">0</div>
+        <div class="s6-label">~60% faster design-to-delivery</div>
+      </div>
+      <div class="s6-card" id="imp-3">
+        <div class="s6-number" data-target="3" data-suffix=" Tools">0</div>
+        <div class="s6-label">Figma Make &middot; Claude Code &middot; Google Stitch</div>
+      </div>
+      <div class="s6-card" id="imp-4">
+        <div class="s6-number" data-text="Quarterly">0</div>
+        <div class="s6-label">AI Readiness Reviews established</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scene 7: Closing -->
+  <div class="scene" id="scene7">
+    <blockquote class="s7-quote">&ldquo;An AI-ready design system isn't a project you finish. It's a standard you maintain.&rdquo;</blockquote>
+    <div class="s7-divider"></div>
+    <div class="s7-name">Lin Zhao</div>
+    <div class="s7-role">Principal Designer &times; AI Systems Architect</div>
+    <div class="s7-email">lin@linzhao.design</div>
+  </div>
+
+</div>
+
+<script>
+/* ================================================================
+   CASE STUDY REEL — GSAP Sequenced Animation
+   ================================================================ */
+
+const TOTAL_DURATION = 40; // seconds per loop
+const progressBar = document.getElementById('progress');
+let loopStart = 0;
+
+// Progress bar updater
+function updateProgress() {
+  const elapsed = (Date.now() - loopStart) / 1000;
+  const pct = Math.min((elapsed / TOTAL_DURATION) * 100, 100);
+  progressBar.style.width = pct + '%';
+  if (pct < 100) requestAnimationFrame(updateProgress);
+}
+
+// Helper: show scene
+function showScene(id) {
+  return gsap.to(id, { opacity: 1, duration: 0.6, ease: 'power2.out' });
+}
+function hideScene(id) {
+  return gsap.to(id, { opacity: 0, duration: 0.5, ease: 'power2.in' });
+}
+
+// Counter animation
+function animateCounter(el, target, suffix) {
+  const proxy = { v: 0 };
+  gsap.to(proxy, {
+    v: target,
+    duration: 1.5,
+    ease: 'power2.out',
+    onUpdate: () => { el.textContent = Math.round(proxy.v) + suffix; }
+  });
+}
+
+function buildReel() {
+  const master = gsap.timeline({
+    onStart: () => {
+      loopStart = Date.now();
+      requestAnimationFrame(updateProgress);
+    },
+    onComplete: () => {
+      // Reset all scenes
+      gsap.set('.scene', { opacity: 0 });
+      // Reset scene-specific elements
+      gsap.set('.s1-title .line-inner', { y: '110%' });
+      gsap.set(['.s1-meta', '.s1-sub', '.s1-pills'], { opacity: 0, y: 10 });
+      gsap.set('.s2-heading', { opacity: 0, y: 20 });
+      gsap.set(['.s2-box', '.s2-arrow'], { opacity: 0, scale: 0.9 });
+      gsap.set('.s2-stat', { opacity: 0, x: -20 });
+      gsap.set('.s3-mark', { opacity: 0, scale: 0.8 });
+      gsap.set('.s3-quote', { opacity: 0, y: 20 });
+      gsap.set('.s4-eyebrow', { opacity: 0, y: 10 });
+      gsap.set('.s4-layer', { opacity: 0, y: 30 });
+      gsap.set('.s4-spine-line', { scaleY: 0 });
+      gsap.set('.s5-heading', { opacity: 0, y: 20 });
+      gsap.set('.s5-card-wrap', { opacity: 0, x: (i) => i === 0 ? -40 : 40 });
+      gsap.set(['.s6-eyebrow', '.s6-heading'], { opacity: 0, y: 10 });
+      gsap.set('.s6-card', { opacity: 0, y: 25, scale: 0.95 });
+      gsap.set(['.s7-quote', '.s7-divider', '.s7-name', '.s7-role', '.s7-email'], { opacity: 0, y: 12 });
+      // Reset counters
+      document.querySelectorAll('.s6-number').forEach(el => { el.textContent = '0'; });
+      // Stop spinning border
+      document.querySelector('.s5-card-wrap.after').style.animationPlayState = 'paused';
+      // Restart
+      gsap.delayedCall(0.5, buildReel);
+    }
+  });
+
+  /* ── Scene 1: Opening (0-4s) ────────────────────── */
+  const s1 = gsap.timeline();
+  s1.add(showScene('#scene1'), 0)
+    .to('.s1-meta', { opacity: 0.75, y: 0, duration: 0.6, ease: 'power3.out' }, 0.2)
+    .to('.s1-title .line-inner', {
+      y: '0%', duration: 0.9, ease: 'power3.out',
+      stagger: 0.12
+    }, 0.4)
+    .to('.s1-sub', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 1.0)
+    .to('.s1-pills', { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 1.3)
+    .to({}, { duration: 1.2 }) // hold
+    .add(hideScene('#scene1'));
+
+  master.add(s1, 0);
+
+  /* ── Scene 2: Problem (4-9s) ────────────────────── */
+  const s2 = gsap.timeline();
+  s2.add(showScene('#scene2'), 0)
+    .fromTo('.s2-heading', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 0.3)
+    .to('.s2-box.left', { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.5)' }, 0.7)
+    .to('.s2-arrow', { opacity: 1, scale: 1, duration: 0.4, ease: 'power2.out' }, 1.0)
+    .to('.s2-box.right', { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.5)' }, 1.2)
+    .to('.s2-stat', { opacity: 1, x: 0, duration: 0.5, ease: 'power3.out', stagger: 0.2 }, 1.8)
+    .to({}, { duration: 1.2 }) // hold
+    .add(hideScene('#scene2'));
+
+  master.add(s2, 4);
+
+  /* ── Scene 3: Insight (9-13s) ───────────────────── */
+  const s3 = gsap.timeline();
+  s3.add(showScene('#scene3'), 0)
+    .fromTo('.s3-mark', { opacity: 0, scale: 0.7 }, { opacity: 0.12, scale: 1, duration: 0.8, ease: 'back.out(1.2)' }, 0.2)
+    .fromTo('.s3-quote', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, 0.5)
+    .to({}, { duration: 1.5 }) // hold
+    .add(hideScene('#scene3'));
+
+  master.add(s3, 9);
+
+  /* ── Scene 4: Architecture (13-20s) ─────────────── */
+  const s4 = gsap.timeline();
+  s4.add(showScene('#scene4'), 0)
+    .fromTo('.s4-eyebrow', { opacity: 0, y: 10 }, { opacity: 0.75, y: 0, duration: 0.5, ease: 'power3.out' }, 0.2)
+    // Layer 1
+    .fromTo('#s4-l1', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, ease: 'back.out(1.4)' }, 0.5)
+    .to('#s4-l1 .s4-spine-line', { scaleY: 1, duration: 0.5, ease: 'power2.out' }, 1.0)
+    // Layer 2
+    .fromTo('#s4-l2', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, ease: 'back.out(1.4)' }, 1.3)
+    .to('#s4-l2 .s4-spine-line', { scaleY: 1, duration: 0.5, ease: 'power2.out' }, 1.8)
+    // Layer 3
+    .fromTo('#s4-l3', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7, ease: 'back.out(1.4)' }, 2.1)
+    .to({}, { duration: 2 }) // hold
+    .add(hideScene('#scene4'));
+
+  master.add(s4, 13);
+
+  /* ── Scene 5: Before/After (20-26s) ─────────────── */
+  const afterWrap = document.querySelector('.s5-card-wrap.after');
+  const s5 = gsap.timeline();
+  s5.add(showScene('#scene5'), 0)
+    .fromTo('.s5-heading', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, 0.2)
+    .fromTo('.s5-card-wrap.before', { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.7, ease: 'power3.out' }, 0.5)
+    .fromTo('.s5-card-wrap.after', { opacity: 0, x: 40 }, {
+      opacity: 1, x: 0, duration: 0.7, ease: 'power3.out',
+      onComplete: () => { afterWrap.style.animationPlayState = 'running'; }
+    }, 0.7)
+    .to({}, { duration: 3 }) // hold
+    .add(hideScene('#scene5'));
+
+  master.add(s5, 20);
+
+  /* ── Scene 6: Impact (26-33s) ───────────────────── */
+  const s6 = gsap.timeline();
+  s6.add(showScene('#scene6'), 0)
+    .fromTo('.s6-eyebrow', { opacity: 0, y: 10 }, { opacity: 0.75, y: 0, duration: 0.4, ease: 'power3.out' }, 0.2)
+    .fromTo('.s6-heading', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 0.35)
+    .fromTo('.s6-card', { opacity: 0, y: 25, scale: 0.95 }, {
+      opacity: 1, y: 0, scale: 1, duration: 0.6,
+      ease: 'back.out(1.3)',
+      stagger: 0.15,
+      onStart: function() {
+        // Animate counters for each card as it appears
+        const cards = document.querySelectorAll('.s6-card');
+        cards.forEach((card, i) => {
+          const numEl = card.querySelector('.s6-number');
+          const target = numEl.dataset.target;
+          const text = numEl.dataset.text;
+          const suffix = numEl.dataset.suffix || '';
+
+          gsap.delayedCall(i * 0.15, () => {
+            if (text) {
+              numEl.innerHTML = text;
+            } else if (target) {
+              animateCounter(numEl, parseInt(target), suffix);
+            }
+          });
+        });
+      }
+    }, 0.6)
+    .to({}, { duration: 2.5 }) // hold
+    .add(hideScene('#scene6'));
+
+  master.add(s6, 26);
+
+  /* ── Scene 7: Closing (33-40s) ──────────────────── */
+  const s7 = gsap.timeline();
+  s7.add(showScene('#scene7'), 0)
+    .fromTo('.s7-quote', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, 0.3)
+    .fromTo('.s7-divider', { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.5, ease: 'power2.out' }, 1.2)
+    .fromTo('.s7-name', { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 1.5)
+    .fromTo('.s7-role', { opacity: 0, y: 8 }, { opacity: 0.7, y: 0, duration: 0.4, ease: 'power3.out' }, 1.8)
+    .fromTo('.s7-email', { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power3.out' }, 2.1)
+    .to({}, { duration: 2.5 }) // hold
+    .to('.scene', { opacity: 0, duration: 0.8, ease: 'power2.in' });
+
+  master.add(s7, 33);
+
+  return master;
+}
+
+// Initialize: set all initial states
+gsap.set('.scene', { opacity: 0 });
+gsap.set('.s1-title .line-inner', { y: '110%' });
+gsap.set(['.s1-meta', '.s1-sub', '.s1-pills'], { opacity: 0, y: 10 });
+gsap.set('.s2-heading', { opacity: 0, y: 20 });
+gsap.set(['.s2-box', '.s2-arrow'], { opacity: 0, scale: 0.9 });
+gsap.set('.s2-stat', { opacity: 0, x: -20 });
+gsap.set('.s3-mark', { opacity: 0, scale: 0.8 });
+gsap.set('.s3-quote', { opacity: 0, y: 20 });
+gsap.set('.s4-eyebrow', { opacity: 0, y: 10 });
+gsap.set('.s4-layer', { opacity: 0, y: 30 });
+gsap.set('.s4-spine-line', { scaleY: 0 });
+gsap.set('.s5-heading', { opacity: 0, y: 20 });
+gsap.set('.s5-card-wrap.before', { opacity: 0, x: -40 });
+gsap.set('.s5-card-wrap.after', { opacity: 0, x: 40 });
+gsap.set(['.s6-eyebrow', '.s6-heading'], { opacity: 0, y: 10 });
+gsap.set('.s6-card', { opacity: 0, y: 25, scale: 0.95 });
+gsap.set(['.s7-quote', '.s7-divider', '.s7-name', '.s7-role', '.s7-email'], { opacity: 0, y: 12 });
+
+// Start on load
+window.addEventListener('load', () => {
+  gsap.delayedCall(0.3, buildReel);
+});
+</script>
+
+</body>
+</html>
