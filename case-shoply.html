@@ -210,9 +210,9 @@ main { position: relative; z-index: 2; }
 
 /* ── Hero ─────────────────────────────────────────────────────── */
 #hero {
-  min-height: 100svh; display: flex; align-items: center;
+  display: flex; align-items: center;
   padding: 140px 0 80px;
-  position: relative; overflow: hidden;
+  position: relative;
 }
 .hero-inner { max-width: var(--max-w); margin: 0 auto; width: 100%; }
 .hero-meta {
@@ -330,7 +330,57 @@ main { position: relative; z-index: 2; }
   cursor: pointer; transition: border-color 0.3s;
 }
 .cs-image-trio img:hover { border-color: rgba(92,110,77,0.2); }
+.cs-image-trio--balanced img {
+  height: 320px; object-fit: contain;
+  background: rgba(253,250,246,0.5);
+}
 @media (max-width: 600px) { .cs-image-trio { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .cs-image-trio--balanced img { height: auto; } }
+
+.cs-image-quad {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem; margin: 1rem 0;
+}
+.cs-image-quad img {
+  width: 100%; border-radius: var(--radius);
+  border: 1px solid rgba(92,110,77,0.08);
+  cursor: pointer; transition: border-color 0.3s;
+  object-fit: cover; aspect-ratio: 3/4;
+}
+.cs-image-quad img:hover { border-color: rgba(92,110,77,0.2); }
+@media (max-width: 600px) { .cs-image-quad { grid-template-columns: 1fr 1fr; } }
+
+.cs-image-quint {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: 0.75rem; margin: 1rem 0;
+}
+.cs-image-quint img {
+  width: 100%; border-radius: var(--radius);
+  border: 1px solid rgba(92,110,77,0.08);
+  cursor: pointer; transition: border-color 0.3s;
+}
+.cs-image-quint img:hover { border-color: rgba(92,110,77,0.2); }
+@media (max-width: 680px) { .cs-image-quint { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 480px) { .cs-image-quint { grid-template-columns: 1fr 1fr; } }
+
+.cs-image-gallery {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem; margin: 1rem 0;
+}
+.cs-image-gallery img {
+  width: 100%; border-radius: var(--radius);
+  border: 1px solid rgba(92,110,77,0.08);
+  cursor: pointer; transition: border-color 0.3s;
+  aspect-ratio: 16/10; object-fit: cover;
+}
+.cs-image-gallery img:hover { border-color: rgba(92,110,77,0.2); }
+@media (max-width: 600px) { .cs-image-gallery { grid-template-columns: 1fr 1fr; } }
+
+.cs-hero-image {
+  width: 100%; max-width: 260px;
+  margin: 2.5rem auto 0; display: block;
+  filter: drop-shadow(0 20px 60px rgba(0,0,0,0.10));
+}
 
 /* ── Persona Cards ────────────────────────────────────────────── */
 .cs-persona-grid {
@@ -480,6 +530,14 @@ main { position: relative; z-index: 2; }
   color: var(--ink-muted); line-height: 1.4;
 }
 
+/* ── Section Label ───────────────────────────────────────────── */
+.cs-section-label {
+  font-family: var(--font-display);
+  font-size: clamp(1.125rem, 2vw, 1.375rem);
+  font-weight: 400; font-style: italic;
+  color: var(--ink-mid); margin: 2rem 0 0.75rem;
+}
+
 /* ── Contact / Footer ─────────────────────────────────────────── */
 #contact {
   padding: clamp(100px,14vw,160px) var(--pad) 0;
@@ -585,7 +643,7 @@ footer {
         From 31%<br>retention to <em>82%.</em>
       </h1>
       <p class="hero-sub">
-        Users downloaded Shoply, poked around for four days, and left. The cashback app's V1 was haemorrhaging users — declining conversion, spiking bounce rates, and a retention curve that flatlined after day four. <strong>I owned V2 end to end: audit, redesign, testing, and a new design system.</strong>
+        Shoply is a cashback app for online and offline shoppers. V1 was haemorrhaging users: declining conversion, spiking bounce rates, and a retention curve that flatlined after day four. <strong>I owned V2 end to end: audit, research, redesign, testing, and a new design system.</strong>
       </p>
 
       <div class="cs-meta-grid">
@@ -605,31 +663,50 @@ footer {
           <div class="cs-meta-label">Tools</div>
           <div class="cs-meta-value">Figma, SurveyMonkey</div>
         </div>
+        <div class="cs-meta-item">
+          <div class="cs-meta-label">Outcome</div>
+          <div class="cs-meta-value">User retention 31% → 82%</div>
+        </div>
         <div class="cs-meta-item wide">
           <div class="cs-meta-label">Process</div>
-          <div class="cs-meta-value">Audit → Research → Ideate → Prototype → Test → Design System → QA</div>
+          <div class="cs-meta-value">Pain Points → Design Audit → Competitive Analysis → Ideation → Whiteboarding → Prototyping → Think-aloud + Survey → Iterations → Design System → QA</div>
         </div>
       </div>
+
+      <img class="cs-hero-image"
+           src="https://www.linzhao15.com/wp-content/uploads/2024/05/%F0%9F%93%B1-Iphone-X.png"
+           alt="Shoply V2 on iPhone" loading="eager">
       </div>
     </section>
 
-    <!-- ── Day 4 cliff ────────────────────────────────────────── -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 01 — BUSINESS PAIN POINT                                  -->
+    <!-- ══════════════════════════════════════════════════════════ -->
     <div class="divider"><div class="divider-line"></div></div>
     <div class="cs-content-section reveal">
       <div class="chapter-num">01 — The Problem</div>
       <h2 class="chapter-heading">Day 4 <em>was the cliff</em></h2>
-      <p class="cs-content-text">The data was unambiguous: users who survived onboarding hit a wall by day four. They couldn't find deals, couldn't figure out redemption, and didn't see the value fast enough. The question wasn't whether to redesign — it was how deep to go.</p>
+      <p class="cs-content-text">Previous stats showed Shoply V1 was unsatisfactory for users: declining conversion rate, high bounce rate, and a drop in daily active users after four days. Users downloaded the app, poked around, couldn't find value fast enough, and left. To boost conversion and retention, leadership prioritized improving UX. <strong>As the lead designer for V2, I began with a design audit to identify the structural issues driving churn.</strong></p>
+      <div class="cs-image-row">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screen-Shot-2019-09-20-at-3.35.47-PM.png"
+             alt="Shoply V1 app overview" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screenshot-2024-06-30-at-10.48.23%E2%80%AFAM.png"
+             alt="V1 pain point analysis" onclick="openLightbox(this.src)" loading="lazy">
+      </div>
     </div>
 
-    <!-- ── Personas ───────────────────────────────────────────── -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 02 — USER TYPES / PERSONAS                                -->
+    <!-- ══════════════════════════════════════════════════════════ -->
     <div class="cs-content-section reveal">
       <div class="chapter-num">02 — Research</div>
       <h2 class="chapter-heading">Two users, <em>opposite needs</em></h2>
-      <p class="cs-content-text">Marketing data surfaced two behavioural archetypes — and they wanted fundamentally different things from the same app:</p>
+      <p class="cs-content-text">Based on the data from marketing, I developed two distinct persona types to understand user behavior and preferences. They wanted fundamentally different things from the same app:</p>
       <div class="cs-persona-grid">
         <div class="cs-persona-card">
-          <div class="cs-persona-card-name">The Deal Hunter — browses online, wants speed</div>
+          <div class="cs-persona-card-name">Persona A: The Deal Hunter</div>
           <ul>
+            <li>Female, 18, College Student</li>
             <li>Prefers online shopping</li>
             <li>Goals: save money quickly, earn rewards</li>
             <li>Wants convenient cashback experience</li>
@@ -638,70 +715,103 @@ footer {
           </ul>
         </div>
         <div class="cs-persona-card">
-          <div class="cs-persona-card-name">The Coupon Clipper — shops in-store, wants simplicity</div>
+          <div class="cs-persona-card-name">Persona B: The Coupon Clipper</div>
           <ul>
+            <li>Female, 45, Housewife, no college degree</li>
             <li>Prefers offline shopping</li>
             <li>Goals: save money, find nearby store coupons</li>
             <li>Needs quick access to deals and coupons</li>
             <li>Wants easy-to-learn app</li>
-            <li>Simple interface — no tech complexity</li>
+            <li>Simple interface, no tech complexity</li>
           </ul>
         </div>
       </div>
+      <div class="cs-image-row">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screen-Shot-2021-01-30-at-6.25.46-PM-1280x955.png"
+             alt="Persona A analysis" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screen-Shot-2021-01-30-at-6.54.27-PM-1280x856.png"
+             alt="Persona B analysis" onclick="openLightbox(this.src)" loading="lazy">
+      </div>
     </div>
 
-    <!-- ── Audit ──────────────────────────────────────────────── -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 03 — HEURISTIC AUDIT                                      -->
+    <!-- ══════════════════════════════════════════════════════════ -->
     <div class="cs-content-section reveal">
       <div class="chapter-num">03 — Heuristic Audit</div>
       <h2 class="chapter-heading">Broken at <em>every layer</em></h2>
-      <p class="cs-content-text">A heuristic evaluation across onboarding, homepage, and redemption revealed the problems weren't cosmetic — they were structural:</p>
+      <p class="cs-content-text">To offer targeted features and effective improvements, I conducted a design audit using heuristic evaluation. The problems weren't cosmetic; they were structural. Here are my primary findings:</p>
       <div class="cs-three-col">
         <div class="cs-audit-card">
           <div class="cs-audit-card-title">Onboarding</div>
           <ul>
-            <li>Lacks visual appeal — aesthetic and minimalist design failure</li>
-            <li>No feature intro demonstrating product value</li>
-            <li>Excessive pre-sign-up questions without skip button, heightening user anxiety</li>
+            <li><strong>Aesthetic and minimalist design:</strong> Lacks visual appeal</li>
+            <li><strong>Business goal:</strong> No feature/solution intro demonstrating product value</li>
+            <li><strong>Flexibility and efficiency:</strong> Excessive pre-sign-up questions without skip button, heightening user anxiety</li>
           </ul>
         </div>
         <div class="cs-audit-card">
           <div class="cs-audit-card-title">Homepage</div>
           <ul>
-            <li>No search, filtering, or sorting — users can't find deals</li>
-            <li>Visual hierarchy collapse: icons and text blend together</li>
-            <li>Saved offers disappear with no way to find them again</li>
+            <li><strong>Consistency &amp; standards:</strong> Icons inconsistent in size and style</li>
+            <li><strong>Aesthetic design:</strong> UI lacks engagement; font sizes too small for older adults; icons and text blend together</li>
+            <li><strong>Recognition vs. recall:</strong> After adding offers, users can't find saved offers</li>
+            <li><strong>Flexibility:</strong> No search bar, no sorting by popularity, time, or location</li>
           </ul>
         </div>
         <div class="cs-audit-card">
           <div class="cs-audit-card-title">Redemption</div>
           <ul>
-            <li>Users unsure where to upload receipts — logos not clearly clickable</li>
-            <li>No immediate feedback after receipt upload — no success or error message</li>
+            <li><strong>Recognition vs. recall:</strong> Users unsure where to upload receipts; logos not clearly indicated as clickable</li>
+            <li><strong>User control &amp; freedom:</strong> No immediate feedback (success/error) after uploading receipts</li>
           </ul>
         </div>
       </div>
       <div class="cs-image-trio">
-        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screen-Shot-2021-01-30-at-6.25.46-PM-1280x955.png"
-             alt="Heuristic evaluation — onboarding" onclick="openLightbox(this.src)" loading="lazy">
-        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screen-Shot-2021-01-30-at-6.54.27-PM-1280x856.png"
-             alt="Heuristic evaluation — homepage" onclick="openLightbox(this.src)" loading="lazy">
-        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screen-Shot-2019-09-20-at-3.35.47-PM.png"
-             alt="Heuristic evaluation — redeem" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screenshot-2024-06-29-at-9.54.54%E2%80%AFAM.png"
+             alt="Heuristic evaluation: onboarding" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screenshot-2024-06-29-at-9.55.01%E2%80%AFAM.png"
+             alt="Heuristic evaluation: homepage" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screenshot-2024-06-29-at-9.55.07%E2%80%AFAM.png"
+             alt="Heuristic evaluation: redemption" onclick="openLightbox(this.src)" loading="lazy">
       </div>
     </div>
 
-    <!-- ── Competitive Analysis ───────────────────────────────── -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 04 — COMPETITIVE ANALYSIS                                 -->
+    <!-- ══════════════════════════════════════════════════════════ -->
     <div class="cs-content-section reveal">
       <div class="chapter-num">04 — Competitive Analysis</div>
       <h2 class="chapter-heading">What the best cashback apps <em>got right</em></h2>
-      <p class="cs-content-text">I benchmarked 8 competitors across 9 dimensions and presented findings company-wide. The gap between Shoply and market leaders (Ibotta, Rakuten) was clear — and specific:</p>
-      <ul class="cs-bullet-list">
-        <li><strong>Immediate value hook</strong> — join bonuses + instruction pages drive first-session engagement</li>
-        <li><strong>Location-aware deals</strong> — geo-targeting bridges online and offline shopping</li>
-        <li><strong>Browse by category + sort</strong> — navigation that matches how users think about deals</li>
-        <li><strong>Real-time cashback status</strong> — visibility of system status keeps users in control</li>
-      </ul>
-      <div class="cs-image-row">
+      <p class="cs-content-text">After self-assessment, I conducted a competitive analysis on <strong>8 products across 9 dimensions</strong> (UX/UI, error prevention, onboarding, info sorting/filtering, etc.) and presented the findings company-wide. I highlighted strengths to learn from and weaknesses to avoid, concluding with key takeaways for future upgrades:</p>
+      <div class="cs-two-col">
+        <div>
+          <h4>Top takeaways from Ibotta and 8 apps</h4>
+          <ul class="cs-bullet-list">
+            <li><strong>Join bonus</strong> to boost conversion rate</li>
+            <li><strong>Location tracking</strong> to find nearby offers</li>
+            <li><strong>Instruction pages</strong> for easy onboarding, reducing bounce rate</li>
+            <li><strong>Scrollable offer banners</strong> to attract users</li>
+            <li><strong>Category browsing</strong> to simplify navigation</li>
+            <li><strong>Sorting options</strong> to enhance findability</li>
+            <li><strong>QR code scanning</strong> to improve accuracy</li>
+            <li><strong>Cash back updates</strong> to increase user control</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Other inspirations</h4>
+          <ul class="cs-bullet-list">
+            <li>Face ID verification</li>
+            <li>Weekly ads</li>
+            <li>"You may also like" suggestions</li>
+            <li>Facebook connection to boost retention</li>
+            <li>Improve UI consistency across screens</li>
+          </ul>
+        </div>
+      </div>
+      <div class="cs-image-trio">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Shoply-Competitive-Analysis.docx-3.jpg"
+             alt="Competitive analysis document" onclick="openLightbox(this.src)" loading="lazy">
         <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Shoply-Competitive-Analysis.jpg"
              alt="Competitive analysis overview" onclick="openLightbox(this.src)" loading="lazy">
         <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Shoply-CA-2.jpg"
@@ -709,53 +819,112 @@ footer {
       </div>
     </div>
 
-    <!-- ── IA + Ideation ──────────────────────────────────────── -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 05 — IDEATION: CARD SORTING                               -->
+    <!-- ══════════════════════════════════════════════════════════ -->
     <div class="cs-content-section reveal">
       <div class="chapter-num">05 — Ideation</div>
-      <h2 class="chapter-heading">Rebuilding the <em>information architecture</em></h2>
-      <p class="cs-content-text">Card sorting with stakeholders confirmed what testing showed: users couldn't find deals because the IA didn't match how they think about shopping. I rebuilt the flow with the PM and devs around one core principle: <strong>every screen must have a clear next step, and every step must be reversible.</strong></p>
-      <div class="cs-image-row">
-        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Shoply-Competitive-Analysis.docx-3.jpg"
-             alt="Card sorting session" onclick="openLightbox(this.src)" loading="lazy">
-        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Redesigned-Shopping-Flow.png"
-             alt="Redesigned shopping flow" onclick="openLightbox(this.src)" loading="lazy">
-      </div>
+      <h2 class="chapter-heading">Aligning the team <em>before building</em></h2>
+      <p class="cs-content-text">Based on all the data and findings from our research, I facilitated a comprehensive card sorting session with stakeholders. This session was instrumental in confirming and aligning on the prioritization and organization of features, optimizing the user experience, refining branding elements, and <strong>ensuring coherence across the user interface</strong>.</p>
+      <img class="cs-image-full"
+           src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screenshot-2024-06-30-at-10.48.50%E2%80%AFAM.png"
+           alt="Card sorting session with stakeholders" onclick="openLightbox(this.src)" loading="lazy">
     </div>
 
-    <!-- ── Wireframing ────────────────────────────────────────── -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 06 — INFORMATION ARCHITECTURE                             -->
+    <!-- ══════════════════════════════════════════════════════════ -->
     <div class="cs-content-section reveal">
-      <div class="chapter-num">06 — Design</div>
-      <h2 class="chapter-heading">From whiteboard <em>to high-fidelity</em></h2>
-      <p class="cs-content-text">Wireframes first, whiteboarding with the team to align on logic and edge cases, then high-fidelity designs targeting the two core failure points:</p>
-      <div class="cs-two-col">
-        <div>
-          <h4>Onboarding: show value, not process</h4>
-          <ul class="cs-bullet-list">
-            <li>Replaced text walls with visual demos of cashback in action</li>
-            <li>Cut pre-sign-up questions — earn trust first, ask later</li>
-          </ul>
-        </div>
-        <div>
-          <h4>Homepage: findability over decoration</h4>
-          <ul class="cs-bullet-list">
-            <li>Added search + category filtering — the #1 user request</li>
-            <li>Rebuilt visual hierarchy so deals, not chrome, dominate the fold</li>
-          </ul>
-        </div>
-      </div>
-      <div class="cs-image-row">
+      <div class="chapter-num">06 — Information Architecture</div>
+      <h2 class="chapter-heading">Rebuilding the <em>user flow</em></h2>
+      <p class="cs-content-text">Research revealed logic issues in Shoply, making it hard for users to find and redeem deals. To address this, I created user flows and discussed navigation, hierarchy, categories, and sorting with the PM and devs. The goal was to make the app intuitive and streamline the design process around clear principles:</p>
+      <ul class="cs-bullet-list">
+        <li><strong>Clarify information hierarchy</strong> for clear understanding</li>
+        <li><strong>Enable quick navigation</strong> throughout the interface</li>
+        <li><strong>Ensure no dead ends</strong> in user journeys</li>
+        <li><strong>Allow easy backtracking</strong> and backward navigation</li>
+        <li><strong>Prevent misoperations</strong> with clear affordances</li>
+      </ul>
+      <div class="cs-section-label">Homepage flow</div>
+      <img class="cs-image-full"
+           src="https://www.linzhao15.com/wp-content/uploads/2020/01/Redesigned-Shopping-Flow.png"
+           alt="Redesigned homepage shopping flow" onclick="openLightbox(this.src)" loading="lazy">
+      <div class="cs-section-label">Sign-up / sign-in flow</div>
+      <img class="cs-image-full"
+           src="https://www.linzhao15.com/wp-content/uploads/2020/01/Sign-up_sign-in-User-Flow.png"
+           alt="Sign-up and sign-in user flow" onclick="openLightbox(this.src)" loading="lazy">
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 07 — SKETCH + WHITEBOARDING                               -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <div class="cs-content-section reveal">
+      <div class="chapter-num">07 — Whiteboarding</div>
+      <h2 class="chapter-heading">From whiteboard <em>to alignment</em></h2>
+      <p class="cs-content-text">With the architecture complete, we moved to the design phase. Instead of starting with the UI library, I wanted stakeholders on the same page about timeline, components, and layout to avoid rework and deliver on time. I created wireframes and whiteboarded with the team to:</p>
+      <ul class="cs-bullet-list">
+        <li><strong>Confirm the logic, triggers, and flow</strong> with marketing, product managers, and developers</li>
+        <li><strong>Align sprint planning</strong> with story points to manage timeline and workload effectively</li>
+        <li><strong>Arrange elements and layout</strong> for optimal user experience</li>
+      </ul>
+      <div class="cs-image-quad">
         <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/IMG_4835.jpg"
              alt="Whiteboarding session" onclick="openLightbox(this.src)" loading="lazy">
         <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/IMG_4992.jpg"
              alt="Wireframe sketches" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/IMG_4834.jpg"
+             alt="Team whiteboard discussion" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/IMG_4930.jpg"
+             alt="Layout sketching" onclick="openLightbox(this.src)" loading="lazy">
       </div>
     </div>
 
-    <!-- ── Usability Testing ──────────────────────────────────── -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 08 — PROTOTYPING                                          -->
+    <!-- ══════════════════════════════════════════════════════════ -->
     <div class="cs-content-section reveal">
-      <div class="chapter-num">07 — Testing</div>
+      <div class="chapter-num">08 — Design</div>
+      <h2 class="chapter-heading">High-fidelity <em>prototyping</em></h2>
+      <p class="cs-content-text">High-fidelity designs were created to mimic the real product for devs and user tests. The redesign addressed the issues surfaced in the audit, and a new UI library would be built after positive user feedback. Here are the primary enhancements:</p>
+      <div class="cs-two-col">
+        <div>
+          <h4>Onboarding enhancement</h4>
+          <ul class="cs-bullet-list">
+            <li>Simple and intuitive onboarding process</li>
+            <li>Clear calls-to-action (CTA)</li>
+            <li>Replace lengthy text and questions with visual elements</li>
+            <li>Concise copy to communicate product value</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Homepage enhancement</h4>
+          <ul class="cs-bullet-list">
+            <li>Integrated search bar for improved navigation</li>
+            <li>Clear content hierarchy through color, typography, and sequence</li>
+            <li>Effective notification systems</li>
+            <li>Minimalist UI with consistent branding</li>
+          </ul>
+        </div>
+      </div>
+      <div class="cs-image-trio cs-image-trio--balanced">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Shoply_landing_tutorialoption.png"
+             alt="High-fidelity prototype: onboarding" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screen-Shot-2020-02-05-at-3.32.21-PM.png"
+             alt="High-fidelity prototype: homepage" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screen-Shot-2019-12-03-at-11.02.55-AM.png"
+             alt="High-fidelity prototype: details" onclick="openLightbox(this.src)" loading="lazy">
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 09 — USABILITY TESTING                                    -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <div class="cs-content-section reveal">
+      <div class="chapter-num">09 — Testing</div>
       <h2 class="chapter-heading">272 users <em>confirmed the direction</em></h2>
-      <p class="cs-content-text">338 users recruited, 272 completed usability tests across three core tasks. Alongside that, 10+ think-aloud sessions with a researcher gave us the qualitative "why" behind the numbers:</p>
+
+      <div class="cs-section-label">Survey</div>
+      <p class="cs-content-text">I invited 338 users for an online survey; 272 completed usability tests. Users performed three tasks and shared honest feedback anonymously. The new design showed high engagement and satisfaction:</p>
       <div class="cs-outcomes-grid" style="margin-bottom:1.5rem;">
         <div class="cs-outcome-card">
           <div class="cs-outcome-number">78%</div>
@@ -770,34 +939,67 @@ footer {
           <div class="cs-outcome-label">wanted to use it frequently</div>
         </div>
       </div>
-      <p class="cs-content-text">I distilled the top 10 pain points into prioritised recommendations, weighed against engineering feasibility and timeline. V2 shipped the critical fixes; the remaining insights seeded V3 strategy.</p>
-      <img class="cs-image-full"
-           src="https://www.linzhao15.com/wp-content/uploads/2020/01/Shoply-Mobile-On-boarding-_-home-page-User-Testing-09_27_2019-Sheet1-copy.jpg"
-           alt="Usability test results" onclick="openLightbox(this.src)" loading="lazy">
-    </div>
 
-    <!-- ── Final Design + DS ──────────────────────────────────── -->
-    <div class="cs-content-section reveal">
-      <div class="chapter-num">08 — Shipped Product</div>
-      <h2 class="chapter-heading">V2 + <em>Design System 2.0</em></h2>
+      <div class="cs-section-label">Think-aloud</div>
+      <p class="cs-content-text">To gather first-hand qualitative data, I conducted think-aloud tests with a researcher, focusing on constructive advice. Over ten users participated. From survey and think-aloud results, <strong>I presented the top 10 user pain points and my recommendations</strong> and brainstormed with stakeholders. Considering user needs, project due date, and engineering feasibility, I finalized the V2 iteration and began planning the V3 product strategy based on our data.</p>
       <div class="cs-image-trio">
         <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screen-Shot-2019-12-02-at-2.18.26-PM.png"
-             alt="Final design — onboarding" onclick="openLightbox(this.src)" loading="lazy">
+             alt="Think-aloud session: participant 1" onclick="openLightbox(this.src)" loading="lazy">
         <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screen-Shot-2019-12-02-at-2.18.33-PM.png"
-             alt="Final design — homepage" onclick="openLightbox(this.src)" loading="lazy">
+             alt="Think-aloud session: participant 2" onclick="openLightbox(this.src)" loading="lazy">
         <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screen-Shot-2019-12-02-at-2.18.40-PM.png"
-             alt="Final design — redemption" onclick="openLightbox(this.src)" loading="lazy">
+             alt="Think-aloud session: participant 3" onclick="openLightbox(this.src)" loading="lazy">
+      </div>
+      <div class="cs-image-gallery">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Shoply-UX-Research-Sharedexplore-Public-view9.jpg"
+             alt="Research presentation: overview" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Shoply-UX-Research-Sharedexplore-Public-view.jpg"
+             alt="Research presentation: findings" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Shoply-UX-Research-Sharedexplore-Public-view2.jpg"
+             alt="Research presentation: analysis" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Shoply-UX-Research-Sharedexplore-Public-view4.jpg"
+             alt="Research presentation: insights" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Shoply-UX-Research-Sharedexplore-Public-view5.jpg"
+             alt="Research presentation: recommendations" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Shoply-UX-Research-Sharedexplore-Public-view6-2.jpg"
+             alt="Research presentation: priorities" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Shoply-UX-Research-Sharedexplore-Public-view6.jpg"
+             alt="Research presentation: pain points" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/Shoply-UX-Research-Sharedexplore-Public-view8.jpg"
+             alt="Research presentation: next steps" onclick="openLightbox(this.src)" loading="lazy">
       </div>
       <img class="cs-image-full"
-           src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screen-Shot-2019-12-02-at-1.55.40-PM.png"
-           alt="Design System 2.0" onclick="openLightbox(this.src)" loading="lazy">
+           src="https://www.linzhao15.com/wp-content/uploads/2020/01/Shoply-Mobile-On-boarding-_-home-page-User-Testing-09_27_2019-Sheet1-copy.jpg"
+           alt="Usability test results spreadsheet" onclick="openLightbox(this.src)" loading="lazy">
     </div>
 
-    <!-- ── Outcomes ───────────────────────────────────────────── -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 10 — FINAL DESIGN                                         -->
+    <!-- ══════════════════════════════════════════════════════════ -->
     <div class="cs-content-section reveal">
-      <div class="chapter-num">09 — Outcomes</div>
+      <div class="chapter-num">10 — Shipped Product</div>
+      <h2 class="chapter-heading">Final <em>design samples</em></h2>
+      <div class="cs-image-quint">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/2.png"
+             alt="Final design: screen 2" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/3.png"
+             alt="Final design: screen 3" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/4.png"
+             alt="Final design: screen 4" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/5.png"
+             alt="Final design: screen 5" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/01/6.png"
+             alt="Final design: screen 6" onclick="openLightbox(this.src)" loading="lazy">
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- 11 — OUTCOMES                                             -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <div class="cs-content-section reveal">
+      <div class="chapter-num">11 — Outcomes</div>
       <h2 class="chapter-heading">The retention curve <em>bent</em></h2>
-      <p class="cs-content-text">V2 didn't just fix individual screens — it fixed the <em>system</em>. Every heuristic failure from the audit got a targeted solution:</p>
+      <p class="cs-content-text">Shoply 2.0 achieved notable success. V2 didn't just fix individual screens; it fixed the <em>system</em>. Every heuristic failure from the audit got a targeted solution:</p>
       <div class="cs-outcomes-grid">
         <div class="cs-outcome-card">
           <div class="cs-outcome-number">31→82%</div>
@@ -808,18 +1010,26 @@ footer {
           <div class="cs-outcome-label">usability test completions</div>
         </div>
         <div class="cs-outcome-card">
-          <div class="cs-outcome-number">2.0</div>
-          <div class="cs-outcome-label">new design system shipped</div>
+          <div class="cs-outcome-number">338</div>
+          <div class="cs-outcome-label">users recruited for testing</div>
         </div>
       </div>
+
+      <div class="cs-section-label">Heuristic improvements</div>
       <ul class="cs-bullet-list">
-        <li><strong>Visibility of System Status:</strong> Instant confirmation after adding deals and uploading receipts</li>
-        <li><strong>Consistency &amp; Standards:</strong> New UI library clarifying information hierarchy</li>
-        <li><strong>Error Prevention:</strong> Error messages with instructions for fixing issues</li>
-        <li><strong>Aesthetic &amp; Minimalist Design:</strong> Sorting and filtering for a concise, logical homepage</li>
+        <li><strong>Visibility of System Status:</strong> Instant confirmation after adding deals and uploading receipts, informing users of actions taken and next steps</li>
+        <li><strong>Consistency &amp; Standards:</strong> New UI library clarifying information hierarchy across every screen</li>
+        <li><strong>Error Prevention:</strong> Error messages with clear instructions for fixing issues</li>
+        <li><strong>Aesthetic &amp; Minimalist Design:</strong> Sorting and filtering for a concise, logical homepage display</li>
       </ul>
+
+      <img class="cs-image-full"
+           src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screenshot-2024-05-28-at-3.51.48%E2%80%AFPM.png"
+           alt="Shoply achievements overview" onclick="openLightbox(this.src)" loading="lazy">
+
       <div class="cs-key-insight">
-        <p><strong>The real lesson:</strong> V1 failed not because individual screens were bad, but because <strong>no one owned the system</strong>. Icons, hierarchy, feedback loops, redemption flows — they were designed in isolation. V2 worked because I treated the entire app as one connected experience, not a collection of screens. A design system isn't a style guide — it's the <strong>connective tissue</strong> between every interaction.</p>
+        <p><strong>The real lesson:</strong> V1 failed not because individual screens were bad, but because <strong>no one owned the system</strong>. Icons, hierarchy, feedback loops, redemption flows were designed in isolation. V2 worked because I treated the entire app as one connected experience, not a collection of screens.</p>
+        <p style="margin-top:0.75rem;">Research and ideation are essential to streamline the design process, avoiding unnecessary back-and-forth. Balancing business goals with user needs is crucial, and <strong>inviting developers and PMs to join the ideation process early on</strong> saves time and effort, ensuring usability and feasibility are harmoniously aligned.</p>
       </div>
     </div>
 
@@ -830,7 +1040,7 @@ footer {
     <div class="contact-inner">
       <div class="contact-eyebrow reveal">What's next</div>
       <h2 class="contact-headline reveal" id="contactHeadline">Let's close<br>a gap together.</h2>
-      <p class="contact-sub reveal">I'm looking for teams where research drives the roadmap and design ships — not just specs.</p>
+      <p class="contact-sub reveal">I'm looking for teams where research drives the roadmap and design ships, not just specs.</p>
       <div><a class="contact-email reveal" href="mailto:lin@linzhao.design">lin@linzhao.design</a></div>
     </div>
     <footer>
@@ -998,7 +1208,7 @@ const PRM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     entries.forEach(e => {
       if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); }
     });
-  }, { threshold: 0.08 });
+  }, { threshold: 0.02, rootMargin: '0px 0px 120px 0px' });
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 })();
 
