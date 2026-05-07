@@ -482,7 +482,8 @@ main, footer { position: relative; z-index: 2; }
 .proj-card:hover .proj-num { opacity: 0.45; }
 /* Hide number badge on cards with animated reels */
 .proj-card:has(.ds-reel-host) .proj-num,
-.proj-card:has(.uw-reel-host) .proj-num { display: none !important; }
+.proj-card:has(.uw-reel-host) .proj-num,
+.proj-card:has(.sh-reel-host) .proj-num { display: none !important; }
 
 
 .proj-img-wrap {
@@ -826,7 +827,9 @@ main, footer { position: relative; z-index: 2; }
   .ds-impact-num, .ds-impact-word, .ds-impact-sub,
   .ds-token-line, .ds-bar-dot,
   .uw-reel-scene, .uw-hero-img,
-  .uw-metric, .uw-metric-divider {
+  .uw-metric, .uw-metric-divider,
+  .sh-reel-scene, .sh-hero-img,
+  .sh-metric, .sh-metric-divider, .sh-reviews-img {
     transition-duration: 0.01ms !important;
     transition-delay: 0ms !important;
     animation: none !important;
@@ -948,6 +951,142 @@ main, footer { position: relative; z-index: 2; }
 }
 .uw-active .uw-metric-divider:nth-child(2) { transition-delay: 0.1s; }
 .uw-active .uw-metric-divider:nth-child(4) { transition-delay: 0.2s; }
+
+/* ================================================================
+   SH REEL — Shoply inline showcase
+   ================================================================ */
+.sh-reel-host { position: relative; }
+.sh-reel {
+  position: relative;
+  width: 100%; height: 236px;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #f5f2ec;
+}
+.sh-reel-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 25% 70%, rgba(92,110,77,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 75% 25%, rgba(184,125,90,0.05) 0%, transparent 50%),
+    linear-gradient(155deg, #faf8f4 0%, #f0ede6 100%);
+}
+
+.sh-reel-scene {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+  padding: 24px 20px 14px;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.5s cubic-bezier(0.16,1,0.3,1), transform 0.5s cubic-bezier(0.16,1,0.3,1);
+  pointer-events: none;
+}
+.sh-reel-scene.sh-active {
+  opacity: 1; transform: translateY(0); pointer-events: auto;
+}
+
+.sh-reel-bar {
+  position: absolute; top: 0; left: 0; right: 0;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px; z-index: 10;
+}
+.sh-reel-bar-label {
+  font-family: var(--font-mono);
+  font-size: 0.4375rem;
+  letter-spacing: 0.22em;
+  color: var(--sage); opacity: 0.5;
+}
+.sh-reel-bar-dots { display: flex; gap: 5px; align-items: center; }
+.sh-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--sand); opacity: 0.35;
+  transition: opacity 0.4s, background 0.4s, transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+.sh-dot.sh-dot-active {
+  opacity: 1; background: var(--sage); transform: scale(1.3);
+}
+
+/* Scene A: iPhone device */
+.sh-hero-img {
+  max-width: 120px; max-height: 195px;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.12));
+  opacity: 0;
+  transform: scale(0.9) translateY(8px);
+  transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.34,1.56,0.64,1);
+}
+.sh-active .sh-hero-img {
+  opacity: 1; transform: scale(1) translateY(0);
+}
+
+/* Scene B: Survey metrics */
+.sh-metrics {
+  display: flex; align-items: center; gap: 16px;
+}
+.sh-metric {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 4px;
+  opacity: 0;
+  transform: translateY(14px) scale(0.92);
+  transition: opacity 0.5s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.34,1.56,0.64,1);
+}
+.sh-active .sh-metric { opacity: 1; transform: translateY(0) scale(1); }
+.sh-active .sh-metric:nth-child(1) { transition-delay: 0.05s; }
+.sh-active .sh-metric:nth-child(3) { transition-delay: 0.15s; }
+.sh-active .sh-metric:nth-child(5) { transition-delay: 0.25s; }
+.sh-metric-num {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3.5vw, 2rem);
+  font-weight: 300; font-style: italic;
+  letter-spacing: -0.03em;
+  color: var(--sage); line-height: 1.1;
+}
+.sh-metric-label {
+  font-family: var(--font-mono);
+  font-size: 0.4375rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+  text-align: center; line-height: 1.3;
+}
+.sh-metric-divider {
+  width: 1px; height: 32px;
+  background: rgba(120,118,104,0.15);
+  opacity: 0; transform: scaleY(0);
+  transition: opacity 0.3s, transform 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+.sh-active .sh-metric-divider { opacity: 1; transform: scaleY(1); }
+.sh-active .sh-metric-divider:nth-child(2) { transition-delay: 0.1s; }
+.sh-active .sh-metric-divider:nth-child(4) { transition-delay: 0.2s; }
+
+/* Scene C: App Store reviews */
+.sh-reviews-img {
+  max-width: 55%; max-height: 195px;
+  object-fit: contain;
+  border-radius: 10px;
+  opacity: 0;
+  transform: scale(0.92) translateY(10px);
+  transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.34,1.56,0.64,1);
+}
+.sh-active .sh-reviews-img {
+  opacity: 1; transform: scale(1) translateY(0);
+}
+
+/* Scene label */
+.sh-reel-label {
+  position: absolute; bottom: 10px; left: 0; right: 0;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.4375rem;
+  letter-spacing: 0.15em;
+  color: var(--ink-muted);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.4s 0.2s, transform 0.4s 0.2s;
+}
+.sh-active .sh-reel-label {
+  opacity: 0.7; transform: translateY(0);
+}
 
 /* flex: 1 makes all captions fill remaining height equally */
 .proj-caption { padding: 1.5rem 0.375rem 0.5rem; position: relative; z-index: 2; flex: 1; display: flex; flex-direction: column; }
@@ -1450,11 +1589,57 @@ footer {
       <div class="proj-wrap">
         <article class="proj-card" tabindex="0" aria-label="Project 4 of 5: From frustration to retention at Shoply">
           <div class="proj-num">04</div>
-          <div class="proj-img-wrap">
-            <img class="proj-img"
-                 src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screen-Shot-2019-12-02-at-2.18.26-PM.png"
-                 alt="Shoply platform redesign showing improved merchant dashboard"
-                 loading="lazy" width="520" height="320">
+          <div class="proj-img-wrap sh-reel-host">
+            <div class="sh-reel" aria-label="Shoply case study showcase animation">
+              <div class="sh-reel-bg"></div>
+
+              <!-- Scene A: iPhone device showcase -->
+              <div class="sh-reel-scene sh-scene-a">
+                <img class="sh-hero-img"
+                     src="https://www.linzhao15.com/wp-content/uploads/2024/05/%F0%9F%93%B1-Iphone-X.png"
+                     alt="Shoply V2 on iPhone" loading="lazy">
+                <div class="sh-reel-label">REDESIGNED ONBOARDING</div>
+              </div>
+
+              <!-- Scene B: Survey impact metrics -->
+              <div class="sh-reel-scene sh-scene-b">
+                <div class="sh-metrics">
+                  <div class="sh-metric">
+                    <span class="sh-metric-num">78%</span>
+                    <span class="sh-metric-label">easy to use</span>
+                  </div>
+                  <div class="sh-metric-divider"></div>
+                  <div class="sh-metric">
+                    <span class="sh-metric-num">81%</span>
+                    <span class="sh-metric-label">easy to learn</span>
+                  </div>
+                  <div class="sh-metric-divider"></div>
+                  <div class="sh-metric">
+                    <span class="sh-metric-num">31→82%</span>
+                    <span class="sh-metric-label">retention rate</span>
+                  </div>
+                </div>
+                <div class="sh-reel-label">272 USABILITY TESTS</div>
+              </div>
+
+              <!-- Scene C: App Store reviews -->
+              <div class="sh-reel-scene sh-scene-c">
+                <img class="sh-reviews-img"
+                     src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screenshot-2024-05-28-at-3.51.48%E2%80%AFPM.png"
+                     alt="5-star App Store reviews" loading="lazy">
+                <div class="sh-reel-label">USER FEEDBACK</div>
+              </div>
+
+              <!-- Top bar -->
+              <div class="sh-reel-bar">
+                <span class="sh-reel-bar-label">SHOPLY V2</span>
+                <span class="sh-reel-bar-dots">
+                  <i class="sh-dot sh-dot-active" data-scene="0"></i>
+                  <i class="sh-dot" data-scene="1"></i>
+                  <i class="sh-dot" data-scene="2"></i>
+                </span>
+              </div>
+            </div>
           </div>
           <div class="proj-caption">
             <div class="proj-eyebrow">Shoply &middot; Lead UX/UI Designer</div>
@@ -2189,6 +2374,44 @@ if (!supportsScrollDriven) {
     current = index % scenes.length;
     scenes[current].classList.add('uw-active');
     dots[current].classList.add('uw-dot-active');
+  }
+
+  function next() { show(current + 1); }
+
+  const reelIO = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !timer) {
+        show(0);
+        timer = setInterval(next, INTERVAL);
+      } else if (!entry.isIntersecting && timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+    });
+  }, { threshold: 0.15 });
+
+  reelIO.observe(reel);
+})();
+
+/* ================================================================
+   13. SH REEL — Shoply auto-cycling animation
+   ================================================================ */
+(function() {
+  const reel = document.querySelector('.sh-reel');
+  if (!reel) return;
+
+  const scenes = reel.querySelectorAll('.sh-reel-scene');
+  const dots   = reel.querySelectorAll('.sh-dot');
+  const INTERVAL = 3500;
+  let current = -1;
+  let timer   = null;
+
+  function show(index) {
+    scenes.forEach(s => s.classList.remove('sh-active'));
+    dots.forEach(d => d.classList.remove('sh-dot-active'));
+    current = index % scenes.length;
+    scenes[current].classList.add('sh-active');
+    dots[current].classList.add('sh-dot-active');
   }
 
   function next() { show(current + 1); }
