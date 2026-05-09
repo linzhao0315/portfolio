@@ -829,7 +829,7 @@ main, footer { position: relative; z-index: 2; }
   .uw-reel-scene, .uw-hero-img,
   .uw-metric, .uw-metric-divider,
   .sh-reel-scene, .sh-hero-img,
-  .sh-metric, .sh-metric-divider, .sh-reviews-img {
+  .sh-word, .sh-reviews-img {
     transition-duration: 0.01ms !important;
     transition-delay: 0ms !important;
     animation: none !important;
@@ -1020,44 +1020,52 @@ main, footer { position: relative; z-index: 2; }
   opacity: 1; transform: scale(1) translateY(0);
 }
 
-/* Scene B: Survey metrics */
-.sh-metrics {
-  display: flex; align-items: center; gap: 16px;
+/* Scene B: Word cloud */
+.sh-cloud {
+  position: relative;
+  width: 90%; height: 180px;
 }
-.sh-metric {
-  display: flex; flex-direction: column;
-  align-items: center; gap: 4px;
+.sh-word {
+  position: absolute;
+  font-family: var(--font-body);
+  font-weight: 600;
+  line-height: 1;
   opacity: 0;
-  transform: translateY(14px) scale(0.92);
+  transform: scale(0.7) translateY(8px);
   transition: opacity 0.5s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.34,1.56,0.64,1);
 }
-.sh-active .sh-metric { opacity: 1; transform: translateY(0) scale(1); }
-.sh-active .sh-metric:nth-child(1) { transition-delay: 0.05s; }
-.sh-active .sh-metric:nth-child(3) { transition-delay: 0.15s; }
-.sh-active .sh-metric:nth-child(5) { transition-delay: 0.25s; }
-.sh-metric-num {
-  font-family: var(--font-display);
-  font-size: clamp(1.5rem, 3.5vw, 2rem);
-  font-weight: 300; font-style: italic;
-  letter-spacing: -0.03em;
-  color: var(--sage); line-height: 1.1;
+.sh-active .sh-word {
+  opacity: var(--wo, 0.85);
+  transform: scale(1) translateY(0);
 }
-.sh-metric-label {
-  font-family: var(--font-mono);
-  font-size: 0.4375rem;
-  letter-spacing: 0.08em;
-  color: var(--ink-muted);
-  text-align: center; line-height: 1.3;
+/* Stagger each word */
+.sh-active .sh-word:nth-child(1)  { transition-delay: 0.00s; }
+.sh-active .sh-word:nth-child(2)  { transition-delay: 0.04s; }
+.sh-active .sh-word:nth-child(3)  { transition-delay: 0.08s; }
+.sh-active .sh-word:nth-child(4)  { transition-delay: 0.12s; }
+.sh-active .sh-word:nth-child(5)  { transition-delay: 0.16s; }
+.sh-active .sh-word:nth-child(6)  { transition-delay: 0.20s; }
+.sh-active .sh-word:nth-child(7)  { transition-delay: 0.24s; }
+.sh-active .sh-word:nth-child(8)  { transition-delay: 0.28s; }
+.sh-active .sh-word:nth-child(9)  { transition-delay: 0.32s; }
+.sh-active .sh-word:nth-child(10) { transition-delay: 0.36s; }
+.sh-active .sh-word:nth-child(11) { transition-delay: 0.40s; }
+.sh-active .sh-word:nth-child(12) { transition-delay: 0.44s; }
+.sh-active .sh-word:nth-child(13) { transition-delay: 0.48s; }
+.sh-active .sh-word:nth-child(14) { transition-delay: 0.52s; }
+.sh-active .sh-word:nth-child(15) { transition-delay: 0.56s; }
+.sh-active .sh-word:nth-child(16) { transition-delay: 0.60s; }
+.sh-active .sh-word:nth-child(17) { transition-delay: 0.64s; }
+.sh-active .sh-word:nth-child(18) { transition-delay: 0.68s; }
+
+/* Gentle float animation when active */
+@keyframes sh-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
 }
-.sh-metric-divider {
-  width: 1px; height: 32px;
-  background: rgba(120,118,104,0.15);
-  opacity: 0; transform: scaleY(0);
-  transition: opacity 0.3s, transform 0.4s cubic-bezier(0.16,1,0.3,1);
-}
-.sh-active .sh-metric-divider { opacity: 1; transform: scaleY(1); }
-.sh-active .sh-metric-divider:nth-child(2) { transition-delay: 0.1s; }
-.sh-active .sh-metric-divider:nth-child(4) { transition-delay: 0.2s; }
+.sh-active .sh-word { animation: sh-float 3s ease-in-out infinite; }
+.sh-active .sh-word:nth-child(odd) { animation-duration: 3.5s; }
+.sh-active .sh-word:nth-child(3n) { animation-duration: 4s; animation-delay: 0.5s; }
 
 /* Scene C: App Store reviews */
 .sh-reviews-img {
@@ -1070,22 +1078,6 @@ main, footer { position: relative; z-index: 2; }
 }
 .sh-active .sh-reviews-img {
   opacity: 1; transform: scale(1) translateY(0);
-}
-
-/* Scene label */
-.sh-reel-label {
-  position: absolute; bottom: 10px; left: 0; right: 0;
-  text-align: center;
-  font-family: var(--font-mono);
-  font-size: 0.4375rem;
-  letter-spacing: 0.15em;
-  color: var(--ink-muted);
-  opacity: 0;
-  transform: translateY(4px);
-  transition: opacity 0.4s 0.2s, transform 0.4s 0.2s;
-}
-.sh-active .sh-reel-label {
-  opacity: 0.7; transform: translateY(0);
 }
 
 /* flex: 1 makes all captions fill remaining height equally */
@@ -1598,28 +1590,30 @@ footer {
                 <img class="sh-hero-img"
                      src="https://www.linzhao15.com/wp-content/uploads/2024/05/%F0%9F%93%B1-Iphone-X.png"
                      alt="Shoply V2 on iPhone" loading="lazy">
-                <div class="sh-reel-label">REDESIGNED ONBOARDING</div>
               </div>
 
-              <!-- Scene B: Survey impact metrics -->
+              <!-- Scene B: User feedback word cloud -->
               <div class="sh-reel-scene sh-scene-b">
-                <div class="sh-metrics">
-                  <div class="sh-metric">
-                    <span class="sh-metric-num">78%</span>
-                    <span class="sh-metric-label">easy to use</span>
-                  </div>
-                  <div class="sh-metric-divider"></div>
-                  <div class="sh-metric">
-                    <span class="sh-metric-num">81%</span>
-                    <span class="sh-metric-label">easy to learn</span>
-                  </div>
-                  <div class="sh-metric-divider"></div>
-                  <div class="sh-metric">
-                    <span class="sh-metric-num">31→82%</span>
-                    <span class="sh-metric-label">retention rate</span>
-                  </div>
+                <div class="sh-cloud">
+                  <span class="sh-word" style="font-size:2.4rem; left:28%; top:28%; color:#D4894A; --wo:0.95;">easy</span>
+                  <span class="sh-word" style="font-size:1.6rem; left:56%; top:22%; color:#C0392B; --wo:0.85;">app</span>
+                  <span class="sh-word" style="font-size:1.1rem; left:12%; top:12%; color:#5C6E4D; --wo:0.75;">good</span>
+                  <span class="sh-word" style="font-size:1.3rem; left:18%; top:58%; color:#8E44AD; --wo:0.8;">simple</span>
+                  <span class="sh-word" style="font-size:0.85rem; left:62%; top:8%; color:#E67E22; --wo:0.65;">navigate</span>
+                  <span class="sh-word" style="font-size:0.95rem; left:5%; top:38%; color:#2980B9; --wo:0.7;">clean</span>
+                  <span class="sh-word" style="font-size:0.8rem; left:72%; top:42%; color:#27AE60; --wo:0.6;">modern</span>
+                  <span class="sh-word" style="font-size:1rem; left:42%; top:5%; color:#16A085; --wo:0.7;">follow</span>
+                  <span class="sh-word" style="font-size:0.75rem; left:50%; top:62%; color:#C0392B; --wo:0.55;">feel</span>
+                  <span class="sh-word" style="font-size:0.7rem; left:78%; top:58%; color:#E74C3C; --wo:0.5;">nice</span>
+                  <span class="sh-word" style="font-size:1.8rem; left:38%; top:70%; color:#D35400; --wo:0.9;">easier</span>
+                  <span class="sh-word" style="font-size:1.5rem; left:58%; top:72%; color:#F39C12; --wo:0.8;">change</span>
+                  <span class="sh-word" style="font-size:0.7rem; left:82%; top:25%; color:#9B59B6; --wo:0.5;">pretty</span>
+                  <span class="sh-word" style="font-size:0.65rem; left:2%; top:68%; color:#1ABC9C; --wo:0.5;">clear</span>
+                  <span class="sh-word" style="font-size:0.75rem; left:68%; top:88%; color:#E67E22; --wo:0.55;">colors</span>
+                  <span class="sh-word" style="font-size:0.65rem; left:25%; top:88%; color:#3498DB; --wo:0.45;">bigger</span>
+                  <span class="sh-word" style="font-size:0.6rem; left:8%; top:82%; color:#95A5A6; --wo:0.4;">great</span>
+                  <span class="sh-word" style="font-size:0.7rem; left:48%; top:48%; color:#7F8C8D; --wo:0.5;">flow</span>
                 </div>
-                <div class="sh-reel-label">272 USABILITY TESTS</div>
               </div>
 
               <!-- Scene C: App Store reviews -->
@@ -1627,7 +1621,6 @@ footer {
                 <img class="sh-reviews-img"
                      src="https://www.linzhao15.com/wp-content/uploads/2020/01/Screenshot-2024-05-28-at-3.51.48%E2%80%AFPM.png"
                      alt="5-star App Store reviews" loading="lazy">
-                <div class="sh-reel-label">USER FEEDBACK</div>
               </div>
 
               <!-- Top bar -->
