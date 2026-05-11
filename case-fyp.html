@@ -316,23 +316,26 @@ section { padding: clamp(80px, 12vw, 140px) 0; }
 .cs-key-insight strong { color: var(--ink-mid); font-weight: 500; }
 
 /* ── Images ───────────────────────────────────────────────────── */
+/* cs-image-full: proportional, uncropped; portrait images center at natural size */
 .cs-image-full {
-  width: 100%; border-radius: var(--radius);
-  border: 1px solid rgba(92,110,77,0.08);
-  cursor: pointer; margin: 1rem 0;
-  transition: border-color 0.3s;
-  max-height: 520px; object-fit: cover; object-position: top;
+  display: block; max-width: 100%; width: auto; height: auto;
+  border-radius: var(--radius); border: 1px solid rgba(92,110,77,0.08);
+  cursor: pointer; margin: 1rem auto; transition: border-color 0.3s;
 }
 .cs-image-full:hover { border-color: rgba(92,110,77,0.2); }
+/* Full-page desktop screenshot: show top at full width, click for full view */
+.cs-image-full--preview {
+  width: 100%; height: auto; max-height: 560px;
+  object-fit: cover; object-position: top;
+}
 .cs-image-row {
   display: grid; grid-template-columns: 1fr 1fr;
   gap: 0.75rem; margin: 1rem 0;
 }
 .cs-image-row img {
-  width: 100%; border-radius: var(--radius);
+  width: 100%; height: auto; border-radius: var(--radius);
   border: 1px solid rgba(92,110,77,0.08);
   cursor: pointer; transition: border-color 0.3s;
-  object-fit: cover; max-height: 280px; object-position: top;
 }
 .cs-image-row img:hover { border-color: rgba(92,110,77,0.2); }
 .cs-image-trio {
@@ -340,12 +343,12 @@ section { padding: clamp(80px, 12vw, 140px) 0; }
   gap: 0.75rem; margin: 1rem 0;
 }
 .cs-image-trio img {
-  width: 100%; border-radius: var(--radius);
+  width: 100%; height: auto; border-radius: var(--radius);
   border: 1px solid rgba(92,110,77,0.08);
   cursor: pointer; transition: border-color 0.3s;
-  max-height: 360px; object-fit: cover; object-position: top;
 }
 .cs-image-trio img:hover { border-color: rgba(92,110,77,0.2); }
+/* cs-image-quad: uniform height grid (workshop shots + mobile mockups) */
 .cs-image-quad {
   display: grid; grid-template-columns: repeat(4, 1fr);
   gap: 0.75rem; margin: 1rem 0;
@@ -405,8 +408,6 @@ section { padding: clamp(80px, 12vw, 140px) 0; }
   margin: 2.5rem 0; padding-left: 1.5rem;
   border-left: 1.5px solid rgba(92,110,77,0.15);
 }
-.cs-sprint-day .cs-image-full { max-height: 420px; object-fit: cover; }
-.cs-sprint-day .cs-image-row img { max-height: 280px; }
 .cs-sprint-day-label {
   font-family: var(--font-mono); font-size: 0.5625rem; font-weight: 500;
   letter-spacing: 0.14em; text-transform: uppercase;
@@ -721,14 +722,12 @@ footer {
       <div class="cs-key-insight">
         <p><strong>Core insight:</strong> A single flow can't serve all three. The Decided wants to skip straight to program search. The Explorer wants career-to-program matching. The Lost needs a guided assessment. <strong>One tool, forked experiences.</strong></p>
       </div>
-      <div class="cs-image-row">
-        <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2020-08-04-at-12.00.40-PM.png" alt="Research findings detail" onclick="openLightbox(this.src)" loading="lazy">
-        <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2020-08-04-at-11.56.18-AM.png" alt="User feedback analysis" onclick="openLightbox(this.src)" loading="lazy">
+      <div class="cs-image-trio">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2020-08-04-at-12.00.40-PM.png" alt="Competitor tool — UOPX mobile" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2020-08-04-at-11.56.18-AM.png" alt="Competitor tool — Purdue Global" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2020-08-04-at-11.59.44-AM.png" alt="Competitor tool — concept exploration" onclick="openLightbox(this.src)" loading="lazy">
       </div>
-      <div class="cs-image-row">
-        <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2020-08-04-at-11.59.44-AM.png" alt="Competitor analysis findings" onclick="openLightbox(this.src)" loading="lazy">
-        <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screenshot-2024-06-01-at-10.04.39%E2%80%AFPM.png" alt="Stakeholder presentation findings" onclick="openLightbox(this.src)" loading="lazy">
-      </div>
+      <img class="cs-image-full" src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screenshot-2024-06-01-at-10.04.39%E2%80%AFPM.png" alt="Round-1 Insights — key takeaways presented to stakeholders" onclick="openLightbox(this.src)" loading="lazy">
     </div>
   </div>
 </section>
@@ -955,7 +954,7 @@ footer {
         <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/result-desktop.png" alt="Results page" onclick="openLightbox(this.src)" loading="lazy">
       </div>
       <p class="cs-content-text" style="margin-bottom:0.5rem; margin-top: 2rem;">Program finder sample:</p>
-      <img class="cs-image-full" src="https://www.linzhao15.com/wp-content/uploads/2020/08/find-your-program-desktop.png" alt="Program finder desktop" onclick="openLightbox(this.src)" loading="lazy">
+      <img class="cs-image-full cs-image-full--preview" src="https://www.linzhao15.com/wp-content/uploads/2020/08/find-your-program-desktop.png" alt="Program finder desktop" onclick="openLightbox(this.src)" loading="lazy">
       <p class="cs-content-text" style="margin-bottom:0.5rem; margin-top: 2rem;">Mobile samples:</p>
       <div class="cs-image-quad">
         <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/career-assessment-mobile.png" alt="Career assessment mobile" onclick="openLightbox(this.src)" loading="lazy">
