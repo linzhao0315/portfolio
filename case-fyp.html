@@ -241,6 +241,18 @@ section { padding: clamp(80px, 12vw, 140px) 0; }
 }
 .hero-sub strong { color: var(--ink); font-weight: 500; }
 
+/* ── Hero Banner Image ────────────────────────────────────────── */
+.hero-banner {
+  width: 100%; margin-top: 3rem;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  opacity: 0; transform: translateY(28px);
+}
+.hero-banner img {
+  width: 100%; display: block;
+  border-radius: var(--radius-lg);
+}
+
 /* ── Meta Grid ────────────────────────────────────────────────── */
 .cs-meta-grid {
   display: grid; grid-template-columns: repeat(3, 1fr);
@@ -286,7 +298,7 @@ section { padding: clamp(80px, 12vw, 140px) 0; }
   position: relative;
 }
 .cs-bullet-list li::before {
-  content: '→'; position: absolute; left: 0;
+  content: '\2192'; position: absolute; left: 0;
   color: var(--sage); font-size: 0.75rem;
 }
 
@@ -309,6 +321,7 @@ section { padding: clamp(80px, 12vw, 140px) 0; }
   border: 1px solid rgba(92,110,77,0.08);
   cursor: pointer; margin: 1rem 0;
   transition: border-color 0.3s;
+  max-height: 520px; object-fit: cover; object-position: top;
 }
 .cs-image-full:hover { border-color: rgba(92,110,77,0.2); }
 .cs-image-row {
@@ -319,7 +332,7 @@ section { padding: clamp(80px, 12vw, 140px) 0; }
   width: 100%; border-radius: var(--radius);
   border: 1px solid rgba(92,110,77,0.08);
   cursor: pointer; transition: border-color 0.3s;
-  object-fit: cover; max-height: 280px;
+  object-fit: cover; max-height: 280px; object-position: top;
 }
 .cs-image-row img:hover { border-color: rgba(92,110,77,0.2); }
 .cs-image-trio {
@@ -330,8 +343,20 @@ section { padding: clamp(80px, 12vw, 140px) 0; }
   width: 100%; border-radius: var(--radius);
   border: 1px solid rgba(92,110,77,0.08);
   cursor: pointer; transition: border-color 0.3s;
+  max-height: 360px; object-fit: cover; object-position: top;
 }
 .cs-image-trio img:hover { border-color: rgba(92,110,77,0.2); }
+.cs-image-quad {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem; margin: 1rem 0;
+}
+.cs-image-quad img {
+  width: 100%; border-radius: var(--radius);
+  border: 1px solid rgba(92,110,77,0.08);
+  cursor: pointer; transition: border-color 0.3s;
+  max-height: 420px; object-fit: cover; object-position: top;
+}
+.cs-image-quad img:hover { border-color: rgba(92,110,77,0.2); }
 
 /* ── Three Col Cards ──────────────────────────────────────────── */
 .cs-three-col {
@@ -360,7 +385,7 @@ section { padding: clamp(80px, 12vw, 140px) 0; }
   line-height: 1.55; padding: 0.2rem 0 0.2rem 1rem; position: relative;
 }
 .cs-audit-card li::before {
-  content: '→'; position: absolute; left: 0;
+  content: '\2192'; position: absolute; left: 0;
   color: var(--ink-faint); font-size: 0.6875rem;
 }
 
@@ -397,6 +422,27 @@ section { padding: clamp(80px, 12vw, 140px) 0; }
   line-height: 1.7; margin-bottom: 1rem;
 }
 .cs-sprint-day-text strong { color: var(--ink-mid); font-weight: 500; }
+
+/* ── Sprint Sub-Sections ─────────────────────────────────────── */
+.cs-sprint-sub {
+  margin: 1.75rem 0; padding-left: 1.25rem;
+  border-left: 1px solid rgba(92,110,77,0.10);
+}
+.cs-sprint-sub-label {
+  font-family: var(--font-mono); font-size: 0.5rem; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--ink-faint); margin-bottom: 0.375rem;
+}
+.cs-sprint-sub-title {
+  font-family: var(--font-display);
+  font-size: 1.125rem; font-weight: 400; font-style: italic;
+  color: var(--ink-mid); margin-bottom: 0.625rem;
+}
+.cs-sprint-sub-text {
+  font-size: 0.875rem; color: var(--ink-muted);
+  line-height: 1.7; margin-bottom: 0.75rem;
+}
+.cs-sprint-sub-text strong { color: var(--ink-mid); font-weight: 500; }
 
 /* ── Outcomes Grid ────────────────────────────────────────────── */
 .cs-outcomes-grid {
@@ -508,7 +554,7 @@ footer {
   #cursor, #cursor-aura, .c-trail, #glCanvas { display: none; }
   body { cursor: auto !important; } * { cursor: auto !important; }
   .reveal { opacity: 1 !important; transform: none !important; }
-  .hero-meta, .hero-title, .hero-sub { opacity: 1 !important; transform: none !important; }
+  .hero-meta, .hero-title, .hero-sub, .hero-banner { opacity: 1 !important; transform: none !important; }
 }
 @media (prefers-contrast: more) {
   :root { --ink: #000; --ink-muted: #222; --sage: #2d4220; --terracotta: #7a3a10; }
@@ -523,6 +569,7 @@ footer {
 @media (max-width: 768px) {
   .nav-links { display: none; }
   .cs-image-trio { grid-template-columns: 1fr; }
+  .cs-image-quad { grid-template-columns: repeat(2, 1fr); }
   .cs-meta-grid { grid-template-columns: repeat(2, 1fr); }
   .cs-three-col { grid-template-columns: 1fr; }
   .cs-two-col { grid-template-columns: 1fr; }
@@ -560,122 +607,309 @@ footer {
   <div class="hero-inner">
   <div class="hero-meta">UOPX &middot; Design Lead</div>
   <h1 class="hero-title" id="hero-heading">5 days to help students<br><em>find their future.</em></h1>
-  <p class="hero-sub">79% of prospective students said they needed career outcome clarity before choosing a program — but UOPX had no tool to give it to them. Five days. Nine stakeholders. One sprint to go from open question to tested prototype.</p>
+  <p class="hero-sub">Find Your Path is a tool designed to help future students discover the best-fit degree programs that align with their interests. Students come to us with varying levels of understanding about their desired programs and career paths.</p>
 
   <div class="cs-meta-grid reveal">
     <div class="cs-meta-item"><div class="cs-meta-label">Role</div><div class="cs-meta-value">Design Lead &amp; Sprint Facilitator</div></div>
     <div class="cs-meta-item"><div class="cs-meta-label">Team</div><div class="cs-meta-value">PMs, Engs, Marketing, Content Designer, SEO</div></div>
     <div class="cs-meta-item"><div class="cs-meta-label">Duration</div><div class="cs-meta-value">5 days + 1 week testing</div></div>
     <div class="cs-meta-item"><div class="cs-meta-label">Tools</div><div class="cs-meta-value">Figma, Validately, Miro</div></div>
-    <div class="cs-meta-item"><div class="cs-meta-label">Process</div><div class="cs-meta-value">Discovery → 5-Day Sprint (Map → Sketch → Decide → Prototype → Test)</div></div>
+    <div class="cs-meta-item"><div class="cs-meta-label">Process</div><div class="cs-meta-value">Discovery &gt; Design Sprint &gt; Usability Test</div></div>
+    <div class="cs-meta-item"><div class="cs-meta-label">Outcome</div><div class="cs-meta-value">Boosted retention by 41%</div></div>
+  </div>
+
+  <div class="hero-banner">
+    <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/FYP2-1280x919.png" alt="Find Your Path tool overview" onclick="openLightbox(this.src)" loading="eager">
   </div>
   </div>
 </section>
 
 <div class="divider"><div class="divider-line"></div></div>
 
-<!-- ── USER RESEARCH ──────────────────────────────────────────── -->
+<!-- ── 01 BUSINESS GOALS ─────────────────────────────────────── -->
+<section aria-labelledby="goals-heading">
+  <div class="container">
+    <div class="chapter-num reveal">01</div>
+    <h2 class="chapter-heading reveal" id="goals-heading">Business <em>Goals</em></h2>
+
+    <div class="cs-content-section reveal">
+      <p class="cs-content-text">UOPX is developing a "Find Your Path" tool for phoenix.edu visitors to help them find degree programs that match their interests and skills. A 2019 survey found that <strong>79% of future students need to understand career outcomes</strong> to feel comfortable selecting a degree program.</p>
+      <p class="cs-content-text">Team needs to gather qualitative data and insights to understand user needs, and identify the general strategy, direction, and value-added features for the tool. Then design and test a useful, easy-to-use "Find Your Path" tool.</p>
+      <img class="cs-image-full" src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screenshot-2024-06-01-at-9.59.01%E2%80%AFPM-1280x379.png" alt="Business goals overview" onclick="openLightbox(this.src)" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<div class="divider"><div class="divider-line"></div></div>
+
+<!-- ── 02 USER INTERVIEW ─────────────────────────────────────── -->
 <section aria-labelledby="research-heading">
   <div class="container">
+    <div class="chapter-num reveal">02</div>
+    <h2 class="chapter-heading reveal" id="research-heading">User <em>Interview</em></h2>
+
     <div class="cs-content-section reveal">
-      <h3 class="cs-content-title" id="research-heading">The real problem: students don't all start from the same place</h3>
-      <p class="cs-content-text">Before the sprint, I ran a moderated study with prospective students — testing two of our tools against two competitors. The key finding wasn't about features. It was about <strong>readiness</strong>:</p>
+      <p class="cs-content-text">I recruited future students from three personas provided by marketing:</p>
       <div class="cs-three-col">
         <div class="cs-audit-card">
-          <div class="cs-audit-card-title">The Decided — "I know what I want"</div>
+          <div class="cs-audit-card-title">Persona B - The Decided</div>
           <ul>
-            <li>Clearly knows the specific program and job</li>
+            <li>Clearly knows the specific program and job they want</li>
             <li>Wants to skip assessments and go straight to the program finder</li>
           </ul>
         </div>
         <div class="cs-audit-card">
-          <div class="cs-audit-card-title">The Explorer — "I have a general idea"</div>
+          <div class="cs-audit-card-title">Persona F - The Explorer</div>
           <ul>
-            <li>Has a general idea of the field of study</li>
+            <li>Has a general idea of the field of study and career area</li>
             <li>Wants career-to-program matches without lengthy assessments</li>
           </ul>
         </div>
         <div class="cs-audit-card">
-          <div class="cs-audit-card-title">The Lost — "I'm unsure"</div>
+          <div class="cs-audit-card-title">Persona J - The Lost</div>
           <ul>
-            <li>Unsure about both what to study and which career</li>
+            <li>Unsure about both what to study and which career path to pursue</li>
             <li>Prefers detailed assessments covering career, skills, interests</li>
+          </ul>
+        </div>
+      </div>
+
+      <img class="cs-image-full" src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screenshot-2024-06-01-at-9.29.37%E2%80%AFPM.png" alt="User persona comparison" onclick="openLightbox(this.src)" loading="lazy">
+    </div>
+
+    <!-- Research Method -->
+    <div class="cs-content-section reveal">
+      <h3 class="cs-content-title">Research method</h3>
+      <p class="cs-content-text">I conducted a remote moderated study to gather qualitative data and user feedback on two of our tools and two competitor products.</p>
+      <p class="cs-content-text"><strong>Research Objectives:</strong> Identify user needs and pain points in selecting degree programs, careers, and universities. Explore Find Your Path (FYP) concepts and features to determine what resonates with future students and why, guiding FYP design.</p>
+      <p class="cs-content-text">We observed behaviors and asked probing questions, such as:</p>
+      <ul class="cs-bullet-list">
+        <li>Would you start this tool as shown? Why or why not?</li>
+        <li>Would you stop before finishing? Where and why?</li>
+        <li>Which features resonate or don't resonate with you? Why?</li>
+        <li>What is clear or confusing about this tool?</li>
+        <li>On a 5-point scale, how helpful is the tool? (1=Not at all helpful; 3=Neutral; 5=Very helpful) Please explain.</li>
+      </ul>
+      <p class="cs-content-text"><strong>Comparison:</strong> After exploring all concepts, we asked participants: Which concept resonates best with you? Which doesn't? Why? If you could pick any feature from any concept to create your ideal tool, what would you choose?</p>
+      <img class="cs-image-full" src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2020-08-04-at-12.01.48-PM.png" alt="User research overview" onclick="openLightbox(this.src)" loading="lazy">
+    </div>
+
+    <!-- Research Findings -->
+    <div class="cs-content-section reveal">
+      <h3 class="cs-content-title">Research findings</h3>
+      <p class="cs-content-text">We received valuable and informative feedback from our users. I created and presented detailed findings and recommendations to stakeholders:</p>
+      <div class="cs-three-col">
+        <div class="cs-audit-card">
+          <div class="cs-audit-card-title">The Lost</div>
+          <ul>
+            <li>Prefer detailed assessments covering career, skills, interests, and program matches</li>
+          </ul>
+        </div>
+        <div class="cs-audit-card">
+          <div class="cs-audit-card-title">The Explorer</div>
+          <ul>
+            <li>Want to see career-to-program matches instead of taking assessments</li>
+          </ul>
+        </div>
+        <div class="cs-audit-card">
+          <div class="cs-audit-card-title">The Decided</div>
+          <ul>
+            <li>Want to skip assessments and go straight to the program finder</li>
           </ul>
         </div>
       </div>
       <div class="cs-key-insight">
         <p><strong>Core insight:</strong> A single flow can't serve all three. The Decided wants to skip straight to program search. The Explorer wants career-to-program matching. The Lost needs a guided assessment. <strong>One tool, forked experiences.</strong></p>
       </div>
-      <img class="cs-image-full" src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2020-08-04-at-12.01.48-PM.png" alt="User research overview" onclick="openLightbox(this.src)" loading="lazy">
+      <div class="cs-image-row">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2020-08-04-at-12.00.40-PM.png" alt="Research findings detail" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2020-08-04-at-11.56.18-AM.png" alt="User feedback analysis" onclick="openLightbox(this.src)" loading="lazy">
+      </div>
+      <div class="cs-image-row">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2020-08-04-at-11.59.44-AM.png" alt="Competitor analysis findings" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screenshot-2024-06-01-at-10.04.39%E2%80%AFPM.png" alt="Stakeholder presentation findings" onclick="openLightbox(this.src)" loading="lazy">
+      </div>
     </div>
+  </div>
+</section>
 
-    <!-- Sprint Overview -->
+<div class="divider"><div class="divider-line"></div></div>
+
+<!-- ── 03 DESIGN SPRINT ──────────────────────────────────────── -->
+<section aria-labelledby="sprint-heading">
+  <div class="container">
+    <div class="chapter-num reveal">03</div>
+    <h2 class="chapter-heading reveal" id="sprint-heading">5 Days <em>Design Sprint</em></h2>
+
     <div class="cs-content-section reveal">
-      <h3 class="cs-content-title">Five days, five phases, one room</h3>
-      <p class="cs-content-text">I pulled 9 stakeholders — execs, PMs, engineers, SEO, legal — into an intensive sprint. The constraint was the point: no time for politics, no room for scope creep.</p>
+      <p class="cs-content-text">With user needs identified, we now focus on business goals, product expectations, and solution feasibility. I invited key stakeholders (executives, PMs, POs, developers, SEO, Legal, SMEs) for a 5-day design sprint. We broke it into five parts: <strong>Mapping, Sketching, Deciding, Prototyping, and Testing.</strong></p>
+      <ul class="cs-bullet-list">
+        <li>Identify problems/goals and vote</li>
+        <li>Prioritize problems and vote</li>
+        <li>Explore solutions and vote</li>
+        <li>Make decisions and vote</li>
+        <li>Prototype and test</li>
+      </ul>
+      <p class="cs-content-text" style="margin-top: 1rem;"><strong>Participants (8-9 people):</strong> Facilitator: Me (designer). Experts (6): 1 researcher, 3 developers, 1 copywriter, 1 PM, 1 PO. Decision Makers (1-2).</p>
       <img class="cs-image-full" src="https://www.linzhao15.com/wp-content/uploads/2020/08/FYP-Design-Sprint-.png" alt="Design sprint process map" onclick="openLightbox(this.src)" loading="lazy">
     </div>
 
     <!-- Day 1 -->
     <div class="cs-sprint-day reveal">
       <div class="cs-sprint-day-label">Day 1</div>
-      <div class="cs-sprint-day-title">Map — Goals, questions, and HMW</div>
-      <div class="cs-sprint-day-text">Started with fears — "How could this fail?" — then converted them into sprint questions. From there, the team voted on HMW priorities:</div>
-      <ul class="cs-bullet-list">
-        <li>Create a fun and inviting tool to maximize engagement</li>
-        <li>Provide career info to address users' major pain points</li>
-        <li>Bridge skill gaps with relevant programs</li>
-        <li>Align the tool with employer needs (skills, job matches, top traits)</li>
-        <li>Offer customized paths for diverse users</li>
-        <li>Develop an ecosystem for users' long-term career growth</li>
-      </ul>
-      <div class="cs-sprint-day-text">Individual mapping, then convergence. The decision maker's final call: focus on two flows — <strong>Career Search</strong> (for Explorers and the Lost) and <strong>Program Finder</strong> (for the Decided).</div>
-      <div class="cs-image-row">
-        <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2020-08-04-at-1.19.58-PM.png" alt="HMW voting — prioritized questions" onclick="openLightbox(this.src)" loading="lazy">
-        <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2021-01-31-at-3.41.57-PM.png" alt="Unified map with target flows" onclick="openLightbox(this.src)" loading="lazy">
+      <div class="cs-sprint-day-title">Map - Goals, questions, and HMW</div>
+
+      <!-- Long-term goal setting -->
+      <div class="cs-sprint-sub">
+        <div class="cs-sprint-sub-label">10 mins</div>
+        <div class="cs-sprint-sub-title">Long-term goal setting</div>
+        <div class="cs-sprint-sub-text">Questions for the team: Why are we undertaking this project? Where do we want to be in six months, one year, or even five years from now? The image below shows the voting results, highlighting the <strong>top two long-term goals.</strong></div>
+        <img class="cs-image-full" src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2020-08-04-at-1.15.15-PM.png" alt="Long-term goal voting results" onclick="openLightbox(this.src)" loading="lazy">
+      </div>
+
+      <!-- Sprint questions -->
+      <div class="cs-sprint-sub">
+        <div class="cs-sprint-sub-label">10 mins</div>
+        <div class="cs-sprint-sub-title">Sprint questions</div>
+        <div class="cs-sprint-sub-text">Questions for the team: How could we fail? What could go wrong? Translate fear into a yes/no question. The Sprint Questions posed by the team reveal the <strong>main concerns of our stakeholders:</strong></div>
+        <ul class="cs-bullet-list">
+          <li>Can our tool address users' main concerns?</li>
+          <li>Will our tool support prospective students effectively?</li>
+          <li>Can we maintain an easy-to-use UI/UX?</li>
+          <li>Can we provide accurate and useful information?</li>
+          <li>Can our data source meet customers' needs?</li>
+        </ul>
+        <img class="cs-image-full" src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2020-08-04-at-1.19.36-PM.png" alt="Sprint questions voting" onclick="openLightbox(this.src)" loading="lazy">
+      </div>
+
+      <!-- Ask the experts + HMW -->
+      <div class="cs-sprint-sub">
+        <div class="cs-sprint-sub-label">60 mins</div>
+        <div class="cs-sprint-sub-title">Ask the experts + HMW</div>
+        <div class="cs-sprint-sub-text">Questions for the team: What do you think the FYP tool is? What does it do, and who uses it? What problem do you believe this tool is trying to solve? What should the product look like in 2 years? What would be the ideal situation?</div>
+        <div class="cs-sprint-sub-text">The team raised and voted on the top <strong>"How Might We" (HMW)</strong> questions:</div>
+        <ul class="cs-bullet-list">
+          <li>Create a fun and inviting tool to maximize engagement</li>
+          <li>Provide career info to address users' major pain points</li>
+          <li>Bridge skill gaps with relevant programs</li>
+          <li>Align the tool with employer needs (skills, job matches, top traits)</li>
+          <li>Offer customized paths for diverse users</li>
+          <li>Develop an ecosystem for users' long-term career growth</li>
+        </ul>
+        <img class="cs-image-full" src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2020-08-04-at-1.19.58-PM.png" alt="HMW voting results" onclick="openLightbox(this.src)" loading="lazy">
+      </div>
+
+      <!-- Note N Map -->
+      <div class="cs-sprint-sub">
+        <div class="cs-sprint-sub-label">45 mins</div>
+        <div class="cs-sprint-sub-title">Note N Map</div>
+        <div class="cs-sprint-sub-text">After the team set the goals and vision, they individually created high-level maps of the user (Persona B, F &amp; J)'s current experience from start to goal achievement. Then, each participant presented their map, and the team voted and discussed the priority, importance, and feasibility for the new features and design.</div>
+        <div class="cs-image-row">
+          <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2021-01-31-at-3.39.56-PM.png" alt="Individual note maps" onclick="openLightbox(this.src)" loading="lazy">
+          <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2021-01-31-at-3.41.57-PM.png" alt="Team note map voting" onclick="openLightbox(this.src)" loading="lazy">
+        </div>
+      </div>
+
+      <!-- Map + Target -->
+      <div class="cs-sprint-sub">
+        <div class="cs-sprint-sub-label">50 mins</div>
+        <div class="cs-sprint-sub-title">Map + Target</div>
+        <div class="cs-sprint-sub-text">The team began the following tasks together based on the previous takeaways:</div>
+        <ul class="cs-bullet-list">
+          <li>Considered the top HMWs (business, product goals)</li>
+          <li>Merged all the top notes into the map</li>
+          <li>Discussed and removed notes with the lowest votes</li>
+          <li>The decision maker voted on the notes and made the final decision on the features and user flows</li>
+        </ul>
+        <div class="cs-sprint-sub-text">The team decided to focus on <strong>two user flows</strong> to fit different persona types (B, F, J):</div>
+        <div class="cs-two-col">
+          <div>
+            <h4>1. Career Search (F, J)</h4>
+            <p class="cs-sprint-sub-text">For Explorers and the Lost who need guidance</p>
+          </div>
+          <div>
+            <h4>2. Program Finder (B)</h4>
+            <p class="cs-sprint-sub-text">For the Decided who know what they want</p>
+          </div>
+        </div>
+        <div class="cs-image-row">
+          <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2021-01-31-at-3.31.05-PM.png" alt="Unified map with merged notes" onclick="openLightbox(this.src)" loading="lazy">
+          <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2020-08-04-at-1.20.27-PM.png" alt="Final target map with two user flows" onclick="openLightbox(this.src)" loading="lazy">
+        </div>
       </div>
     </div>
 
     <!-- Day 2 -->
     <div class="cs-sprint-day reveal">
       <div class="cs-sprint-day-label">Day 2</div>
-      <div class="cs-sprint-day-title">Sketch — Lightning demos &amp; concept creation</div>
-      <div class="cs-sprint-day-text">The team researched inspiring products, captured screenshots, and shared patterns. Lightning demos surfaced the ideas that seeded Day 3's concepts.</div>
-      <img class="cs-image-full" src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2020-08-04-at-12.00.40-PM.png" alt="Lightning demo inspirations" onclick="openLightbox(this.src)" loading="lazy">
+      <div class="cs-sprint-day-title">Sketch - Lightning demos &amp; concept creation</div>
+      <div class="cs-sprint-day-text">Based on the features and flows decided on Day 1, the team researched and sought out inspiring products and experiences, examining great solutions and capturing screenshots of their findings. These screenshots were then shared with the team for discussion and inspiration, fostering a collaborative environment aimed at generating innovative ideas and strategies.</div>
+      <img class="cs-image-full" src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2020-08-04-at-1.20.20-PM.png" alt="Lightning demo inspirations" onclick="openLightbox(this.src)" loading="lazy">
     </div>
 
     <!-- Day 3 -->
     <div class="cs-sprint-day reveal">
       <div class="cs-sprint-day-label">Day 3</div>
-      <div class="cs-sprint-day-title">Decide — Art Museum &amp; feature selection</div>
-      <div class="cs-sprint-day-text">Silent review, dot voting, speed critiques. The room converged on features for each flow:</div>
+      <div class="cs-sprint-day-title">Decide - Art Museum &amp; feature selection</div>
+      <div class="cs-sprint-day-text">On Day 3, the team conducted the Art Museum activities based on the concepts created on Day 2. Here is the decision making process:</div>
+      <ul class="cs-bullet-list">
+        <li>Silently reviewed all the concepts</li>
+        <li>Created a heatmap by adding little green dots to the ideas they liked</li>
+        <li>Conducted a speed critique</li>
+        <li>Held a straw poll</li>
+        <li>Decide</li>
+      </ul>
+
+      <div class="cs-sprint-day-text" style="margin-top: 1.25rem;">Here are the decided features for the two primary user flows. The team has left out some features for future versions after reconfirming their feasibility with the engineering team:</div>
       <div class="cs-two-col">
         <div>
-          <h4>Program Finder (for the Decided)</h4>
+          <h4>Program Finder</h4>
           <ul class="cs-bullet-list">
-            <li>Filterable catalog with real-time cost, salary, and career pathway data</li>
-            <li>Skip the assessment — go straight to searching</li>
+            <li>Filtering &amp; sorting</li>
+            <li>Search bar</li>
+            <li>Program intro</li>
+            <li>Tuition of programs</li>
+            <li>Start date</li>
+            <li>Cost per credit</li>
+            <li>Program length</li>
+            <li>Education requested</li>
+            <li>Salary range from BLS</li>
+            <li>Career pathway</li>
+            <li>Skills</li>
           </ul>
         </div>
         <div>
-          <h4>Career Assessment (for Explorers + the Lost)</h4>
+          <h4>Career Assessment</h4>
           <ul class="cs-bullet-list">
-            <li>2-4 min guided assessment with animated engagement cues</li>
-            <li>Results: top traits, matched careers, projected growth, and program fit</li>
+            <li>Detailed assessment (2-4 mins)</li>
+            <li>Condensed assessment</li>
+            <li>Progress bar</li>
+            <li>Emoji and icons for fun</li>
+            <li>Top traits</li>
+            <li>Career matches</li>
+            <li>Projected growth</li>
+            <li>Career intro</li>
+            <li>Career pathway</li>
           </ul>
         </div>
       </div>
       <div class="cs-image-row">
-        <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2020-08-04-at-1.20.27-PM.png" alt="Art museum voting" onclick="openLightbox(this.src)" loading="lazy">
-        <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2020-08-04-at-1.20.20-PM.png" alt="Concept review" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2020-08-04-at-1.21.13-PM.png" alt="Art museum concept review" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2020-08-04-at-1.20.35-PM.png" alt="Dot voting heatmap" onclick="openLightbox(this.src)" loading="lazy">
+      </div>
+      <div class="cs-image-quad">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2020-08-04-at-1.20.45-PM.png" alt="Speed critique session" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2020-08-04-at-1.20.56-PM.png" alt="Straw poll voting" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2020-08-04-at-1.21.04-PM.png" alt="Feature decision board" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/Screen-Shot-2020-08-04-at-1.20.27-PM.png" alt="Final feature decisions" onclick="openLightbox(this.src)" loading="lazy">
       </div>
     </div>
 
     <!-- Day 4 -->
     <div class="cs-sprint-day reveal">
       <div class="cs-sprint-day-label">Day 4</div>
-      <div class="cs-sprint-day-title">Prototype — Two high-fidelity prototypes</div>
-      <div class="cs-sprint-day-text">Two high-fidelity prototypes were built in one day — one for Career Assessment, one for Program Finder. I conducted a dry run with the interviewer and decision maker to identify issues and prepare for Day 5 testing.</div>
+      <div class="cs-sprint-day-title">Prototype - Two high-fidelity prototypes</div>
+      <div class="cs-sprint-day-text">Two high-fi prototypes were created. I conducted a dry run with the interviewer and decision maker to identify mistakes and prepare for testing.</div>
     </div>
 
     <!-- Day 5 -->
@@ -687,45 +921,63 @@ footer {
         <div>
           <h4>Program Finder Iterations</h4>
           <ul class="cs-bullet-list">
-            <li>Include quick facts (cost, credits, program length)</li>
-            <li>Add icons/pictures for each program</li>
-            <li>Implement autofill for search bar</li>
+            <li>Include quick facts such as cost, credits, and program length</li>
+            <li>Add icons or pictures for each program to enhance visual engagement</li>
+            <li>Implement autofill for the search bar</li>
           </ul>
         </div>
         <div>
           <h4>Career Assessment Iterations</h4>
           <ul class="cs-bullet-list">
             <li>Use direct, clear questions to avoid confusion</li>
-            <li>Add animated emojis for engagement</li>
-            <li>Shorten results page text, use bullet points</li>
+            <li>Add animated emojis in the assessment to make the UI more engaging and clearer</li>
+            <li>Shorten the text on the results page and use bullet points for clarity</li>
           </ul>
         </div>
       </div>
     </div>
+  </div>
+</section>
 
-    <!-- Final Designs -->
+<div class="divider"><div class="divider-line"></div></div>
+
+<!-- ── 04 FINAL DESIGNS ──────────────────────────────────────── -->
+<section aria-labelledby="designs-heading">
+  <div class="container">
+    <div class="chapter-num reveal">04</div>
+    <h2 class="chapter-heading reveal" id="designs-heading">Final <em>Designs</em></h2>
+
     <div class="cs-content-section reveal">
-      <h3 class="cs-content-title">Two tools, one shared architecture</h3>
-      <p class="cs-content-text" style="margin-bottom:0.5rem;">Career/skill assessment tool:</p>
+      <p class="cs-content-text" style="margin-bottom:0.5rem;">Career/skill assessment tool samples:</p>
       <div class="cs-image-trio">
         <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/2-1.1_CSMVP_LandingPage_1280-129782791-1610515023.png" alt="Career assessment landing page" onclick="openLightbox(this.src)" loading="lazy">
         <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/question-desktop.png" alt="Assessment question page" onclick="openLightbox(this.src)" loading="lazy">
         <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/result-desktop.png" alt="Results page" onclick="openLightbox(this.src)" loading="lazy">
       </div>
-      <p class="cs-content-text" style="margin-bottom:0.5rem;">Program finder:</p>
+      <p class="cs-content-text" style="margin-bottom:0.5rem; margin-top: 2rem;">Program finder sample:</p>
       <img class="cs-image-full" src="https://www.linzhao15.com/wp-content/uploads/2020/08/find-your-program-desktop.png" alt="Program finder desktop" onclick="openLightbox(this.src)" loading="lazy">
-      <p class="cs-content-text" style="margin-bottom:0.5rem;">Mobile samples:</p>
-      <div class="cs-image-trio">
+      <p class="cs-content-text" style="margin-bottom:0.5rem; margin-top: 2rem;">Mobile samples:</p>
+      <div class="cs-image-quad">
         <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/career-assessment-mobile.png" alt="Career assessment mobile" onclick="openLightbox(this.src)" loading="lazy">
         <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/question-mobile.png" alt="Question page mobile" onclick="openLightbox(this.src)" loading="lazy">
         <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/find-your-program-mobile-201x1280.png" alt="Program finder mobile" onclick="openLightbox(this.src)" loading="lazy">
+        <img src="https://www.linzhao15.com/wp-content/uploads/2020/08/result-mobile-221x1280.png" alt="Results page mobile" onclick="openLightbox(this.src)" loading="lazy">
       </div>
     </div>
+  </div>
+</section>
 
-    <!-- Outcomes -->
+<div class="divider"><div class="divider-line"></div></div>
+
+<!-- ── 05 OUTCOMES ────────────────────────────────────────────── -->
+<section aria-labelledby="outcomes-heading">
+  <div class="container">
+    <div class="chapter-num reveal">05</div>
+    <h2 class="chapter-heading reveal" id="outcomes-heading">What five days <em>bought</em></h2>
+
     <div class="cs-content-section reveal">
-      <h3 class="cs-content-title">What five days bought</h3>
-      <p class="cs-content-text">The sprint didn't just produce prototypes — it produced <strong>alignment</strong>. Nine stakeholders walked out of that room with the same mental model of the product, the same prioritization, and the same evidence base.</p>
+      <p class="cs-content-text">Over the course of five intense days, we embarked on a design sprint that allowed us to rapidly progress from defining our goals to developing actionable solutions. We tackled problems head-on, explored innovative ideas, and meticulously organized and prioritized our findings.</p>
+      <p class="cs-content-text">Through collaborative mapping, sketching, and critique sessions, every team member's voice was heard, ensuring a unified vision before moving into the prototyping phase.</p>
       <div class="cs-outcomes-grid">
         <div class="cs-outcome-card"><div class="cs-outcome-number">+41%</div><div class="cs-outcome-label">boost in retention</div></div>
         <div class="cs-outcome-card"><div class="cs-outcome-number">5 days</div><div class="cs-outcome-label">from problem to tested prototype</div></div>
@@ -733,7 +985,7 @@ footer {
         <div class="cs-outcome-card"><div class="cs-outcome-number">2</div><div class="cs-outcome-label">distinct user flows shipped</div></div>
       </div>
       <div class="cs-key-insight">
-        <p><strong>The real lesson:</strong> Sprints aren't about speed — they're about <strong>compression of ambiguity</strong>. The forked experience design (two distinct flows serving three persona types) would have taken months to negotiate through normal process. Five days of structured constraint forced decisions that committee meetings never would.</p>
+        <p><strong>The real lesson:</strong> This sprint was not just about speed, but about <strong>aligning our efforts and leveraging our collective creativity</strong> to drive meaningful outcomes. The forked experience design (two distinct flows serving three persona types) would have taken months to negotiate through normal process. Five days of structured constraint forced decisions that committee meetings never would.</p>
       </div>
     </div>
   </div>
@@ -746,12 +998,12 @@ footer {
   <div class="contact-inner">
     <div class="contact-eyebrow reveal">What's next</div>
     <h2 class="contact-headline reveal" id="contact-heading">Let's close<br>a gap together.</h2>
-    <p class="contact-sub reveal">I'm looking for teams where research drives the roadmap and design ships — not just specs.</p>
+    <p class="contact-sub reveal">I'm looking for teams where research drives the roadmap and design ships -- not just specs.</p>
     <div><a class="contact-email reveal mag" href="mailto:lin@linzhao.design">lin@linzhao.design</a></div>
   </div>
   <footer>
     <span class="footer-copy">&copy; 2026 Lin Zhao. All rights reserved.</span>
-    <div class="footer-note">Built with <span class="footer-accent">Claude Code</span> · Deployed on <span class="footer-accent">Vercel</span></div>
+    <div class="footer-note">Built with <span class="footer-accent">Claude Code</span> &middot; Deployed on <span class="footer-accent">Vercel</span></div>
     <div class="footer-links">
       <a href="https://www.linkedin.com/in/linzhao15/" target="_blank" rel="noopener" class="mag">LinkedIn</a>
       <a href="https://www.linzhao15.com/" target="_blank" rel="noopener" class="mag">Previous Work</a>
@@ -761,7 +1013,7 @@ footer {
 
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-  <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close lightbox">✕</button>
+  <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close lightbox">&#x2715;</button>
   <img id="lightboxImg" src="" alt="Zoomed image">
 </div>
 
@@ -878,11 +1130,12 @@ addEventListener('scroll', function() { if (nav) nav.classList.toggle('scrolled'
 /* ── 6. Hero Entrance ─────────────────────────────────────────── */
 if (!PRM && window.gsap) {
   var tl = gsap.timeline({ delay: 0.15 });
-  tl.to('.hero-meta',  { opacity: 1, y: 0, duration: 0.8,  ease: 'power3.out' }, 0)
-    .to('.hero-title', { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1.15, ease: 'power3.out' }, 0.12)
-    .to('.hero-sub',   { opacity: 1, y: 0, duration: 0.9,  ease: 'power3.out' }, 0.52);
+  tl.to('.hero-meta',   { opacity: 1, y: 0, duration: 0.8,  ease: 'power3.out' }, 0)
+    .to('.hero-title',  { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1.15, ease: 'power3.out' }, 0.12)
+    .to('.hero-sub',    { opacity: 1, y: 0, duration: 0.9,  ease: 'power3.out' }, 0.52)
+    .to('.hero-banner', { opacity: 1, y: 0, duration: 1.0,  ease: 'power3.out' }, 0.7);
 } else {
-  ['.hero-meta', '.hero-title', '.hero-sub'].forEach(function(s) {
+  ['.hero-meta', '.hero-title', '.hero-sub', '.hero-banner'].forEach(function(s) {
     var el = document.querySelector(s);
     if (el) { el.style.opacity = '1'; el.style.transform = 'none'; el.style.filter = 'none'; }
   });
