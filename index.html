@@ -482,6 +482,7 @@ main, footer { position: relative; z-index: 2; }
 .proj-card:hover .proj-num { opacity: 0.45; }
 /* Hide number badge on cards with animated reels */
 .proj-card:has(.ds-reel-host) .proj-num,
+.proj-card:has(.sk-reel-host) .proj-num,
 .proj-card:has(.uw-reel-host) .proj-num,
 .proj-card:has(.sh-reel-host) .proj-num { display: none !important; }
 
@@ -826,6 +827,10 @@ main, footer { position: relative; z-index: 2; }
   .ds-layer-chip, .ds-layer-connector,
   .ds-impact-num, .ds-impact-word, .ds-impact-sub,
   .ds-token-line, .ds-bar-dot,
+  .sk-reel-scene, .sk-loop-dot, .sk-file-tree,
+  .sk-rule-line, .sk-score-num, .sk-score-label, .sk-score-sub,
+  .sk-impact-num, .sk-impact-arrow, .sk-impact-desc, .sk-impact-sub,
+  .sk-loop-label, .sk-dot,
   .uw-reel-scene, .uw-hero-img,
   .uw-metric, .uw-metric-divider,
   .sh-reel-scene, .sh-hero-img,
@@ -835,6 +840,147 @@ main, footer { position: relative; z-index: 2; }
     animation: none !important;
   }
 }
+
+/* ================================================================
+   SK REEL — AI Design Skill inline showcase
+   ================================================================ */
+.sk-reel-host { position: relative; }
+.sk-reel {
+  position: relative; width: 100%; height: 236px;
+  overflow: hidden; border-radius: 18px;
+  background: linear-gradient(155deg, #F7F4ED 0%, #EDE8DE 50%, #E8E4DA 100%);
+}
+.sk-reel-grid {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  opacity: 0.7; pointer-events: none;
+}
+.sk-reel-scene {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 28px 24px 18px;
+  opacity: 0; transform: translateY(6px);
+  transition: opacity 0.5s cubic-bezier(0.16,1,0.3,1), transform 0.5s cubic-bezier(0.16,1,0.3,1);
+  pointer-events: none;
+}
+.sk-reel-scene.sk-active { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.sk-reel-bar {
+  position: absolute; top: 0; left: 0; right: 0;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px; z-index: 10;
+}
+.sk-reel-bar-label {
+  font-family: var(--font-mono); font-size: 0.4375rem;
+  letter-spacing: 0.22em; color: var(--sage); opacity: 0.6;
+}
+.sk-reel-bar-dots { display: flex; gap: 5px; align-items: center; }
+.sk-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--sand); opacity: 0.35;
+  transition: opacity 0.4s, background 0.4s, transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+.sk-dot.sk-dot-active { opacity: 1; background: var(--sage); transform: scale(1.3); }
+.sk-reel-label {
+  font-family: var(--font-mono); font-size: 0.5rem;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--sage); margin-bottom: 10px; opacity: 0.7;
+}
+/* Scene A: Loop dots */
+.sk-loop-visual { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 8px; }
+.sk-loop-row { display: flex; gap: 5px; }
+.sk-loop-dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--terracotta); opacity: 0; transform: scale(0.5);
+  transition: opacity 0.35s cubic-bezier(0.16,1,0.3,1), transform 0.45s cubic-bezier(0.34,1.56,0.64,1);
+}
+.sk-active .sk-loop-dot { opacity: 0.8; transform: scale(1); }
+.sk-active .sk-loop-dot:nth-child(1) { transition-delay: 0.05s; }
+.sk-active .sk-loop-dot:nth-child(2) { transition-delay: 0.12s; }
+.sk-active .sk-loop-dot:nth-child(3) { transition-delay: 0.19s; }
+.sk-active .sk-loop-dot:nth-child(4) { transition-delay: 0.26s; }
+.sk-active .sk-loop-dot:nth-child(5) { transition-delay: 0.33s; }
+.sk-loop-label {
+  font-family: var(--font-mono); font-size: 0.5rem; letter-spacing: 0.1em;
+  color: var(--ink-muted); opacity: 0; transform: translateY(4px);
+  transition: opacity 0.4s 0.4s cubic-bezier(0.16,1,0.3,1), transform 0.4s 0.4s;
+}
+.sk-active .sk-loop-label { opacity: 0.6; transform: translateY(0); }
+/* Scene B: File tree */
+.sk-file-tree {
+  font-family: var(--font-mono); font-size: 0.5625rem;
+  line-height: 1.9; opacity: 0; transform: translateX(-8px);
+  transition: opacity 0.45s 0.08s cubic-bezier(0.16,1,0.3,1), transform 0.45s 0.08s;
+  align-self: flex-start; padding-left: 12px;
+}
+.sk-active .sk-file-tree { opacity: 1; transform: translateX(0); }
+.sk-file-root { color: var(--ink); font-weight: 500; margin-bottom: 2px; }
+.sk-file-icon { color: var(--sage); }
+.sk-file-branch { color: var(--sand); }
+.sk-file-leaf { color: var(--sage-mid); }
+/* Scene C: Rule lines */
+.sk-rule-block { width: 100%; max-width: 300px; font-family: var(--font-mono); font-size: 0.5rem; line-height: 1.9; }
+.sk-rule-line {
+  display: flex; gap: 8px; align-items: center;
+  opacity: 0; transform: translateX(8px);
+  transition: opacity 0.4s cubic-bezier(0.16,1,0.3,1), transform 0.4s cubic-bezier(0.16,1,0.3,1);
+  color: var(--ink-muted); border-bottom: 1px solid rgba(92,110,77,0.06); padding: 2px 0;
+}
+.sk-rule-line:last-child { border-bottom: none; }
+.sk-active .sk-rule-line { opacity: 1; transform: translateX(0); }
+.sk-active .sk-rule-line:nth-child(1) { transition-delay: 0.05s; }
+.sk-active .sk-rule-line:nth-child(2) { transition-delay: 0.14s; }
+.sk-active .sk-rule-line:nth-child(3) { transition-delay: 0.23s; }
+.sk-active .sk-rule-line:nth-child(4) { transition-delay: 0.32s; }
+.sk-active .sk-rule-line:nth-child(5) { transition-delay: 0.41s; }
+.sk-rule-role { color: var(--ink-faint); min-width: 72px; }
+.sk-rule-arrow { color: var(--sand); }
+.sk-rule-token { color: var(--sage); }
+/* Scene D: Score */
+.sk-score-num {
+  font-family: var(--font-display); font-size: 3.25rem;
+  font-weight: 300; font-style: italic; letter-spacing: -0.04em;
+  color: var(--sage); line-height: 1; display: block;
+  opacity: 0; transform: scale(0.8);
+  transition: opacity 0.5s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.34,1.56,0.64,1);
+}
+.sk-active .sk-score-num { opacity: 1; transform: scale(1); transition-delay: 0.05s; }
+.sk-score-label {
+  font-family: var(--font-display); font-size: 1rem; font-style: italic; color: var(--ink);
+  display: block; opacity: 0; transform: translateY(6px);
+  transition: opacity 0.45s 0.18s cubic-bezier(0.16,1,0.3,1), transform 0.45s 0.18s;
+}
+.sk-active .sk-score-label { opacity: 1; transform: translateY(0); }
+.sk-score-sub {
+  font-family: var(--font-mono); font-size: 0.5rem; letter-spacing: 0.08em; color: var(--ink-muted);
+  display: flex; gap: 0.6em; align-items: center; opacity: 0; transition: opacity 0.4s 0.32s;
+}
+.sk-active .sk-score-sub { opacity: 0.6; }
+/* Scene E: Impact */
+.sk-impact-before-after { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.sk-impact-num {
+  font-family: var(--font-display); font-size: 2rem; font-weight: 300; font-style: italic;
+  letter-spacing: -0.04em; line-height: 1;
+  opacity: 0; transform: scale(0.8);
+  transition: opacity 0.45s cubic-bezier(0.16,1,0.3,1), transform 0.55s cubic-bezier(0.34,1.56,0.64,1);
+}
+.sk-impact-num.before { color: var(--terracotta); }
+.sk-impact-num.after  { color: var(--sage); }
+.sk-active .sk-impact-num { opacity: 1; transform: scale(1); }
+.sk-active .sk-impact-num.before { transition-delay: 0.05s; }
+.sk-active .sk-impact-num.after  { transition-delay: 0.28s; }
+.sk-impact-arrow { color: var(--sand); font-size: 1rem; opacity: 0; transition: opacity 0.3s 0.2s; }
+.sk-active .sk-impact-arrow { opacity: 0.6; }
+.sk-impact-desc {
+  font-family: var(--font-display); font-size: 0.9375rem; font-style: italic; color: var(--ink);
+  display: block; opacity: 0; transform: translateY(4px);
+  transition: opacity 0.4s 0.38s cubic-bezier(0.16,1,0.3,1), transform 0.4s 0.38s;
+}
+.sk-active .sk-impact-desc { opacity: 1; transform: translateY(0); }
+.sk-impact-sub {
+  font-family: var(--font-mono); font-size: 0.5rem; letter-spacing: 0.08em; color: var(--ink-muted);
+  display: flex; gap: 0.6em; align-items: center; opacity: 0; transition: opacity 0.4s 0.5s;
+}
+.sk-active .sk-impact-sub { opacity: 0.6; }
 
 /* ================================================================
    UW REEL — Upwork Talent Scout inline showcase
@@ -1372,7 +1518,7 @@ footer {
 
       <!-- ── Card 0: AI Pipeline ── -->
       <div class="proj-wrap">
-        <article class="proj-card" tabindex="0" aria-label="Project 1 of 5: Building an AI-Governed Design Pipeline">
+        <article class="proj-card" tabindex="0" aria-label="Project 1 of 6: Building an AI-Governed Design Pipeline">
           <div class="proj-num">01</div>
           <div class="proj-img-wrap ds-reel-host">
             <div class="ds-reel" aria-label="Design system showcase animation">
@@ -1497,10 +1643,121 @@ footer {
         </article>
       </div>
 
-      <!-- ── Card 1: Kiva ── -->
+      <!-- ── Card 1: AI Skill ── -->
       <div class="proj-wrap">
-        <article class="proj-card" tabindex="0" aria-label="Project 2 of 5: From strategic pivot to production at Kiva">
-          <div class="proj-num">02</div>
+        <article class="proj-card" tabindex="0" aria-label="Project 2 of 6: Teaching AI to speak in tokens">
+          <div class="proj-img-wrap sk-reel-host">
+            <div class="sk-reel" aria-label="AI Design Skill showcase animation">
+              <svg class="sk-reel-grid" viewBox="0 0 520 236" preserveAspectRatio="xMidYMid slice">
+                <defs>
+                  <pattern id="skGrid" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(92,110,77,0.06)" stroke-width="0.5"/>
+                  </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#skGrid)"/>
+              </svg>
+
+              <!-- Scene A: The Problem -->
+              <div class="sk-reel-scene sk-scene-a">
+                <div class="sk-reel-label">The Problem</div>
+                <div class="sk-loop-visual">
+                  <div class="sk-loop-row">
+                    <div class="sk-loop-dot"></div>
+                    <div class="sk-loop-dot"></div>
+                    <div class="sk-loop-dot"></div>
+                    <div class="sk-loop-dot"></div>
+                    <div class="sk-loop-dot"></div>
+                  </div>
+                  <div class="sk-loop-label">5 correction rounds per session</div>
+                </div>
+                <div class="ds-token-line" style="margin-top:4px;"><span class="ds-tk">prompt &rarr; correct &rarr; correct &rarr; correct &rarr; correct &rarr; correct</span></div>
+              </div>
+
+              <!-- Scene B: File Architecture -->
+              <div class="sk-reel-scene sk-scene-b">
+                <div class="sk-reel-label">Skill Architecture</div>
+                <div class="sk-file-tree">
+                  <div class="sk-file-root"><span class="sk-file-icon">&#9670;</span> SKILL.md</div>
+                  <div><span class="sk-file-branch">&#9500;&#9472;</span> <span class="sk-file-leaf">reference/color.md</span></div>
+                  <div><span class="sk-file-branch">&#9500;&#9472;</span> <span class="sk-file-leaf">reference/typography.md</span></div>
+                  <div><span class="sk-file-branch">&#9500;&#9472;</span> <span class="sk-file-leaf">reference/spacing-layout.md</span></div>
+                  <div><span class="sk-file-branch">&#9492;&#9472;</span> <span class="sk-file-leaf">reference/components.md</span></div>
+                </div>
+              </div>
+
+              <!-- Scene C: Token Rules -->
+              <div class="sk-reel-scene sk-scene-c">
+                <div class="sk-reel-label">Zero Hardcoding</div>
+                <div class="sk-rule-block">
+                  <div class="sk-rule-line"><span class="sk-rule-role">link text</span><span class="sk-rule-arrow">&rarr;</span><span class="sk-rule-token">text.action</span></div>
+                  <div class="sk-rule-line"><span class="sk-rule-role">btn primary</span><span class="sk-rule-arrow">&rarr;</span><span class="sk-rule-token">background.action</span></div>
+                  <div class="sk-rule-line"><span class="sk-rule-role">card title</span><span class="sk-rule-arrow">&rarr;</span><span class="sk-rule-token">title (Medium)</span></div>
+                  <div class="sk-rule-line"><span class="sk-rule-role">section gap</span><span class="sk-rule-arrow">&rarr;</span><span class="sk-rule-token">spacing.structure.XL</span></div>
+                  <div class="sk-rule-line"><span class="sk-rule-role">radius</span><span class="sk-rule-arrow">&rarr;</span><span class="sk-rule-token">base token</span></div>
+                </div>
+              </div>
+
+              <!-- Scene D: Score -->
+              <div class="sk-reel-scene sk-scene-d">
+                <div class="sk-reel-label">Validation</div>
+                <div style="text-align:center; margin-bottom:8px;">
+                  <span class="sk-score-num">91</span>
+                  <span class="sk-score-label">Skill quality score</span>
+                </div>
+                <div class="sk-score-sub">
+                  <span>8 dimensions</span>
+                  <span style="color:var(--sand);">&middot;</span>
+                  <span>real-world tested</span>
+                </div>
+              </div>
+
+              <!-- Scene E: Impact -->
+              <div class="sk-reel-scene sk-scene-e">
+                <div class="sk-reel-label">Impact</div>
+                <div class="sk-impact-before-after">
+                  <span class="sk-impact-num before">5</span>
+                  <span class="sk-impact-arrow">&rarr;</span>
+                  <span class="sk-impact-num after">1</span>
+                </div>
+                <span class="sk-impact-desc">correction loops</span>
+                <div class="sk-impact-sub">
+                  <span>91/100 score</span>
+                  <span style="color:var(--sand);">&middot;</span>
+                  <span>100+ teammates</span>
+                </div>
+              </div>
+
+              <!-- Top bar -->
+              <div class="sk-reel-bar">
+                <span class="sk-reel-bar-label">KIVA AI SKILL</span>
+                <span class="sk-reel-bar-dots">
+                  <i class="sk-dot sk-dot-active" data-scene="0"></i>
+                  <i class="sk-dot" data-scene="1"></i>
+                  <i class="sk-dot" data-scene="2"></i>
+                  <i class="sk-dot" data-scene="3"></i>
+                  <i class="sk-dot" data-scene="4"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="proj-caption">
+            <div class="proj-eyebrow">Kiva &middot; Principal Designer &middot; AI Pioneer &middot; 2025&ndash;2026</div>
+            <h3 class="proj-title">Teaching AI to speak in tokens</h3>
+            <p class="proj-desc">5 correction loops per session — even with DTCG exports, Code Connect, and Figma Make. The format was wrong. Built a modular AI skill that reads once and never hallucinates: 91/100 score, 5&rarr;1 loops.</p>
+            <div class="proj-metrics">
+              <span class="proj-metric">5&rarr;1 correction loops</span>
+              <span class="proj-metric">91/100 skill score</span>
+              <span class="proj-metric">100+ teammates</span>
+            </div>
+            <a class="proj-link" href="case-ai-skill.html">View case study &rarr;</a>
+          </div>
+        </article>
+      </div>
+
+      <!-- ── Card 2: Kiva ── -->
+      <div class="proj-wrap">
+        <article class="proj-card" tabindex="0" aria-label="Project 3 of 6: From strategic pivot to production at Kiva">
+          <div class="proj-num">03</div>
           <div class="proj-img-wrap">
             <img class="proj-img" src="portfolio-assets/ch3-hero.png"
                  alt="Kiva partnerships platform interface showing Figma to production pipeline"
@@ -1519,10 +1776,10 @@ footer {
         </article>
       </div>
 
-      <!-- ── Card 2: Upwork ── -->
+      <!-- ── Card 3: Upwork ── -->
       <div class="proj-wrap">
-        <article class="proj-card" tabindex="0" aria-label="Project 3 of 5: Turning no-shows into converts at Upwork">
-          <div class="proj-num">03</div>
+        <article class="proj-card" tabindex="0" aria-label="Project 4 of 6: Turning no-shows into converts at Upwork">
+          <div class="proj-num">04</div>
           <div class="proj-img-wrap uw-reel-host">
             <div class="uw-reel" aria-label="Upwork Talent Scout showcase animation">
               <!-- Subtle background -->
@@ -1577,10 +1834,10 @@ footer {
         </article>
       </div>
 
-      <!-- ── Card 3: Shoply ── -->
+      <!-- ── Card 4: Shoply ── -->
       <div class="proj-wrap">
-        <article class="proj-card" tabindex="0" aria-label="Project 4 of 5: From frustration to retention at Shoply">
-          <div class="proj-num">04</div>
+        <article class="proj-card" tabindex="0" aria-label="Project 5 of 6: From frustration to retention at Shoply">
+          <div class="proj-num">05</div>
           <div class="proj-img-wrap sh-reel-host">
             <div class="sh-reel" aria-label="Shoply case study showcase animation">
               <div class="sh-reel-bg"></div>
@@ -1646,10 +1903,10 @@ footer {
         </article>
       </div>
 
-      <!-- ── Card 4: FYP ── -->
+      <!-- ── Card 5: FYP ── -->
       <div class="proj-wrap">
-        <article class="proj-card" tabindex="0" aria-label="Project 5 of 5: 5 days to product clarity at UOPX">
-          <div class="proj-num">05</div>
+        <article class="proj-card" tabindex="0" aria-label="Project 6 of 6: 5 days to product clarity at UOPX">
+          <div class="proj-num">06</div>
           <div class="proj-img-wrap">
             <img class="proj-img"
                  src="https://www.linzhao15.com/wp-content/uploads/2020/08/FYP2-1280x919.png"
@@ -2405,6 +2662,44 @@ if (!supportsScrollDriven) {
     current = index % scenes.length;
     scenes[current].classList.add('sh-active');
     dots[current].classList.add('sh-dot-active');
+  }
+
+  function next() { show(current + 1); }
+
+  const reelIO = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !timer) {
+        show(0);
+        timer = setInterval(next, INTERVAL);
+      } else if (!entry.isIntersecting && timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+    });
+  }, { threshold: 0.15 });
+
+  reelIO.observe(reel);
+})();
+
+/* ================================================================
+   14. SK REEL — AI Design Skill auto-cycling animation
+   ================================================================ */
+(function() {
+  const reel = document.querySelector('.sk-reel');
+  if (!reel) return;
+
+  const scenes = reel.querySelectorAll('.sk-reel-scene');
+  const dots   = reel.querySelectorAll('.sk-dot');
+  const INTERVAL = 3200;
+  let current = -1;
+  let timer   = null;
+
+  function show(index) {
+    scenes.forEach(s => s.classList.remove('sk-active'));
+    dots.forEach(d => d.classList.remove('sk-dot-active'));
+    current = index % scenes.length;
+    scenes[current].classList.add('sk-active');
+    dots[current].classList.add('sk-dot-active');
   }
 
   function next() { show(current + 1); }
