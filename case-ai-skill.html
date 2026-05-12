@@ -330,9 +330,10 @@ main { position: relative; z-index: 2; }
 .loop-panel.before { border-left: 2px solid rgba(184,125,90,0.4); }
 .loop-panel.after  { border-left: 2px solid rgba(92,110,77,0.45); }
 .loop-panel-label {
-  font-family: var(--font-mono); font-size: 0.5rem;
-  letter-spacing: 0.2em; text-transform: uppercase;
+  font-family: var(--font-mono); font-size: 0.5625rem;
+  letter-spacing: 0.16em; text-transform: uppercase;
   color: var(--ink-faint); margin-bottom: 1rem;
+  font-weight: 500;
 }
 .loop-panel.before .loop-panel-label { color: var(--terracotta); }
 .loop-panel.after  .loop-panel-label { color: var(--sage); }
@@ -351,9 +352,9 @@ main { position: relative; z-index: 2; }
   background: var(--sage); opacity: 0.85;
 }
 .loop-correction {
-  font-family: var(--font-mono); font-size: 0.5rem;
-  letter-spacing: 0.04em; color: var(--ink-muted);
-  line-height: 1.8; opacity: 0.75;
+  font-family: var(--font-mono); font-size: 0.75rem;
+  letter-spacing: 0.02em; color: var(--ink-muted);
+  line-height: 1.8; opacity: 0.9;
 }
 .loop-correction span {
   display: block; padding: 0.2rem 0;
@@ -473,17 +474,17 @@ main { position: relative; z-index: 2; }
 }
 .st-leaf {
   display: flex; align-items: center; gap: 0.625rem;
-  color: #787668;
+  color: #9E9A8E;
 }
-.st-leaf-prefix { color: #4A4A44; }
+.st-leaf-prefix { color: #787668; }
 .st-leaf-file { color: #8A9E78; }
 .st-leaf-desc {
-  color: #4A4A44; font-size: 0.5625rem;
+  color: #787668; font-size: 0.5625rem;
   padding-left: 0.25rem;
 }
 .st-leaf-count {
   margin-left: auto;
-  font-size: 0.5rem; color: #4A4A44;
+  font-size: 0.5rem; color: #787668;
   letter-spacing: 0.1em;
 }
 
