@@ -956,9 +956,9 @@ main, footer { position: relative; z-index: 2; }
 }
 .sk-active .sk-score-sub { opacity: 0.6; }
 /* Scene E: Impact */
-.sk-impact-before-after { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.sk-impact-before-after { display: flex; align-items: baseline; gap: 14px; margin-bottom: 12px; }
 .sk-impact-num {
-  font-family: var(--font-display); font-size: 2rem; font-weight: 300; font-style: italic;
+  font-family: var(--font-display); font-size: 2.5rem; font-weight: 300; font-style: italic;
   letter-spacing: -0.04em; line-height: 1;
   opacity: 0; transform: scale(0.8);
   transition: opacity 0.45s cubic-bezier(0.16,1,0.3,1), transform 0.55s cubic-bezier(0.34,1.56,0.64,1);
@@ -968,11 +968,12 @@ main, footer { position: relative; z-index: 2; }
 .sk-active .sk-impact-num { opacity: 1; transform: scale(1); }
 .sk-active .sk-impact-num.before { transition-delay: 0.05s; }
 .sk-active .sk-impact-num.after  { transition-delay: 0.28s; }
-.sk-impact-arrow { color: var(--sand); font-size: 1rem; opacity: 0; transition: opacity 0.3s 0.2s; }
+.sk-impact-arrow { color: var(--sand); font-size: 1.125rem; opacity: 0; transition: opacity 0.3s 0.2s; }
 .sk-active .sk-impact-arrow { opacity: 0.6; }
 .sk-impact-desc {
-  font-family: var(--font-display); font-size: 0.9375rem; font-style: italic; color: var(--ink);
-  display: block; opacity: 0; transform: translateY(4px);
+  font-family: var(--font-display); font-size: 1rem; font-style: italic; color: var(--ink);
+  display: block; margin-bottom: 10px;
+  opacity: 0; transform: translateY(4px);
   transition: opacity 0.4s 0.38s cubic-bezier(0.16,1,0.3,1), transform 0.4s 0.38s;
 }
 .sk-active .sk-impact-desc { opacity: 1; transform: translateY(0); }
@@ -1657,23 +1658,7 @@ footer {
                 <rect width="100%" height="100%" fill="url(#skGrid)"/>
               </svg>
 
-              <!-- Scene A: The Problem -->
-              <div class="sk-reel-scene sk-scene-a">
-                <div class="sk-reel-label">The Problem</div>
-                <div class="sk-loop-visual">
-                  <div class="sk-loop-row">
-                    <div class="sk-loop-dot"></div>
-                    <div class="sk-loop-dot"></div>
-                    <div class="sk-loop-dot"></div>
-                    <div class="sk-loop-dot"></div>
-                    <div class="sk-loop-dot"></div>
-                  </div>
-                  <div class="sk-loop-label">5 correction rounds per session</div>
-                </div>
-                <div class="ds-token-line" style="margin-top:4px;"><span class="ds-tk">prompt &rarr; correct &rarr; correct &rarr; correct &rarr; correct &rarr; correct</span></div>
-              </div>
-
-              <!-- Scene B: File Architecture -->
+              <!-- Scene A: File Architecture -->
               <div class="sk-reel-scene sk-scene-b">
                 <div class="sk-reel-label">Skill Architecture</div>
                 <div class="sk-file-tree">
@@ -1685,7 +1670,7 @@ footer {
                 </div>
               </div>
 
-              <!-- Scene C: Token Rules -->
+              <!-- Scene B: Token Rules -->
               <div class="sk-reel-scene sk-scene-c">
                 <div class="sk-reel-label">Zero Hardcoding</div>
                 <div class="sk-rule-block">
@@ -1697,21 +1682,7 @@ footer {
                 </div>
               </div>
 
-              <!-- Scene D: Score -->
-              <div class="sk-reel-scene sk-scene-d">
-                <div class="sk-reel-label">Validation</div>
-                <div style="text-align:center; margin-bottom:8px;">
-                  <span class="sk-score-num">91</span>
-                  <span class="sk-score-label">Skill quality score</span>
-                </div>
-                <div class="sk-score-sub">
-                  <span>8 dimensions</span>
-                  <span style="color:var(--sand);">&middot;</span>
-                  <span>real-world tested</span>
-                </div>
-              </div>
-
-              <!-- Scene E: Impact -->
+              <!-- Scene C: Impact -->
               <div class="sk-reel-scene sk-scene-e">
                 <div class="sk-reel-label">Impact</div>
                 <div class="sk-impact-before-after">
@@ -1734,8 +1705,6 @@ footer {
                   <i class="sk-dot sk-dot-active" data-scene="0"></i>
                   <i class="sk-dot" data-scene="1"></i>
                   <i class="sk-dot" data-scene="2"></i>
-                  <i class="sk-dot" data-scene="3"></i>
-                  <i class="sk-dot" data-scene="4"></i>
                 </span>
               </div>
             </div>

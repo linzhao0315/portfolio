@@ -880,6 +880,14 @@ footer {
 }
 .lightbox.open { opacity: 1; pointer-events: auto; }
 .lightbox img { max-width: 90vw; max-height: 88vh; border-radius: var(--radius); object-fit: contain; }
+/* video lightbox variant */
+.lightbox video {
+  max-width: 90vw; max-height: 88vh;
+  border-radius: var(--radius);
+  display: none;
+}
+.lightbox.video-mode img  { display: none; }
+.lightbox.video-mode video { display: block; }
 .lightbox-close {
   position: absolute; top: 1.75rem; right: 1.75rem;
   width: 44px; height: 44px; border-radius: 50%;
@@ -889,6 +897,105 @@ footer {
   transition: background 0.2s; backdrop-filter: blur(8px);
 }
 .lightbox-close:hover { background: rgba(244,240,232,0.22); }
+
+/* ── Video Compare ────────────────────────────────────────────── */
+.video-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.75rem;
+  margin-top: 2rem;
+  align-items: start;
+}
+.vc-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  opacity: 0;
+  transform: translateY(52px);
+  transition: opacity 0.85s var(--ease-silk), transform 0.85s var(--ease-silk);
+}
+.vc-panel.vc-before { transition-delay: 0s; }
+.vc-panel.vc-after  { transition-delay: 0.18s; }
+.video-compare.on .vc-panel { opacity: 1; transform: translateY(0); }
+.vc-label {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.625rem;
+  border-radius: 20px;
+  display: inline-flex;
+  align-self: flex-start;
+}
+.vc-before .vc-label {
+  background: rgba(184,125,90,0.12);
+  color: var(--terracotta);
+  border: 1px solid rgba(184,125,90,0.22);
+}
+.vc-after .vc-label {
+  background: rgba(92,110,77,0.10);
+  color: var(--sage);
+  border: 1px solid rgba(92,110,77,0.22);
+}
+.vc-video-wrap {
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--ink);
+  box-shadow: 0 8px 40px rgba(37,37,32,0.14), 0 2px 8px rgba(37,37,32,0.08);
+  line-height: 0;
+  position: relative;
+  cursor: pointer;
+}
+.vc-video-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(37,37,32,0);
+  border-radius: inherit;
+  transition: background 0.25s ease;
+  pointer-events: none;
+}
+.vc-video-wrap:hover::after { background: rgba(37,37,32,0.2); }
+.vc-expand {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 0.75rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(244,240,232,0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(244,240,232,0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(244,240,232,0.9);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+.vc-video-wrap:hover .vc-expand { opacity: 1; transform: scale(1); }
+.vc-video {
+  width: 100%;
+  display: block;
+  height: auto;
+}
+.vc-caption {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  color: var(--ink-muted);
+  letter-spacing: 0.02em;
+  text-align: center;
+  line-height: 1.6;
+}
+@media (max-width: 640px) {
+  .video-compare { grid-template-columns: 1fr; }
+  .vc-panel.vc-after { transition-delay: 0.1s; }
+}
 
 /* ── Accessibility ────────────────────────────────────────────── */
 :focus-visible { outline: 2px solid var(--sage); outline-offset: 3px; border-radius: 3px; }
@@ -902,6 +1009,7 @@ footer {
   .reveal { opacity:1 !important; transform:none !important; }
   .hero-meta,.hero-title,.hero-sub,.cs-meta-grid { opacity:1 !important; transform:none !important; }
   .arch-tier { opacity:1 !important; transform:none !important; }
+  .vc-panel { opacity:1 !important; transform:none !important; }
 }
 @supports not (backdrop-filter: blur(1px)) {
   .cs-meta-grid,.loop-panel,.infra-card,.audit-card,
@@ -1471,6 +1579,36 @@ footer {
       </div>
     </div>
 
+    <!-- ── 09 In Practice ──────────────────────────────────────── -->
+    <div class="cs-content-section reveal">
+      <div class="chapter-num">09 &mdash; In Practice</div>
+      <h2 class="chapter-heading">The proof is in<br>the <em>prototype.</em></h2>
+      <p class="cs-content-text">Same AI model. Same design system. Same prompt. The only variable: whether the skill was loaded. Left is what came back before the skill existed — five correction rounds before the tokens matched. Right is what came back after — accurate on the first pass, tokens correct, no corrections needed.</p>
+
+      <div class="video-compare" id="videoCompare">
+        <div class="vc-panel vc-before">
+          <span class="vc-label">Before the skill</span>
+          <div class="vc-video-wrap" role="button" tabindex="0" aria-label="Expand Before video" onclick="openVideoLightbox('portfolio-assets/Before.mp4')">
+            <video class="vc-video" src="portfolio-assets/Before.mp4" muted loop playsinline></video>
+            <div class="vc-expand" aria-hidden="true">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+          <div class="vc-caption">v1 &mdash; ~5 correction loops per session</div>
+        </div>
+        <div class="vc-panel vc-after">
+          <span class="vc-label">After the skill</span>
+          <div class="vc-video-wrap" role="button" tabindex="0" aria-label="Expand After video" onclick="openVideoLightbox('portfolio-assets/After.mp4')">
+            <video class="vc-video" src="portfolio-assets/After.mp4" muted loop playsinline></video>
+            <div class="vc-expand" aria-hidden="true">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+          <div class="vc-caption">v25 &mdash; 1&ndash;2 loops, accurate first pass</div>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /container -->
 
   <!-- ── Contact ────────────────────────────────────────────────── -->
@@ -1493,9 +1631,10 @@ footer {
 </main>
 
 <!-- ── Lightbox ──────────────────────────────────────────────────── -->
-<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image lightbox">
-  <button class="lightbox-close" id="lightboxClose" aria-label="Close image">&times;</button>
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Media lightbox">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Close">&times;</button>
   <img id="lightboxImg" src="" alt="">
+  <video id="lightboxVid" muted loop playsinline></video>
 </div>
 
 <script>
@@ -1614,22 +1753,44 @@ if (!PRM) {
     });
   }, { threshold: 0.2 });
   document.querySelectorAll('.arch-diagram').forEach(el => archIO.observe(el));
+
+  // Video compare — play both simultaneously on enter, pause on exit
+  const vcIO = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      const vids = e.target.querySelectorAll('.vc-video');
+      if (e.isIntersecting) {
+        e.target.classList.add('on');
+        vids.forEach(v => v.play().catch(() => {}));
+      } else {
+        vids.forEach(v => v.pause());
+      }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.video-compare').forEach(el => vcIO.observe(el));
+
 } else {
   document.querySelectorAll('.reveal, .arch-tier, .score-item').forEach(el => {
     el.classList.add('on');
     el.style.opacity = 1;
     el.style.transform = 'none';
   });
+  // PRM: videos still autoplay (they're muted — safe), just without animation
+  document.querySelectorAll('.video-compare').forEach(el => {
+    el.classList.add('on');
+    el.querySelectorAll('.vc-video').forEach(v => v.play().catch(() => {}));
+  });
 }
 
 /* ================================================================
    5. Lightbox
    ================================================================ */
-const lb   = document.getElementById('lightbox');
-const lbImg = document.getElementById('lightboxImg');
+const lb     = document.getElementById('lightbox');
+const lbImg  = document.getElementById('lightboxImg');
+const lbVid  = document.getElementById('lightboxVid');
 const lbClose = document.getElementById('lightboxClose');
 
 function openLightbox(src) {
+  lb.classList.remove('video-mode');
   lbImg.src = src;
   lb.classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -1637,13 +1798,33 @@ function openLightbox(src) {
 }
 window.openLightbox = openLightbox;
 
+function openVideoLightbox(src) {
+  lb.classList.add('video-mode');
+  lbVid.src = src;
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  lbVid.play().catch(() => {});
+  lbClose.focus();
+}
+window.openVideoLightbox = openVideoLightbox;
+
 function closeLightbox() {
   lb.classList.remove('open');
   document.body.style.overflow = '';
+  lbVid.pause();
+  lbVid.src = '';
+  lbImg.src = '';
 }
 lbClose.addEventListener('click', closeLightbox);
 lb.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+// Keyboard support for video wrap buttons
+document.querySelectorAll('.vc-video-wrap[role="button"]').forEach(el => {
+  el.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
+  });
+});
 </script>
 
 </body>
