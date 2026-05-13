@@ -2325,11 +2325,6 @@ document.querySelectorAll('nav a[href^="#"]').forEach(a => {
         }
       }, 1.05);
 
-    // Hero parallax on scroll
-    gsap.to('.hero-inner', {
-      y: 75, opacity: 0.08, ease: 'none',
-      scrollTrigger: { trigger:'#hero', start:'top top', end:'bottom top', scrub: 0.65 }
-    });
   }
 })();
 
